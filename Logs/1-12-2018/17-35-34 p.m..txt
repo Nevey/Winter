@@ -1,0 +1,20 @@
+[Trace]   DarkRiftServer        System Details:
+                                	OS: Microsoft Windows NT 10.0.17134.0
+                                	CLS Version: 4.0.30319.42000
+                                	DarkRift: 2.3.1.0 - Free
+[Trace]   PluginFactory         Created plugin 'CompatibilityBichannelListener'.
+[Trace]   DefaultNetworkListener Starting compatibility listener.
+[Info]    DefaultNetworkListener Server mounted, listening on port 4296.
+[Trace]   DefaultNetworkListener Accepted TCP connection from 127.0.0.1:51475.
+[Trace]   DefaultNetworkListener Accepted UDP connection from 127.0.0.1:60140.
+[Info]    ClientManager         New client [0] connected [127.0.0.1:51475|127.0.0.1:60140].
+[Error]   ClientManager         An plugin encountered an error whilst handling the ClientConnected event. The client will still be connected. (See logs for exception)
+                                 System.NullReferenceException: Object reference not set to an instance of an object
+                                   at Game.Gameplay.Actors.Services.ServerActorService.SpawnActor (Game.Network.Data.SpawnData spawnData) [0x00001] in D:\Unity\Projects\Eskimos\Assets\[Game]\Scripts\Gameplay\Actors\Services\ServerActorService.cs:33 
+                                   at Scripts.Gameplay.Actors.Players.Services.ServerPlayerService.SpawnPlayer (Game.Network.Data.SpawnData spawnData) [0x00001] in D:\Unity\Projects\Eskimos\Assets\[Game]\Scripts\Gameplay\Actors\Players\Services\ServerPlayerService.cs:38 
+                                   at Scripts.Gameplay.Actors.Players.Services.ServerPlayerService.OnClientConnected (DarkRift.Server.IClient obj) [0x0001d] in D:\Unity\Projects\Eskimos\Assets\[Game]\Scripts\Gameplay\Actors\Players\Services\ServerPlayerService.cs:28 
+                                   at Game.Network.Services.ServerService.OnClientConnected (System.Object sender, DarkRift.Server.ClientConnectedEventArgs e) [0x00061] in D:\Unity\Projects\Eskimos\Assets\[Game]\Scripts\Network\Services\ServerService.cs:35 
+                                   at DarkRift.Server.ClientManager+<>c__DisplayClass31_0.<HandleNewConnection>b__1 () [0x0001f] in <56e64ae805e047608792040aeb2db28d>:0 
+[Info]    ClientManager         Client [0] disconnected: Shutdown.
+                                 System.Net.Sockets.SocketException (0x80004005): Een aanvraag om gegevens te verzenden of te ontvangen is niet toegestaan omdat de socket reeds is afgesloten in die richting door middel van een eerdere shutdown-aanroep.
+                                 
