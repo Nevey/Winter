@@ -94,13 +94,14 @@ namespace Game.Network.Services
         /// <param name="message"></param>
         /// <param name="sender"></param>
         /// <param name="sendMode"></param>
+        /// <param name="receivers"></param>
         /// <typeparam name="T"></typeparam>
         private void SendMessage<T>(T data, Message message, IClient sender,
-            SendMode sendMode = SendMode.Reliable)
+            SendMode sendMode = SendMode.Reliable, Receivers receivers = Receivers.Others)
         {
             byte[] byteArray = ByteArrayUtility.ObjectToByteArray(data);
 
-            SendMessage(byteArray, message, sender, sendMode);
+            SendMessage(byteArray, message, sender, sendMode, receivers);
         }
 
         /// <summary>
@@ -110,8 +111,9 @@ namespace Game.Network.Services
         /// <param name="message"></param>
         /// <param name="sender"></param>
         /// <param name="sendMode"></param>
+        /// <param name="receivers"></param>
         private void SendMessage(byte[] data, Message message, IClient sender,
-            SendMode sendMode = SendMode.Reliable)
+            SendMode sendMode = SendMode.Reliable, Receivers receivers = Receivers.Others)
         {
             using (DarkRiftWriter writer = DarkRiftWriter.Create())
             {
@@ -119,44 +121,31 @@ namespace Game.Network.Services
                 message.Serialize(writer);
             }
 
-            foreach (IClient client in server.ClientManager.GetAllClients().Where(c => c != sender))
+            switch (receivers)
             {
-                client.SendMessage(message, sendMode);
-            }
-        }
+                case Receivers.All:
 
-        /// <summary>
-        /// Send message to all clients
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="message"></param>
-        /// <param name="sendMode"></param>
-        /// <typeparam name="T"></typeparam>
-        private void SendMessage<T>(T data, Message message, SendMode sendMode = SendMode.Reliable)
-        {
-            byte[] byteArray = ByteArrayUtility.ObjectToByteArray(data);
+                    foreach (IClient client in server.ClientManager.GetAllClients())
+                    {
+                        client.SendMessage(message, sendMode);
+                    }
 
-            SendMessage(byteArray, message, sendMode);
-        }
+                    break;
 
-        /// <summary>
-        /// Send message to all clients
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="message"></param>
-        /// <param name="sendMode"></param>
-        /// <typeparam name="T"></typeparam>
-        private void SendMessage(byte[] data, Message message, SendMode sendMode = SendMode.Reliable)
-        {
-            using (DarkRiftWriter writer = DarkRiftWriter.Create())
-            {
-                writer.Write(data);
-                message.Serialize(writer);
-            }
+                case Receivers.Others:
 
-            foreach (IClient client in server.ClientManager.GetAllClients())
-            {
-                client.SendMessage(message, sendMode);
+                    foreach (IClient client in server.ClientManager.GetAllClients().Where(c => c != sender))
+                    {
+                        client.SendMessage(message, sendMode);
+                    }
+
+                    break;
+
+                case Receivers.Self:
+
+                    sender.SendMessage(message, sendMode);
+
+                    break;
             }
         }
 
@@ -168,11 +157,23 @@ namespace Game.Network.Services
             this.server.ClientManager.ClientDisconnected += OnClientDisconnected;
         }
 
-        public void SendMessage<T>(T data, ushort tag, SendMode sendMode)
+        public void UnregisterServer(DarkRiftServer server)
+        {
+            if (this.server == null || this.server != server)
+            {
+                return;
+            }
+
+            this.server.ClientManager.ClientConnected -= OnClientConnected;
+            this.server.ClientManager.ClientDisconnected -= OnClientDisconnected;
+        }
+
+        public void SendNewMessage<T>(T data, ushort tag, IClient sender,
+            SendMode sendMode = SendMode.Unreliable, Receivers receivers = Receivers.All)
         {
             using (Message message = Message.CreateEmpty(tag))
             {
-                SendMessage(data, message, sendMode);
+                SendMessage(data, message, sender, sendMode, receivers);
             }
         }
     }

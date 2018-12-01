@@ -17,6 +17,9 @@ namespace Game.Gameplay.Actors
         /// </summary>
         protected int ownerID;
 
+        // Public
+        public int OwnerID => ownerID;
+
         protected virtual void Awake()
         {
             Instantiate(view, transform);

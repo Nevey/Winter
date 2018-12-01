@@ -20,7 +20,7 @@ namespace Game.Gameplay.Actors.Components.Client
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            
+
             ClientNetworkService.Instance.PositionReceivedEvent -= OnPositionReceived;
         }
 

@@ -27,7 +27,7 @@ namespace Game.Gameplay.Actors.Factories
         public ServerPlayer SpawnServerPlayer(SpawnData spawnData)
         {
             ServerPlayer serverPlayer = Instantiate(serverPlayerPrefab);
-            serverPlayer.Initialize(spawnData.OwningClientId);
+            serverPlayer.Initialize(spawnData.OwnerID);
 
             return serverPlayer;
         }
@@ -35,7 +35,7 @@ namespace Game.Gameplay.Actors.Factories
         public ClientPlayer SpawnClientPlayer(SpawnData spawnData)
         {
             ClientPlayer clientPlayer = Instantiate(clientPlayerPrefab);
-            clientPlayer.Initialize(spawnData.OwningClientId);
+            clientPlayer.Initialize(spawnData.OwnerID);
 
             return clientPlayer;
         }

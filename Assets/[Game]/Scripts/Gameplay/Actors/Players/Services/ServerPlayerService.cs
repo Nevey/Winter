@@ -7,6 +7,7 @@ using Game.Network;
 using Game.Network.Data;
 using Game.Network.Services;
 using Game.Services;
+using UnityEngine;
 
 namespace Scripts.Gameplay.Actors.Players.Services
 {
@@ -26,15 +27,12 @@ namespace Scripts.Gameplay.Actors.Players.Services
             ServerNetworkService.Instance.ClientDisconnectedEvent += OnClientDisconnected;
         }
 
-        private void OnClientConnected(IClient obj)
+        private void OnClientConnected(IClient client)
         {
             // TODO: Create a player service next to this actor service, handle player-only stuff there
             // TODO: Handle d/c'd players
 
-            // TODO: Given position will be based on a system
-            // Create spawn data
-            SpawnData spawnData = new SpawnData(obj.ID, 0f, 0f, 0f);
-            SpawnPlayer(spawnData);
+            SpawnPlayer(client);
         }
 
         private void OnClientDisconnected(IClient obj)
@@ -42,12 +40,30 @@ namespace Scripts.Gameplay.Actors.Players.Services
             // Remove player, or if d/c was accidental keep actor until reconnected (or remove after a timeout)
         }
 
-        private void SpawnPlayer(SpawnData spawnData)
+        private void SpawnPlayer(IClient client)
         {
+            // TODO: Given position will be based on a system
+            // Create spawn data
+            SpawnData spawnData = new SpawnData(client.ID, 0f, 0f, 0f);
+
             ServerActorService.Instance.SpawnActor(spawnData);
 
             // Send spawn message
-            ServerNetworkService.Instance.SendMessage(spawnData, Tags.SPAWN, SendMode.Reliable);
+            ServerNetworkService.Instance.SendNewMessage(spawnData, Tags.SPAWN, client,
+                SendMode.Reliable, Receivers.Others);
+
+            // Find all other players, tell newly connected client to spawn other existing players
+            for (int i = 0; i < players.Count; i++)
+            {
+                ServerPlayer player = players[i];
+
+                Vector3 position = player.transform.position;
+
+                SpawnData data = new SpawnData(player.OwnerID, position.x, position.y, position.z);
+
+                ServerNetworkService.Instance.SendNewMessage(data, Tags.SPAWN, client,
+                    SendMode.Reliable, Receivers.Self);
+            }
         }
 
         public void RegisterPlayer(ServerPlayer player)
