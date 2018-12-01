@@ -10,7 +10,7 @@ using MessageReceivedEventArgs = DarkRift.Client.MessageReceivedEventArgs;
 
 namespace Game.Network.Services
 {
-    public class ClientService : Service<ClientService>
+    public class ClientNetworkService : Service<ClientNetworkService>
     {
         // TODO: Make simplified version of UnityClient
         // Private
@@ -18,6 +18,8 @@ namespace Game.Network.Services
 
         // Public
         public DarkRiftClient Client => unityClient.Client;
+
+        public event Action<PositionData> PositionReceivedEvent;
 
         public void RegisterUnityClient(UnityClient unityClient)
         {
@@ -65,8 +67,10 @@ namespace Game.Network.Services
                             break;
 
                         case Tags.POSITION:
-                            // Set position of client-side actor, actor service
-                            // Use a position listener component
+
+                            PositionReceivedEvent?.Invoke(
+                                ByteArrayUtility.ByteArrayToObject<PositionData>(reader.ReadBytes()));
+
                             break;
 
                         case Tags.ROTATION:

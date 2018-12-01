@@ -14,7 +14,8 @@ namespace Game.Utilities
 
         private static Color GetColor(Type type)
         {
-            if (colorDict.TryGetValue(type, out Color color))
+            Color color;
+            if (colorDict.TryGetValue(type, out color))
             {
                 return color;
             }

@@ -78,7 +78,7 @@ namespace DarkRift.Server.Unity
                 Server = new DarkRiftServer(spawnData);
                 Server.Start();
 
-                ServerService.Instance.RegisterServer(Server);
+                ServerNetworkService.Instance.RegisterServer(Server);
             }
             else
                 Debug.LogError("No configuration file specified!");

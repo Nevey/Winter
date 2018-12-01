@@ -22,8 +22,8 @@ namespace Scripts.Gameplay.Actors.Players.Services
         {
             base.OnInitialize();
 
-            ServerService.Instance.ClientConnectedEvent += OnClientConnected;
-            ServerService.Instance.ClientDisconnectedEvent += OnClientDisconnected;
+            ServerNetworkService.Instance.ClientConnectedEvent += OnClientConnected;
+            ServerNetworkService.Instance.ClientDisconnectedEvent += OnClientDisconnected;
         }
 
         private void OnClientConnected(IClient obj)
@@ -47,7 +47,7 @@ namespace Scripts.Gameplay.Actors.Players.Services
             ServerActorService.Instance.SpawnActor(spawnData);
 
             // Send spawn message
-            ServerService.Instance.SendMessage(spawnData, Tags.SPAWN, SendMode.Reliable);
+            ServerNetworkService.Instance.SendMessage(spawnData, Tags.SPAWN, SendMode.Reliable);
         }
 
         public void RegisterPlayer(ServerPlayer player)

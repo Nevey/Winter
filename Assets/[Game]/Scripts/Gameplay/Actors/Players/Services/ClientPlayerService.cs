@@ -11,7 +11,7 @@ namespace Scripts.Gameplay.Actors.Players.Services
         {
             ClientActorService.Instance.SpawnActor(spawnData);
 
-            if (ClientService.Instance.Client.ID == spawnData.OwningClientId)
+            if (ClientNetworkService.Instance.Client.ID == spawnData.OwningClientId)
             {
                 // TODO: If controlling client id is the same is my client id, take control!
             }

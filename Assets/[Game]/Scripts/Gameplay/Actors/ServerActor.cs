@@ -1,3 +1,4 @@
+using Game.Gameplay.Actors.Components.Server;
 using Game.Gameplay.Actors.Services;
 
 namespace Game.Gameplay.Actors
@@ -16,6 +17,11 @@ namespace Game.Gameplay.Actors
             base.OnDestroy();
 
             ServerActorService.Instance.UnregisterActor(this);
+        }
+
+        protected override void OnInitialized()
+        {
+            gameObject.AddComponent<PositionReceiver>();
         }
     }
 }

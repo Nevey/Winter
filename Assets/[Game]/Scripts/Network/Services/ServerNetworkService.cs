@@ -9,7 +9,7 @@ using Game.Utilities;
 
 namespace Game.Network.Services
 {
-    public class ServerService : Service<ServerService>
+    public class ServerNetworkService : Service<ServerNetworkService>
     {
         // Private
         private DarkRiftServer server;
@@ -20,6 +20,8 @@ namespace Game.Network.Services
         public event Action<IClient> ClientConnectedEvent;
 
         public event Action<IClient> ClientDisconnectedEvent;
+
+        public event Action<int, PositionData> PositionReceivedEvent;
 
         private void OnClientConnected(object sender, ClientConnectedEventArgs e)
         {
@@ -64,8 +66,16 @@ namespace Game.Network.Services
                             break;
 
                         case Tags.POSITION:
+
+                            PositionData positionData =
+                                ByteArrayUtility.ByteArrayToObject<PositionData>(reader.ReadBytes());
+
+                            // Fire PositionReceivedEvent
+                            PositionReceivedEvent?.Invoke(e.Client.ID, positionData);
+
                             // Send position data to other clients
-                            SendMessage(reader.ReadBytes(), message, e.Client, SendMode.Unreliable);
+                            SendMessage(positionData, message, e.Client, SendMode.Unreliable);
+
                             break;
 
                         case Tags.ROTATION:

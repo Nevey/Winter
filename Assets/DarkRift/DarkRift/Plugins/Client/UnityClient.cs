@@ -213,7 +213,7 @@ namespace DarkRift.Client.Unity
             Client.MessageReceived += Client_MessageReceived;
             Client.Disconnected += Client_Disconnected;
 
-            ClientService.Instance.RegisterUnityClient(this);
+            ClientNetworkService.Instance.RegisterUnityClient(this);
         }
 
         void Start()
@@ -235,7 +235,7 @@ namespace DarkRift.Client.Unity
             Close();
             Debug.Log("Destroy");
 
-            ClientService.Instance.UnregisterUnityClient(this);
+            ClientNetworkService.Instance.UnregisterUnityClient(this);
         }
 
         void OnApplicationQuit()
