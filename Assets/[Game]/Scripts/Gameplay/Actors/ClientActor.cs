@@ -6,7 +6,7 @@ namespace Game.Gameplay.Actors
 {
     public class ClientActor : Actor
     {
-        private bool IsMine => ClientNetworkService.Instance.Client.ID == ownerID;
+        protected bool IsMine => ClientNetworkService.Instance.Client.ID == ownerID;
 
         protected override void Awake()
         {
@@ -26,11 +26,11 @@ namespace Game.Gameplay.Actors
         {
             if (IsMine)
             {
-                gameObject.AddComponent<PositionSender>();
+                AddComponent<PositionSender>();
             }
             else
             {
-                gameObject.AddComponent<PositionReceiver>();
+                AddComponent<PositionReceiver>();
             }
         }
     }

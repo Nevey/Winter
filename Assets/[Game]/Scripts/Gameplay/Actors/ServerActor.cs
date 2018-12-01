@@ -21,7 +21,7 @@ namespace Game.Gameplay.Actors
 
         protected override void OnInitialized()
         {
-            gameObject.AddComponent<PositionReceiver>();
+            AddComponent<PositionReceiver>();
         }
     }
 }

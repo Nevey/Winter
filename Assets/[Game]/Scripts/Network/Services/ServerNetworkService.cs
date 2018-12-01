@@ -21,7 +21,7 @@ namespace Game.Network.Services
 
         public event Action<IClient> ClientDisconnectedEvent;
 
-        public event Action<int, PositionData> PositionReceivedEvent;
+        public event Action<PositionData> PositionReceivedEvent;
 
         private void OnClientConnected(object sender, ClientConnectedEventArgs e)
         {
@@ -71,7 +71,7 @@ namespace Game.Network.Services
                                 ByteArrayUtility.ByteArrayToObject<PositionData>(reader.ReadBytes());
 
                             // Fire PositionReceivedEvent
-                            PositionReceivedEvent?.Invoke(e.Client.ID, positionData);
+                            PositionReceivedEvent?.Invoke(positionData);
 
                             // Send position data to other clients
                             SendMessage(positionData, message, e.Client, SendMode.Unreliable);

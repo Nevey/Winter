@@ -292,7 +292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0493769193bb4d4084896185ea2fa1bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  networkType: 0
+  networkType: 1
   serverPrefab: {fileID: 6522459736978920306, guid: 447d6672a01529b45b9abbd5b95b7509,
     type: 3}
   clientPrefab: {fileID: 9044511248344491135, guid: ed1b84b38ba50bd47afaacdf44b97ef6,

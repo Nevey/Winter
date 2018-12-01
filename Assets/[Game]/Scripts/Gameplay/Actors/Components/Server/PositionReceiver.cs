@@ -20,9 +20,9 @@ namespace Game.Gameplay.Actors.Components.Server
             ServerNetworkService.Instance.PositionReceivedEvent -= OnPositionReceived;
         }
 
-        private void OnPositionReceived(int clientID, PositionData positionData)
+        private void OnPositionReceived(PositionData positionData)
         {
-            if (ownerID != clientID)
+            if (ownerID != positionData.clientID)
             {
                 return;
             }
