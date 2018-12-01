@@ -17,6 +17,13 @@ namespace Game.Gameplay.Actors.Components.Client
             ClientNetworkService.Instance.PositionReceivedEvent += OnPositionReceived;
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            
+            ClientNetworkService.Instance.PositionReceivedEvent -= OnPositionReceived;
+        }
+
         private void OnPositionReceived(PositionData positionData)
         {
             if (positionData.clientID != ownerID)
