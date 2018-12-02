@@ -102,7 +102,7 @@ namespace Game.Building
 
             if (!string.IsNullOrEmpty(symbols))
             {
-                symbols += ",";
+                symbols += ";";
             }
 
             return symbols;
@@ -147,6 +147,9 @@ namespace Game.Building
 
             // Restore to previous scripting define symbols
             RestoreScriptingDefineSymbols();
+
+            // Save changes to modified assets
+            AssetDatabase.SaveAssets();
         }
     }
 }
