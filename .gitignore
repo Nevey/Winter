@@ -23,3 +23,5 @@ sysinfo.txt
 # Rider
 .idea/
 Logs/
+
+Builds/
