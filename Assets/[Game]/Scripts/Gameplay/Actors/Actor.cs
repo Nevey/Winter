@@ -47,6 +47,11 @@ namespace Game.Gameplay.Actors
             OnInitialized();
         }
 
+        public void Destroy()
+        {
+            MonoBehaviour.Destroy(gameObject);
+        }
+
         protected abstract void OnInitialized();
     }
 }

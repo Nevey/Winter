@@ -29,15 +29,14 @@ namespace Scripts.Gameplay.Actors.Players.Services
 
         private void OnClientConnected(IClient client)
         {
-            // TODO: Create a player service next to this actor service, handle player-only stuff there
-            // TODO: Handle d/c'd players
-
             SpawnPlayer(client);
         }
 
-        private void OnClientDisconnected(IClient obj)
+        private void OnClientDisconnected(IClient client)
         {
-            // Remove player, or if d/c was accidental keep actor until reconnected (or remove after a timeout)
+            ServerActorService.Instance.DestroyActorsOfClient(client);
+
+            // TODO: Tell other players
         }
 
         private void SpawnPlayer(IClient client)
