@@ -7,11 +7,11 @@ namespace Game.Network.Types
 {
     public class NetworkTypePicker : MonoBehaviour
     {
-        // TODO: use scriptable object for such settings
-        // TODO: based on windows "server build"
         // Private
+        [Header("Selecting network type is for Editor only")]
         [SerializeField] private NetworkType networkType;
 
+        [Header("References to Server and Client prefabs, we never spawn both")]
         [SerializeField] private XmlUnityServer serverPrefab;
 
         [SerializeField] private UnityClient clientPrefab;
@@ -21,6 +21,7 @@ namespace Game.Network.Types
 
         private void Awake()
         {
+#if UNITY_EDITOR
             switch (networkType)
             {
                 case NetworkType.Server:
@@ -35,6 +36,13 @@ namespace Game.Network.Types
                     // TODO...
                     break;
             }
+#endif
+
+#if SERVER_BUILD
+            Instantiate(serverPrefab);
+#elif CLIENT_BUILD
+            Instantiate(clientPrefab);
+#endif
         }
     }
 }
