@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -5,11 +6,15 @@ namespace Game.Building
 {
     public class BuildEditorWindow : EditorWindow
     {
+        private const string BUILD_TARGET_KEY = "buildTarget";
+        private const string BUILD_OPTIONS_KEY = "buildOptions";
+        private const string BUILD_PATH_KEY = "buildPath";
+
         private BuildTarget buildTarget;
 
         private BuildOptions buildOptions;
 
-        private string path;
+        private string buildPath;
 
         private string previousSymbols;
 
@@ -31,7 +36,26 @@ namespace Game.Building
 
         private void Awake()
         {
-            buildTarget = EditorUserBuildSettings.activeBuildTarget;
+            if (EditorPrefs.HasKey(BUILD_TARGET_KEY))
+            {
+                buildTarget = (BuildTarget)EditorPrefs.GetInt(BUILD_TARGET_KEY);
+            }
+            else
+            {
+                buildTarget = EditorUserBuildSettings.activeBuildTarget;
+            }
+
+            if (EditorPrefs.HasKey(BUILD_OPTIONS_KEY))
+            {
+                buildOptions = (BuildOptions)Enum.Parse(typeof(BuildOptions),
+                    EditorPrefs.GetString(BUILD_OPTIONS_KEY));
+            }
+            else
+            {
+                buildOptions = BuildOptions.None;
+            }
+
+            buildPath = EditorPrefs.GetString(BUILD_PATH_KEY);
 
             style = new GUIStyle();
 
@@ -68,11 +92,11 @@ namespace Game.Building
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Current Path", path);
+            EditorGUILayout.LabelField("Current Path", buildPath);
 
             if (GUILayout.Button("Select Path"))
             {
-                path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
+                buildPath = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
             }
 
             EditorGUILayout.Space();
@@ -84,72 +108,26 @@ namespace Game.Building
 
             if (GUILayout.Button("Build Server"))
             {
-                Build(path + "/Server/Winter_Server.exe", "SERVER_BUILD");
+                SaveSettings();
+
+                Builder.Build(buildPath + "/Server/Winter_Server.exe", buildTarget, buildOptions,
+                    "SERVER_BUILD");
             }
 
             if (GUILayout.Button("Build Client"))
             {
-                Build(path + "/Client/Winter_Client.exe", "CLIENT_BUILD");
+                SaveSettings();
+
+                Builder.Build(buildPath + "/Client/Winter_Client.exe", buildTarget, buildOptions,
+                    "CLIENT_BUILD");
             }
         }
 
-        private string GetScriptingDefineSymbols()
+        private void SaveSettings()
         {
-            // Get and store current scripting define symbols
-            string symbols = previousSymbols =
-                PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings
-                    .selectedBuildTargetGroup);
-
-            if (!string.IsNullOrEmpty(symbols))
-            {
-                symbols += ";";
-            }
-
-            return symbols;
-        }
-
-        private void RestoreScriptingDefineSymbols()
-        {
-            if (previousSymbols == null)
-            {
-                return;
-            }
-
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(
-                EditorUserBuildSettings.selectedBuildTargetGroup, previousSymbols);
-        }
-
-        private void SwitchTarget()
-        {
-            BuildTargetGroup buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
-
-            EditorUserBuildSettings.SwitchActiveBuildTarget(buildTargetGroup, buildTarget);
-        }
-
-        private void Build(string path, string customSymbols = null)
-        {
-            // Switch to build target platform
-            SwitchTarget();
-
-            if (customSymbols != null)
-            {
-                // Get current scripting define symbols
-                string symbols = GetScriptingDefineSymbols();
-                symbols += customSymbols;
-
-                // Set define symbols
-                PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup,
-                    symbols);
-            }
-
-            // Make build
-            BuildPipeline.BuildPlayer(EditorBuildSettings.scenes, path, buildTarget, buildOptions);
-
-            // Restore to previous scripting define symbols
-            RestoreScriptingDefineSymbols();
-
-            // Save changes to modified assets
-            AssetDatabase.SaveAssets();
+            EditorPrefs.SetInt(BUILD_TARGET_KEY, (int)buildTarget);
+            EditorPrefs.SetString(BUILD_OPTIONS_KEY, buildOptions.ToString());
+            EditorPrefs.SetString(BUILD_PATH_KEY, buildPath);
         }
     }
 }
