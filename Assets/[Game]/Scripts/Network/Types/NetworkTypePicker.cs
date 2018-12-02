@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Game.Network.Types
 {
+    // TODO: Rename to NetworkFactory?
     public class NetworkTypePicker : MonoBehaviour
     {
         // Private
