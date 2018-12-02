@@ -20,7 +20,11 @@ namespace Game.Gameplay.Camera
 
         private Vector3 horizontalDelta;
         private Vector3 verticalDelta;
+        private Vector3 upDelta;
+        private Vector3 downDelta;
+
         private Vector3 moveDelta;
+        private Vector3 targetMoveDelta;
         private Vector3 moveVelocity;
 
         private void Awake()
@@ -30,6 +34,8 @@ namespace Game.Gameplay.Camera
             ControlsService.Instance.MouseInputEvent += OnMouseInput;
             ControlsService.Instance.HorizontalInputEvent += OnHorizontalInput;
             ControlsService.Instance.VerticalInputEvent += OnVerticalInput;
+            ControlsService.Instance.JumpInputEvent += OnJumpInput;
+            ControlsService.Instance.CrouchInputEvent += OnCrouchInput;
         }
 
         private void OnDestroy()
@@ -37,12 +43,16 @@ namespace Game.Gameplay.Camera
             ControlsService.Instance.MouseInputEvent -= OnMouseInput;
             ControlsService.Instance.HorizontalInputEvent -= OnHorizontalInput;
             ControlsService.Instance.VerticalInputEvent -= OnVerticalInput;
+            ControlsService.Instance.JumpInputEvent -= OnJumpInput;
+            ControlsService.Instance.CrouchInputEvent -= OnCrouchInput;
         }
 
         private void Update()
         {
-            moveDelta = Vector3.SmoothDamp(moveDelta, (horizontalDelta + verticalDelta),
-                ref moveVelocity, moveSmoothStrength);
+            targetMoveDelta = horizontalDelta + verticalDelta + upDelta + downDelta;
+
+            moveDelta = Vector3.SmoothDamp(moveDelta, targetMoveDelta, ref moveVelocity,
+                moveSmoothStrength);
 
             transform.position += moveDelta;
         }
@@ -68,6 +78,16 @@ namespace Game.Gameplay.Camera
         private void OnVerticalInput(float verticalInput)
         {
             verticalDelta = transform.forward * verticalInput * moveSensitivity;
+        }
+
+        private void OnJumpInput(float jumpInput)
+        {
+            upDelta = transform.up * jumpInput * moveSensitivity;
+        }
+
+        private void OnCrouchInput(float crouchInput)
+        {
+            downDelta = (-transform.up) * crouchInput * moveSensitivity;
         }
     }
 }

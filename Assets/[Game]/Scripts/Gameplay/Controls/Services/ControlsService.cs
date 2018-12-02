@@ -1,6 +1,5 @@
 using System;
 using Game.Services;
-using Game.Utilities;
 using Scripts.Gameplay.Controls;
 using UnityEngine;
 
@@ -17,10 +16,10 @@ namespace Game.Gameplay.Controls.Services
 
         // Public
         public event Action<Vector2> MouseInputEvent;
-
         public event Action<float> HorizontalInputEvent;
-
         public event Action<float> VerticalInputEvent;
+        public event Action<float> JumpInputEvent;
+        public event Action<float> CrouchInputEvent;
 
         protected override void OnInitialize()
         {
@@ -40,8 +39,6 @@ namespace Game.Gameplay.Controls.Services
             }
 
             MouseInputEvent?.Invoke(vector2);
-
-            Log.Write($"Mouse Input | X: {vector2.x} - Y: {vector2.y}");
         }
 
         private void OnHorizontalInput(float horizontalInput)
@@ -52,8 +49,6 @@ namespace Game.Gameplay.Controls.Services
             }
 
             HorizontalInputEvent?.Invoke(horizontalInput);
-
-            Log.Write($"Horizontal Input | {horizontalInput}");
         }
 
         private void OnVerticalInput(float verticalInput)
@@ -64,8 +59,26 @@ namespace Game.Gameplay.Controls.Services
             }
 
             VerticalInputEvent?.Invoke(verticalInput);
+        }
 
-            Log.Write($"Vertical Input | {verticalInput}");
+        private void OnJumpInput(float jumpInput)
+        {
+            if (isInputPaused)
+            {
+                return;
+            }
+
+            JumpInputEvent?.Invoke(jumpInput);
+        }
+
+        private void OnCrouchInput(float crouchInput)
+        {
+            if (isInputPaused)
+            {
+                return;
+            }
+
+            CrouchInputEvent?.Invoke(crouchInput);
         }
 
         #endregion
@@ -102,6 +115,8 @@ namespace Game.Gameplay.Controls.Services
             this.keyboardInput = keyboardInput;
             this.keyboardInput.HorizontalInputEvent += OnHorizontalInput;
             this.keyboardInput.VerticalInputEvent += OnVerticalInput;
+            this.keyboardInput.JumpInputEvent += OnJumpInput;
+            this.keyboardInput.CrouchInputEvent += OnCrouchInput;
         }
 
         public void UnregisterKeyboardInput(KeyboardInput keyboardInput)
