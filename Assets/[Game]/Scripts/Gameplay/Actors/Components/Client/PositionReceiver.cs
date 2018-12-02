@@ -26,6 +26,7 @@ namespace Game.Gameplay.Actors.Components.Client
 
         private void OnPositionReceived(PositionData positionData)
         {
+            // TODO: Also/Only compare actor ID...
             if (positionData.clientID != ownerID)
             {
                 return;
