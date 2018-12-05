@@ -19,7 +19,9 @@ namespace Game.Network.Services
         // Public
         public DarkRiftClient Client => unityClient.Client;
 
-        public event Action<PositionData> PositionReceivedEvent;
+        public event Action<NetworkPositionData> PositionReceivedEvent;
+
+        public event Action<NetworkComponentData> ComponentDataReceivedEvent;
 
         public void RegisterUnityClient(UnityClient unityClient)
         {
@@ -69,13 +71,22 @@ namespace Game.Network.Services
                         case Tags.POSITION:
 
                             PositionReceivedEvent?.Invoke(
-                                ByteArrayUtility.ByteArrayToObject<PositionData>(reader.ReadBytes()));
+                                ByteArrayUtility.ByteArrayToObject<NetworkPositionData>(reader.ReadBytes()));
 
                             break;
 
                         case Tags.ROTATION:
                             // Set rotation of client-side actor, actor service
                             // Use a rotation listener component
+                            break;
+
+                        case Tags.NETWORK_COMPONENT_DATA:
+
+                            NetworkComponentData networkComponentData =
+                                ByteArrayUtility.ByteArrayToObject<NetworkComponentData>(reader.ReadBytes());
+
+                            ComponentDataReceivedEvent?.Invoke(networkComponentData);
+                            
                             break;
                     }
                 }

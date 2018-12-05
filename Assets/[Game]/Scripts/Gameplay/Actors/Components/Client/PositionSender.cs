@@ -8,9 +8,9 @@ namespace Game.Gameplay.Actors.Components.Client
     /// <summary>
     /// Should only be added to an actor which local client has authority of
     /// </summary>
-    public class PositionSender : ActorComponent
+    public class PositionSender : ClientActorComponent
     {
-        private PositionData positionData;
+        private NetworkPositionData networkPositionData;
 
         protected override void Awake()
         {
@@ -28,12 +28,12 @@ namespace Game.Gameplay.Actors.Components.Client
 
         private void SendPosition()
         {
-            positionData.clientID = ownerID;
-            positionData.x = transform.position.x;
-            positionData.y = transform.position.y;
-            positionData.z = transform.position.z;
+            networkPositionData.clientID = ownerID;
+            networkPositionData.x = transform.position.x;
+            networkPositionData.y = transform.position.y;
+            networkPositionData.z = transform.position.z;
 
-            ClientNetworkService.Instance.SendMessage(positionData, Tags.POSITION);
+            ClientNetworkService.Instance.SendMessage(networkPositionData, Tags.POSITION);
         }
     }
 }

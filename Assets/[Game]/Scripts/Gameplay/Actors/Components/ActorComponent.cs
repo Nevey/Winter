@@ -2,8 +2,10 @@ using UnityEngine;
 
 namespace Game.Gameplay.Actors.Components
 {
-    public class ActorComponent : MonoBehaviour
+    public abstract class ActorComponent : MonoBehaviour
     {
+        public int ID;
+
         protected int ownerID;
 
         protected virtual void Awake()

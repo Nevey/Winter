@@ -3,7 +3,7 @@ using System;
 namespace Game.Network.Data
 {
     [Serializable]
-    public struct PositionData
+    public class NetworkPositionData : NetworkComponentData
     {
         public int clientID;
 

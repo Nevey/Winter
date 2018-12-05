@@ -24,15 +24,15 @@ namespace Game.Gameplay.Actors.Components.Client
             ClientNetworkService.Instance.PositionReceivedEvent -= OnPositionReceived;
         }
 
-        private void OnPositionReceived(PositionData positionData)
+        private void OnPositionReceived(NetworkPositionData networkPositionData)
         {
             // TODO: Also/Only compare actor ID...
-            if (positionData.clientID != ownerID)
+            if (networkPositionData.clientID != ownerID)
             {
                 return;
             }
 
-            transform.position = new Vector3(positionData.x, positionData.y, positionData.z);
+            transform.position = new Vector3(networkPositionData.x, networkPositionData.y, networkPositionData.z);
         }
     }
 }

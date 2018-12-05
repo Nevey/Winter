@@ -4,30 +4,11 @@ using UnityEngine;
 
 namespace Game.Gameplay.Actors.Components.Server
 {
-    public class PositionReceiver : ActorComponent
+    public class PositionReceiver : ServerNetworkComponent<NetworkPositionData>
     {
-        protected override void Awake()
+        protected override void OnDataReceived(NetworkPositionData data)
         {
-            base.Awake();
-
-            ServerNetworkService.Instance.PositionReceivedEvent += OnPositionReceived;
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            ServerNetworkService.Instance.PositionReceivedEvent -= OnPositionReceived;
-        }
-
-        private void OnPositionReceived(PositionData positionData)
-        {
-            if (ownerID != positionData.clientID)
-            {
-                return;
-            }
-
-            transform.position = new Vector3(positionData.x, positionData.y, positionData.z);
+            transform.position = new Vector3(data.x, data.y, data.z);
         }
     }
 }

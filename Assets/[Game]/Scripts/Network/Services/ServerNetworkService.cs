@@ -21,7 +21,9 @@ namespace Game.Network.Services
 
         public event Action<IClient> ClientDisconnectedEvent;
 
-        public event Action<PositionData> PositionReceivedEvent;
+        public event Action<NetworkPositionData> PositionReceivedEvent;
+
+        public event Action<NetworkComponentData> ComponentDataReceivedEvent;
 
         private void OnClientConnected(object sender, ClientConnectedEventArgs e)
         {
@@ -67,20 +69,29 @@ namespace Game.Network.Services
 
                         case Tags.POSITION:
 
-                            PositionData positionData =
-                                ByteArrayUtility.ByteArrayToObject<PositionData>(reader.ReadBytes());
+                            NetworkPositionData networkPositionData =
+                                ByteArrayUtility.ByteArrayToObject<NetworkPositionData>(reader.ReadBytes());
 
                             // Fire PositionReceivedEvent
-                            PositionReceivedEvent?.Invoke(positionData);
+                            PositionReceivedEvent?.Invoke(networkPositionData);
 
                             // Send position data to other clients
-                            SendMessage(positionData, message, e.Client, SendMode.Unreliable);
+                            SendMessage(networkPositionData, message, e.Client, SendMode.Unreliable);
 
                             break;
 
                         case Tags.ROTATION:
                             // Send rotation data to other clients
                             SendMessage(reader.ReadBytes(), message, e.Client, SendMode.Unreliable);
+                            break;
+
+                        case Tags.NETWORK_COMPONENT_DATA:
+
+                            NetworkComponentData networkComponentData =
+                                ByteArrayUtility.ByteArrayToObject<NetworkComponentData>(reader.ReadBytes());
+
+                            ComponentDataReceivedEvent?.Invoke(networkComponentData);
+                            
                             break;
                     }
                 }
