@@ -1,4 +1,5 @@
 using Game.Gameplay.Actors;
+using Game.Gameplay.Actors.Components.Server;
 using Scripts.Gameplay.Actors.Players.Services;
 
 namespace Scripts.Gameplay.Actors.Players
@@ -17,6 +18,14 @@ namespace Scripts.Gameplay.Actors.Players
             base.OnDestroy();
 
             ServerPlayerService.Instance.UnregisterPlayer(this);
+        }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+
+            // TODO: Do this via unity prefabs
+            AddComponent<PositionSyncer>();
         }
     }
 }

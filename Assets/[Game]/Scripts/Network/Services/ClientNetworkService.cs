@@ -19,15 +19,13 @@ namespace Game.Network.Services
         // Public
         public DarkRiftClient Client => unityClient.Client;
 
-        public event Action<NetworkPositionData> PositionReceivedEvent;
-
         public event Action<NetworkComponentData> ComponentDataReceivedEvent;
 
         public void RegisterUnityClient(UnityClient unityClient)
         {
             if (this.unityClient != null)
             {
-                throw new Exception("Trying to register UnityClient, but it's already registered!");
+                throw Log.Exception("Trying to register UnityClient, but it's already registered!");
             }
 
             this.unityClient = unityClient;
@@ -43,7 +41,7 @@ namespace Game.Network.Services
 
             if (this.unityClient != unityClient)
             {
-                throw new Exception(
+                throw Log.Exception(
                     "Trying to unregister UnityClient, but it's not registered in the first place!");
             }
 
@@ -59,34 +57,23 @@ namespace Game.Network.Services
                 {
                     switch (message.Tag)
                     {
-                        case Tags.SPAWN:
-                            // Spawn a client-side actor
-                            SpawnData spawnData =
-                                ByteArrayUtility.ByteArrayToObject<SpawnData>(reader.ReadBytes());
-
-                            ClientPlayerService.Instance.SpawnPlayer(spawnData);
-
-                            break;
-
-                        case Tags.POSITION:
-
-                            PositionReceivedEvent?.Invoke(
-                                ByteArrayUtility.ByteArrayToObject<NetworkPositionData>(reader.ReadBytes()));
-
-                            break;
-
-                        case Tags.ROTATION:
-                            // Set rotation of client-side actor, actor service
-                            // Use a rotation listener component
-                            break;
-
                         case Tags.NETWORK_COMPONENT_DATA:
 
                             NetworkComponentData networkComponentData =
                                 ByteArrayUtility.ByteArrayToObject<NetworkComponentData>(reader.ReadBytes());
 
                             ComponentDataReceivedEvent?.Invoke(networkComponentData);
-                            
+
+                            break;
+
+                        case Tags.SPAWN:
+
+                            // Spawn a client-side actor
+                            SpawnData spawnData =
+                                ByteArrayUtility.ByteArrayToObject<SpawnData>(reader.ReadBytes());
+
+                            ClientPlayerService.Instance.SpawnPlayer(spawnData);
+
                             break;
                     }
                 }

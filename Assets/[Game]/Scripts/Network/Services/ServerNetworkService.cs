@@ -21,15 +21,13 @@ namespace Game.Network.Services
 
         public event Action<IClient> ClientDisconnectedEvent;
 
-        public event Action<NetworkPositionData> PositionReceivedEvent;
-
         public event Action<NetworkComponentData> ComponentDataReceivedEvent;
 
         private void OnClientConnected(object sender, ClientConnectedEventArgs e)
         {
             if (clients.Contains(e.Client))
             {
-                throw new Exception(
+                throw Log.Exception(
                     $"Client with ID {e.Client.ID} connected but is already connected!");
             }
 
@@ -43,7 +41,7 @@ namespace Game.Network.Services
         {
             if (!clients.Contains(e.Client))
             {
-                throw new Exception(
+                throw Log.Exception(
                     $"Client with ID {e.Client.ID} disconnected but is not connected in the first place!");
             }
 
@@ -61,37 +59,19 @@ namespace Game.Network.Services
                 {
                     switch (message.Tag)
                     {
-                        case Tags.SPAWN:
-                            // Do nothing as clients cannot spawn actors
-                            // ... or ...
-                            // Spawn an actor server side and tell other clients
-                            break;
-
-                        case Tags.POSITION:
-
-                            NetworkPositionData networkPositionData =
-                                ByteArrayUtility.ByteArrayToObject<NetworkPositionData>(reader.ReadBytes());
-
-                            // Fire PositionReceivedEvent
-                            PositionReceivedEvent?.Invoke(networkPositionData);
-
-                            // Send position data to other clients
-                            SendMessage(networkPositionData, message, e.Client, SendMode.Unreliable);
-
-                            break;
-
-                        case Tags.ROTATION:
-                            // Send rotation data to other clients
-                            SendMessage(reader.ReadBytes(), message, e.Client, SendMode.Unreliable);
-                            break;
-
                         case Tags.NETWORK_COMPONENT_DATA:
 
                             NetworkComponentData networkComponentData =
                                 ByteArrayUtility.ByteArrayToObject<NetworkComponentData>(reader.ReadBytes());
 
                             ComponentDataReceivedEvent?.Invoke(networkComponentData);
-                            
+
+                            break;
+
+                        case Tags.SPAWN:
+                            // Do nothing as clients cannot spawn actors
+                            // ... or ...
+                            // Spawn an actor server side and tell other clients
                             break;
                     }
                 }
@@ -160,6 +140,23 @@ namespace Game.Network.Services
             }
         }
 
+        public void SendNewMessage<T>(T data, ushort tag, IClient sender,
+            SendMode sendMode = SendMode.Unreliable, Receivers receivers = Receivers.Others)
+        {
+            using (Message message = Message.CreateEmpty(tag))
+            {
+                SendMessage(data, message, sender, sendMode, receivers);
+            }
+        }
+
+        public void SendNewMessage<T>(T data, ushort tag, int clientID,
+            SendMode sendMode = SendMode.Unreliable, Receivers receivers = Receivers.Others)
+        {
+            IClient sender = clients.FirstOrDefault(t => t.ID == clientID);
+
+            SendNewMessage(data, tag, sender, sendMode, receivers);
+        }
+
         public void RegisterServer(DarkRiftServer server)
         {
             this.server = server;
@@ -177,15 +174,6 @@ namespace Game.Network.Services
 
             this.server.ClientManager.ClientConnected -= OnClientConnected;
             this.server.ClientManager.ClientDisconnected -= OnClientDisconnected;
-        }
-
-        public void SendNewMessage<T>(T data, ushort tag, IClient sender,
-            SendMode sendMode = SendMode.Unreliable, Receivers receivers = Receivers.All)
-        {
-            using (Message message = Message.CreateEmpty(tag))
-            {
-                SendMessage(data, message, sender, sendMode, receivers);
-            }
         }
     }
 }

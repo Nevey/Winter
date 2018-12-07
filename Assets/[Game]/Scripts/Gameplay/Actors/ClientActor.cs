@@ -1,5 +1,5 @@
-﻿using Game.Gameplay.Actors.Components.Client;
-using Game.Gameplay.Actors.Services;
+﻿using Game.Gameplay.Actors.Services;
+using Game.Network.Data;
 using Game.Network.Services;
 
 namespace Game.Gameplay.Actors
@@ -13,6 +13,9 @@ namespace Game.Gameplay.Actors
             base.Awake();
 
             ClientActorService.Instance.RegisterActor(this);
+
+            // TODO: Put this in ClientActorService, for better performance?
+            ClientNetworkService.Instance.ComponentDataReceivedEvent += OnNetworkComponentDataReceived;
         }
 
         protected override void OnDestroy()
@@ -20,18 +23,24 @@ namespace Game.Gameplay.Actors
             base.OnDestroy();
 
             ClientActorService.Instance.UnregisterActor(this);
+
+            ClientNetworkService.Instance.ComponentDataReceivedEvent -= OnNetworkComponentDataReceived;
         }
 
         protected override void OnInitialized()
         {
-            if (IsMine)
+            
+        }
+
+        private void OnNetworkComponentDataReceived(NetworkComponentData obj)
+        {
+            // If this ClientActor is not supposed to be the receiver of this data, early out...
+            if (obj.ownerID != ownerID)
             {
-                AddComponent<PositionSender>();
+                return;
             }
-            else
-            {
-                AddComponent<PositionReceiver>();
-            }
+
+            ReceiveData(obj);
         }
     }
 }

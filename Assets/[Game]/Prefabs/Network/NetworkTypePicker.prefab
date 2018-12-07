@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkType: 1
-  serverPrefab: {fileID: 6522459736978920306, guid: 447d6672a01529b45b9abbd5b95b7509,
+  serverPrefab: {fileID: 5669134012952958813, guid: 447d6672a01529b45b9abbd5b95b7509,
     type: 3}
   clientPrefab: {fileID: 9044511248344491135, guid: ed1b84b38ba50bd47afaacdf44b97ef6,
     type: 3}

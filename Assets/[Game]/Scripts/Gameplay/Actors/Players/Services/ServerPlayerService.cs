@@ -39,26 +39,26 @@ namespace Scripts.Gameplay.Actors.Players.Services
             // TODO: Tell other players
         }
 
+        // TODO: Make it a "spawn actor" thing so we can spawn more than just players...
         private void SpawnPlayer(IClient client)
         {
-            // TODO: Given position will be based on a system
+            // TODO: Given position will be based on a spawning system
             // Create spawn data
-            SpawnData spawnData = new SpawnData(client.ID, 0f, 0f, 0f);
+            SpawnData spawnData = new SpawnData(client.ID, Vector3.zero);
 
             ServerActorService.Instance.SpawnActor(spawnData);
 
-            // Send spawn message
+            // Send spawn message to all other clients
             ServerNetworkService.Instance.SendNewMessage(spawnData, Tags.SPAWN, client,
-                SendMode.Reliable, Receivers.Others);
+                SendMode.Reliable);
 
-            // Find all other players, tell newly connected client to spawn other existing players
+            // Find all other clients, tell newly connected client to spawn other existing players
             for (int i = 0; i < players.Count; i++)
             {
                 ServerPlayer player = players[i];
 
-                Vector3 position = player.transform.position;
+                SpawnData data = new SpawnData(player.OwnerID, player.transform.position);
 
-                SpawnData data = new SpawnData(player.OwnerID, position.x, position.y, position.z);
 
                 ServerNetworkService.Instance.SendNewMessage(data, Tags.SPAWN, client,
                     SendMode.Reliable, Receivers.Self);

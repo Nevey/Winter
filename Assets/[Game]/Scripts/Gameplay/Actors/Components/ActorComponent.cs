@@ -1,12 +1,15 @@
+using Game.Network.Data;
 using UnityEngine;
 
 namespace Game.Gameplay.Actors.Components
 {
     public abstract class ActorComponent : MonoBehaviour
     {
-        public int ID;
-
         protected int ownerID;
+
+        protected Actor owner;
+
+        public abstract System.Type DataFormatType { get; }
 
         protected virtual void Awake()
         {
@@ -27,5 +30,7 @@ namespace Game.Gameplay.Actors.Components
         {
             this.ownerID = ownerID;
         }
+
+        public abstract void ReceiveData(NetworkComponentData data);
     }
 }

@@ -1,15 +1,21 @@
 using System;
+using UnityEngine;
 
 namespace Game.Network.Data
 {
     [Serializable]
     public class NetworkPositionData : NetworkComponentData
     {
-        public int clientID;
-
         // TODO: Create serializable vector (check out System.Numerics.Vector3)
-        public float x;
-        public float y;
-        public float z;
+        public readonly float x;
+        public readonly float y;
+        public readonly float z;
+
+        public NetworkPositionData(int ownerID, Vector3 position) : base(ownerID)
+        {
+            x = position.x;
+            y = position.y;
+            z = position.z;
+        }
     }
 }

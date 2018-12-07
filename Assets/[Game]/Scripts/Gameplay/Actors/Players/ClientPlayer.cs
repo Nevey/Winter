@@ -26,8 +26,11 @@ namespace Scripts.Gameplay.Actors.Players
 
             if (IsMine)
             {
-                AddComponent<InputMovement>();
+                // TODO: Add movement controller
             }
+
+            // TODO: Do this via unity prefabs
+            AddComponent<PositionSyncer>();
         }
     }
 }

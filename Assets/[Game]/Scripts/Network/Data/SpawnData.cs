@@ -4,29 +4,19 @@ using UnityEngine;
 namespace Game.Network.Data
 {
     [Serializable]
-    public struct SpawnData
+    public class SpawnData : NetworkComponentData
     {
-        // Private
-        private readonly int ownerID;
+        public readonly float x;
+        public readonly float y;
+        public readonly float z;
 
-        private readonly float x;
-        private readonly float y;
-        private readonly float z;
+        // TODO: Add actor type reference
 
-        // TODO: Add actor type
-
-        // Public
-        public int OwnerID => ownerID;
-
-        // TODO: Fix performance
-        public Vector3 Position => new Vector3(x, y, z);
-
-        public SpawnData(int ownerID, float x, float y, float z)
+        public SpawnData(int ownerID, Vector3 position) : base(ownerID)
         {
-            this.ownerID = ownerID;
-            this.x = x;
-            this.y = y;
-            this.z = z;
+            x = position.x;
+            y = position.y;
+            z = position.z;
         }
     }
 }

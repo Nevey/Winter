@@ -1,36 +1,17 @@
+using DarkRift;
+using Game.Network;
 using Game.Network.Data;
 using Game.Network.Services;
 
 namespace Game.Gameplay.Actors.Components.Server
 {
-    public abstract class ServerNetworkComponent<T> : ServerActorComponent where T : NetworkComponentData
+    public abstract class ServerNetworkComponent<T> : NetworkComponent<T> where T : NetworkComponentData
     {
-        protected override void Awake()
+        protected void SendData(T networkComponentData, SendMode sendMode = SendMode.Unreliable,
+            Receivers receivers = Receivers.Others)
         {
-            base.Awake();
-
-            ServerNetworkService.Instance.ComponentDataReceivedEvent += OnComponentDataReceived;
+            ServerNetworkService.Instance.SendNewMessage(networkComponentData,
+                Tags.NETWORK_COMPONENT_DATA, ownerID, sendMode, receivers);
         }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            ServerNetworkService.Instance.ComponentDataReceivedEvent -= OnComponentDataReceived;
-        }
-
-        private void OnComponentDataReceived(NetworkComponentData obj)
-        {
-            T data = (T)obj;
-
-            if (data.componentID != ID)
-            {
-                return;
-            }
-
-            OnDataReceived(data);
-        }
-
-        protected abstract void OnDataReceived(T data);
     }
 }
