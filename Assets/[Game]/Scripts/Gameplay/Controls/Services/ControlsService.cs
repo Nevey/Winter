@@ -11,7 +11,6 @@ namespace Game.Gameplay.Controls.Services
         private bool isInputPaused;
 
         private MouseInput mouseInput;
-
         private KeyboardInput keyboardInput;
 
         // Public
@@ -20,6 +19,8 @@ namespace Game.Gameplay.Controls.Services
         public event Action<float> VerticalInputEvent;
         public event Action<float> JumpInputEvent;
         public event Action<float> CrouchInputEvent;
+        public event Action<float> SpectatorCameraUpEvent;
+        public event Action<float> SpectatorCameraDownEvent;
 
         protected override void OnInitialize()
         {
@@ -81,6 +82,27 @@ namespace Game.Gameplay.Controls.Services
             CrouchInputEvent?.Invoke(crouchInput);
         }
 
+        private void OnSpectatorCameraUp(float cameraInput)
+        {
+            if (isInputPaused)
+            {
+                return;
+            }
+
+            SpectatorCameraUpEvent?.Invoke(cameraInput);
+
+        }
+
+        private void OnSpectatorCameraDown(float cameraInput)
+        {
+            if (isInputPaused)
+            {
+                return;
+            }
+
+            SpectatorCameraDownEvent?.Invoke(cameraInput);
+        }
+
         #endregion
 
         public void RegisterMouseInput(MouseInput mouseInput)
@@ -117,6 +139,8 @@ namespace Game.Gameplay.Controls.Services
             this.keyboardInput.VerticalInputEvent += OnVerticalInput;
             this.keyboardInput.JumpInputEvent += OnJumpInput;
             this.keyboardInput.CrouchInputEvent += OnCrouchInput;
+            this.keyboardInput.SpectatorCameraUpEvent += OnSpectatorCameraUp;
+            this.keyboardInput.SpectatorCameraDownEvent += OnSpectatorCameraDown;
         }
 
         public void UnregisterKeyboardInput(KeyboardInput keyboardInput)

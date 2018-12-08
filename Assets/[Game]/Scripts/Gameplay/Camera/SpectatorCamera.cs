@@ -34,8 +34,8 @@ namespace Game.Gameplay.Camera
             ControlsService.Instance.MouseInputEvent += OnMouseInput;
             ControlsService.Instance.HorizontalInputEvent += OnHorizontalInput;
             ControlsService.Instance.VerticalInputEvent += OnVerticalInput;
-            ControlsService.Instance.JumpInputEvent += OnJumpInput;
-            ControlsService.Instance.CrouchInputEvent += OnCrouchInput;
+            ControlsService.Instance.SpectatorCameraUpEvent += OnSpectatorCameraUp;
+            ControlsService.Instance.SpectatorCameraDownEvent += OnSpectatorCameraDown;
         }
 
         private void OnDestroy()
@@ -43,8 +43,8 @@ namespace Game.Gameplay.Camera
             ControlsService.Instance.MouseInputEvent -= OnMouseInput;
             ControlsService.Instance.HorizontalInputEvent -= OnHorizontalInput;
             ControlsService.Instance.VerticalInputEvent -= OnVerticalInput;
-            ControlsService.Instance.JumpInputEvent -= OnJumpInput;
-            ControlsService.Instance.CrouchInputEvent -= OnCrouchInput;
+            ControlsService.Instance.SpectatorCameraUpEvent -= OnSpectatorCameraUp;
+            ControlsService.Instance.SpectatorCameraDownEvent -= OnSpectatorCameraDown;
         }
 
         private void Update()
@@ -80,14 +80,14 @@ namespace Game.Gameplay.Camera
             verticalDelta = transform.forward * verticalInput * moveSensitivity;
         }
 
-        private void OnJumpInput(float jumpInput)
+        private void OnSpectatorCameraUp(float obj)
         {
-            upDelta = transform.up * jumpInput * moveSensitivity;
+            upDelta = transform.up * obj * moveSensitivity;
         }
 
-        private void OnCrouchInput(float crouchInput)
+        private void OnSpectatorCameraDown(float obj)
         {
-            downDelta = (-transform.up) * crouchInput * moveSensitivity;
+            downDelta = (-transform.up) * obj * moveSensitivity;
         }
     }
 }
