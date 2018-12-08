@@ -35,6 +35,12 @@ namespace Game.Gameplay.Actors.Components.Client
         // TODO: Split up sending and receiving asap
         protected override void OnReceiveData(NetworkPositionData networkComponentData)
         {
+            // TODO: After splitting up sending and receiving, IsMine check should not longer be needed here...
+            if (IsMine)
+            {
+                return;
+            }
+
             targetPosition.x = networkComponentData.x;
             targetPosition.y = networkComponentData.y;
             targetPosition.z = networkComponentData.z;
