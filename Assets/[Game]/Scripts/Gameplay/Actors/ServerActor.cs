@@ -28,7 +28,7 @@ namespace Game.Gameplay.Actors
 
         protected override void OnInitialized()
         {
-            
+
         }
 
         private void OnNetworkComponentDataReceived(NetworkComponentData obj)
