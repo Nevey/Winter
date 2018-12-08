@@ -27,7 +27,7 @@ namespace Game.Building
             BuildEditorWindow window = (BuildEditorWindow)GetWindow(typeof(BuildEditorWindow));
             window.Show();
 
-            window.minSize = new Vector2(500, 300);
+            window.minSize = new Vector2(400, 250);
             window.maxSize = window.minSize;
 
             window.name = "Build Window";
