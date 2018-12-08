@@ -359,11 +359,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ActorFactory
       objectReference: {fileID: 0}
-    - target: {fileID: 5371671252670362257, guid: 871749d293f3fae41b9edb3250198737,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5371671252670362256, guid: 871749d293f3fae41b9edb3250198737,
         type: 3}
       propertyPath: m_LocalPosition.x

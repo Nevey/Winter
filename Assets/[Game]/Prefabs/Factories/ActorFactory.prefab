@@ -47,5 +47,5 @@ MonoBehaviour:
     type: 3}
   networkedClientPlayerPrefab: {fileID: 298240251974019913, guid: 60f3f275ff876a24e9541f7618850dab,
     type: 3}
-  localClientPlayerPrefab: {fileID: 1506375506485719889, guid: 593726f2ef035ea4c8f3cd0de98cb0a5,
+  localClientPlayerPrefab: {fileID: 1208151515945785393, guid: 593726f2ef035ea4c8f3cd0de98cb0a5,
     type: 3}

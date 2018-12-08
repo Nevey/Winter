@@ -7,8 +7,6 @@ namespace Game.Gameplay.Actors.Components
     {
         protected int ownerID;
 
-        protected Actor owner;
-
         public abstract System.Type DataFormatType { get; }
 
         protected virtual void Awake()
