@@ -27,6 +27,11 @@ namespace Game.Gameplay.Actors
 
         private void OnNetworkComponentDataReceived(NetworkComponentData obj)
         {
+            if (obj.ownerID != ownerID)
+            {
+                return;
+            }
+            
             ReceiveData(obj);
         }
     }
