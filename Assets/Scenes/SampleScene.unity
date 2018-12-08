@@ -285,6 +285,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ControlsFactory
       objectReference: {fileID: 0}
+    - target: {fileID: 8979596772657807480, guid: 176bd720f470c454cbc2488b1d89bae6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7964796282423154948, guid: 176bd720f470c454cbc2488b1d89bae6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -354,6 +359,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ActorFactory
       objectReference: {fileID: 0}
+    - target: {fileID: 5371671252670362257, guid: 871749d293f3fae41b9edb3250198737,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5371671252670362256, guid: 871749d293f3fae41b9edb3250198737,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -422,6 +432,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NetworkTypePicker
+      objectReference: {fileID: 0}
+    - target: {fileID: 6109568649767787166, guid: 24a55603f2d202a4fbdf972460902665,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6109568649767787160, guid: 24a55603f2d202a4fbdf972460902665,
         type: 3}

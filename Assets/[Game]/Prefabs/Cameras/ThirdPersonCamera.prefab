@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1156651699458014393}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -96,7 +96,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainTarget: {fileID: 0}
+  defaultLookRotation: {x: -10, y: 0}
   minRotationX: -90
   maxRotationX: 90
-  rotationSensitivity: 150
+  movementSmoothWeight: 0.05
+  rotationSmoothWeight: 0.1
   lookSensitivity: {x: 150, y: 150}

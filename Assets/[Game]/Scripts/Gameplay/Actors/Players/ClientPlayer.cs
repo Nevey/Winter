@@ -8,6 +8,8 @@ namespace Scripts.Gameplay.Actors.Players
 {
     public class ClientPlayer : ClientActor
     {
+        [SerializeField] private ThirdPersonCamera thirdPersonCameraPrefab;
+
         protected override void Awake()
         {
             base.Awake();
@@ -25,6 +27,12 @@ namespace Scripts.Gameplay.Actors.Players
         protected override void OnInitialized()
         {
             Log.Write($"Owner with ID <{ownerID}> Initialized this ClientPlayer");
+
+            if (IsMine)
+            {
+//                ThirdPersonCamera thirdPersonCamera = Instantiate(thirdPersonCameraPrefab);
+//                thirdPersonCamera.OverrideMainTarget(transform);
+            }
         }
     }
 }

@@ -13,13 +13,14 @@ namespace Game.Gameplay.Camera
         [SerializeField] private Vector2 defaultLookRotation = new Vector2(35f, 0f);
         [SerializeField] private float minRotationX = -90f;
         [SerializeField] private float maxRotationX = 90f;
-        [SerializeField] private float movementSmoothWeight = 0.05f;
-        [SerializeField] private float rotationSmoothWeight = 0.1f;
+        [SerializeField] private float lookSmoothWeight = 0.1f;
 
         [Header("Sensitivity Settings")]
         [SerializeField] private Vector2 lookSensitivity = new Vector2(150f, 150f);
 
         private Vector2 lookRotation;
+        private Vector2 targetLookRotation;
+        private Vector2 lookVelocity;
 
         // Position fields
         private Vector3 targetPosition;
@@ -31,12 +32,17 @@ namespace Game.Gameplay.Camera
         private float yVel;
         private float zVel;
 
+        private Vector3 offset;
+
         private void Awake()
         {
             if (mainTarget == null)
             {
                 Log.Error("No Main Target is set!");
             }
+
+            offset = transform.position - mainTarget.transform.position;
+            lookRotation = targetLookRotation = defaultLookRotation;
 
             ControlsService.Instance.LookInputEvent += OnLookInput;
         }
@@ -46,58 +52,31 @@ namespace Game.Gameplay.Camera
             ControlsService.Instance.LookInputEvent -= OnLookInput;
         }
 
-        private void LateUpdate()
+        private void OnLookInput(Vector2 input)
         {
             if (mainTarget == null)
             {
                 return;
             }
 
-            transform.position = Vector3.SmoothDamp(transform.position, targetPosition,
-                ref positionVel, movementSmoothWeight);
+            targetLookRotation.x += input.y * lookSensitivity.y * Time.deltaTime;
+            targetLookRotation.y += input.x * lookSensitivity.x * Time.deltaTime;
 
-            Vector3 euler = transform.eulerAngles;
+            targetLookRotation.x = ClampUtility.Angle(targetLookRotation.x, minRotationX, maxRotationX);
 
-            euler.x = Mathf.SmoothDampAngle(euler.x, targetRotation.eulerAngles.x, ref xVel,
-                rotationSmoothWeight);
-            euler.y = Mathf.SmoothDampAngle(euler.y, targetRotation.eulerAngles.y, ref yVel,
-                rotationSmoothWeight);
-            euler.z = Mathf.SmoothDampAngle(euler.z, targetRotation.eulerAngles.z, ref zVel,
-                rotationSmoothWeight);
-
-            transform.rotation = Quaternion.Euler(euler);
-        }
-
-        private void OnLookInput(Vector2 obj)
-        {
-            if (mainTarget == null)
-            {
-                return;
-            }
-
-            lookRotation.x += obj.y * lookSensitivity.y * Time.deltaTime;
-            lookRotation.y += obj.x * lookSensitivity.x * Time.deltaTime;
-
-            lookRotation.x = ClampUtility.Angle(lookRotation.x, minRotationX, maxRotationX);
+            lookRotation = Vector2.SmoothDamp(lookRotation, targetLookRotation, ref lookVelocity,
+                lookSmoothWeight);
 
             Quaternion xQuaternion = Quaternion.AngleAxis(lookRotation.y, Vector3.up);
             Quaternion yQuaternion = Quaternion.AngleAxis(lookRotation.x, Vector3.left);
 
-            targetRotation = xQuaternion * yQuaternion;
+            transform.rotation = xQuaternion * yQuaternion;
 
             // Create a matrix based on camera pivot position and target rotation
             Matrix4x4 matrix =
                 Matrix4x4.TRS(mainTarget.transform.position, transform.rotation, Vector3.one);
 
-            Vector3 offsetPosition = mainTarget.transform.position;
-            offsetPosition.z -= 5f;
-
-            targetPosition = matrix.MultiplyPoint3x4(offsetPosition);
-        }
-
-        public void OverrideMainTarget(Transform mainTarget)
-        {
-            this.mainTarget = mainTarget;
+            transform.position = matrix.MultiplyPoint3x4(offset);
         }
     }
 }
