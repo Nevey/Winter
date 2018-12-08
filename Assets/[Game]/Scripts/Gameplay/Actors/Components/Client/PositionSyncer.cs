@@ -3,9 +3,7 @@ using UnityEngine;
 
 namespace Game.Gameplay.Actors.Components.Client
 {
-    /// <summary>
-    /// Should only be added to an actor which local client has authority of
-    /// </summary>
+    [AddComponentMenu("Winter/Client/PositionSyncer")]
     public class PositionSyncer : ClientNetworkComponent<NetworkPositionData>
     {
         private Vector3 targetPosition;

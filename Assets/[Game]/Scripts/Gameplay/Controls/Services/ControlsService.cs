@@ -14,7 +14,7 @@ namespace Game.Gameplay.Controls.Services
         private KeyboardInput keyboardInput;
 
         // Public
-        public event Action<Vector2> MouseInputEvent;
+        public event Action<Vector2> LookInputEvent;
         public event Action<float> HorizontalInputEvent;
         public event Action<float> VerticalInputEvent;
         public event Action<float> JumpInputEvent;
@@ -39,7 +39,7 @@ namespace Game.Gameplay.Controls.Services
                 return;
             }
 
-            MouseInputEvent?.Invoke(vector2);
+            LookInputEvent?.Invoke(vector2);
         }
 
         private void OnHorizontalInput(float horizontalInput)

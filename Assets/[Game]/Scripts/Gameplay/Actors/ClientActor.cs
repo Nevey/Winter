@@ -4,7 +4,7 @@ using Game.Network.Services;
 
 namespace Game.Gameplay.Actors
 {
-    public class ClientActor : Actor
+    public abstract class ClientActor : Actor
     {
         protected bool IsMine => ClientNetworkService.Instance.Client.ID == ownerID;
 
@@ -25,11 +25,6 @@ namespace Game.Gameplay.Actors
             ClientActorService.Instance.UnregisterActor(this);
 
             ClientNetworkService.Instance.ComponentDataReceivedEvent -= OnNetworkComponentDataReceived;
-        }
-
-        protected override void OnInitialized()
-        {
-
         }
 
         private void OnNetworkComponentDataReceived(NetworkComponentData obj)

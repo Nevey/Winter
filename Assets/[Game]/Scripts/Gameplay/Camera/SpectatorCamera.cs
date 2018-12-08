@@ -31,7 +31,7 @@ namespace Game.Gameplay.Camera
         {
             horizontalDelta = transform.position;
 
-            ControlsService.Instance.MouseInputEvent += OnMouseInput;
+            ControlsService.Instance.LookInputEvent += OnLookInput;
             ControlsService.Instance.HorizontalInputEvent += OnHorizontalInput;
             ControlsService.Instance.VerticalInputEvent += OnVerticalInput;
             ControlsService.Instance.SpectatorCameraUpEvent += OnSpectatorCameraUp;
@@ -40,7 +40,7 @@ namespace Game.Gameplay.Camera
 
         private void OnDestroy()
         {
-            ControlsService.Instance.MouseInputEvent -= OnMouseInput;
+            ControlsService.Instance.LookInputEvent -= OnLookInput;
             ControlsService.Instance.HorizontalInputEvent -= OnHorizontalInput;
             ControlsService.Instance.VerticalInputEvent -= OnVerticalInput;
             ControlsService.Instance.SpectatorCameraUpEvent -= OnSpectatorCameraUp;
@@ -57,7 +57,7 @@ namespace Game.Gameplay.Camera
             transform.position += moveDelta;
         }
 
-        private void OnMouseInput(Vector2 mouseInput)
+        private void OnLookInput(Vector2 mouseInput)
         {
             lookRotation.x += mouseInput.y * lookSensitivity.y * Time.deltaTime;
             lookRotation.y += mouseInput.x * lookSensitivity.x * Time.deltaTime;

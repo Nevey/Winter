@@ -22,8 +22,6 @@ namespace Scripts.Gameplay.Actors.Players
 
         protected override void OnInitialized()
         {
-            base.OnInitialized();
-
             // TODO: Do this via unity prefabs
             AddComponent<PositionSyncer>();
         }

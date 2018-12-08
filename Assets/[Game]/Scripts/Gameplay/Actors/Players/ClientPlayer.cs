@@ -1,11 +1,14 @@
 using Game.Gameplay.Actors;
-using Game.Gameplay.Actors.Components.Client;
+using Game.Gameplay.Camera;
 using Scripts.Gameplay.Actors.Players.Services;
+using UnityEngine;
 
 namespace Scripts.Gameplay.Actors.Players
 {
     public class ClientPlayer : ClientActor
     {
+        [SerializeField] private ThirdPersonCamera thirdPersonCameraPrefab;
+
         protected override void Awake()
         {
             base.Awake();
@@ -22,15 +25,12 @@ namespace Scripts.Gameplay.Actors.Players
 
         protected override void OnInitialized()
         {
-            base.OnInitialized();
-
             if (IsMine)
             {
-                // TODO: Add movement controller
-            }
+                ThirdPersonCamera thirdPersonCamera = Instantiate(thirdPersonCameraPrefab, transform);
 
-            // TODO: Do this via unity prefabs
-            AddComponent<PositionSyncer>();
+                // TODO: Add movement controller component
+            }
         }
     }
 }

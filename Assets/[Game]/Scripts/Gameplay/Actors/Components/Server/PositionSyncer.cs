@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Game.Gameplay.Actors.Components.Server
 {
+    [AddComponentMenu("Winter/Server/PositionSyncer")]
     public class PositionSyncer : ServerNetworkComponent<NetworkPositionData>
     {
         private Vector3 targetPosition;
