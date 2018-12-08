@@ -6,7 +6,10 @@ namespace Game.Gameplay.Camera
 {
     public class ThirdPersonCamera : MonoBehaviour
     {
-        [Header("Camera Look Settings")]
+        [Header("Target Settings")]
+        [SerializeField] private Transform mainTarget;
+
+        [Header("Look Settings")]
         [SerializeField] private Vector2 defaultLookRotation = new Vector2(35f, 0f);
         [SerializeField] private float minRotationX = -90f;
         [SerializeField] private float maxRotationX = 90f;
@@ -16,7 +19,6 @@ namespace Game.Gameplay.Camera
         [Header("Sensitivity Settings")]
         [SerializeField] private Vector2 lookSensitivity = new Vector2(150f, 150f);
 
-        private Transform mainTarget;
         private Vector2 lookRotation;
 
         // Position fields
@@ -31,8 +33,10 @@ namespace Game.Gameplay.Camera
 
         private void Awake()
         {
-            // Main target will always be the transform this component's transform was added to...
-            mainTarget = transform.parent;
+            if (mainTarget == null)
+            {
+                Log.Error("No Main Target is set!");
+            }
 
             ControlsService.Instance.LookInputEvent += OnLookInput;
         }

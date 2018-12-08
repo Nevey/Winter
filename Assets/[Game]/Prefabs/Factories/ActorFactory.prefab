@@ -43,7 +43,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f9936edf1ac4c178cd973cc8bf8909f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverPlayerPrefab: {fileID: 8201426543804016972, guid: 755a3d5010fb29147ade0b73b9854d5c,
+  serverPlayerPrefab: {fileID: 335075883105561033, guid: 55eb12b1f78ac844e9978b11b09bd493,
     type: 3}
-  clientPlayerPrefab: {fileID: 2140049990830772093, guid: 811fb637d1b456946ac69f2ae0dd749d,
+  networkedClientPlayerPrefab: {fileID: 298240251974019913, guid: 60f3f275ff876a24e9541f7618850dab,
+    type: 3}
+  localClientPlayerPrefab: {fileID: 1208151515945785393, guid: 593726f2ef035ea4c8f3cd0de98cb0a5,
     type: 3}

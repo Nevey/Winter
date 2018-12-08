@@ -9,9 +9,6 @@ namespace Game.Gameplay.Actors
     public abstract class Actor : MonoBehaviour
     {
         // Private
-        // TODO: Create View/ActorView component
-        [SerializeField] private GameObject view;
-
         // TODO: Create custom editor for such debugging purposes
         [SerializeField] private int clientID; // This is just here for inspector visualization
 
@@ -30,8 +27,7 @@ namespace Game.Gameplay.Actors
 
         protected virtual void Awake()
         {
-            // Instantiate ActorView and parent to this transform
-            Instantiate(view, transform);
+            
         }
 
         protected virtual void OnDestroy()
