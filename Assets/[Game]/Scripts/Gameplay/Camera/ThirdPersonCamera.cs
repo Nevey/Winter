@@ -44,6 +44,13 @@ namespace Game.Gameplay.Camera
             offset = transform.position - mainTarget.transform.position;
             lookRotation = targetLookRotation = defaultLookRotation;
 
+            // Automatically un-parent to make sure we'll never have to fight any global rotation
+            // being set due to parenting
+            if (transform.parent != null)
+            {
+                transform.parent = null;
+            }
+
             ControlsService.Instance.LookInputEvent += OnLookInput;
         }
 
