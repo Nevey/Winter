@@ -18,12 +18,12 @@ namespace Game.Gameplay.Actors.Components.Client
         {
             base.Update();
 
-            // TODO: After splitting up sending and receiving, IsMine check should not longer be needed here...
             SendPosition();
         }
 
         private void SendPosition()
         {
+            // TODO: After splitting up sending and receiving, IsMine check should not longer be needed here...
             if (!IsMine)
             {
                 return;
