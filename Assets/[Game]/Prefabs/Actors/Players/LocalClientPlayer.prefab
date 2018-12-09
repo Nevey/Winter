@@ -15,7 +15,10 @@ MonoBehaviour:
   thirdPersonCamera: {fileID: 3432596994253285536}
   movementSpeed: 5
   movementSmoothWeight: 0.2
-  rotationSmoothWeight: 0.5
+  maxRotationSpeed: 500
+  rotationSmoothWeight: 0.1
+  acceleration: 0.1
+  maxSpeed: 500
 --- !u!1001 &600509062504947211
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -164,6 +167,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: LocalClientPlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 640851206670000714}
+      propertyPath: m_Name
+      value: LocalClientPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 1208151515945785393}
+      propertyPath: thirdPersonCameraPrefab
+      value: 
+      objectReference: {fileID: 2879602296219039403, guid: ab4f1b7eba73e5947aad68de074eff69,
+        type: 3}
     - target: {fileID: 1208151515945785393}
       propertyPath: thirdPersonCameraPrefab
       value: 

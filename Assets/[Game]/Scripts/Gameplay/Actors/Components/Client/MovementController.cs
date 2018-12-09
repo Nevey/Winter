@@ -15,25 +15,36 @@ namespace Game.Gameplay.Actors.Components.Client
 
         [Header("Rotation Settings")]
         [SerializeField] private float rotationSmoothWeight = 0.1f;
+        [SerializeField] private float maxRotationSpeed = 500f;
+
+        private Vector3 horizontalVector;
+        private Vector3 targetHorizontalVector;
+        private Vector3 horizontalVectorVelocity;
 
         private Vector3 verticalVector;
         private Vector3 targetVerticalVector;
         private Vector3 verticalVectorVelocity;
 
-        private Vector3 verticalEuler;
         private Vector3 targetVerticalEuler;
-        private Vector3 verticalEulerVelocity;
+        private float rotationVelocity;
+
 
         private void Awake()
         {
-            verticalEuler = targetVerticalEuler = thirdPersonCamera.transform.forward;
-            
+            ControlsService.Instance.HorizontalInputEvent += OnHorizontalInput;
             ControlsService.Instance.VerticalInputEvent += OnVerticalInput;
         }
 
         private void OnDestroy()
         {
+            ControlsService.Instance.HorizontalInputEvent -= OnHorizontalInput;
             ControlsService.Instance.VerticalInputEvent -= OnVerticalInput;
+        }
+
+        private void OnHorizontalInput(float obj)
+        {
+            targetHorizontalVector =
+                thirdPersonCamera.transform.right * obj * movementSpeed * Time.deltaTime;
         }
 
         private void OnVerticalInput(float inputDelta)
@@ -43,11 +54,8 @@ namespace Game.Gameplay.Actors.Components.Client
 
             targetVerticalVector.y = 0f;
 
-            if (inputDelta > 0f)
-            {
-                targetVerticalEuler = thirdPersonCamera.transform.forward;
-                targetVerticalEuler.y = 0f;
-            }
+            targetVerticalEuler =
+                inputDelta > 0f ? thirdPersonCamera.transform.eulerAngles : Vector3.zero;
 
             UpdateMovement();
             UpdateRotation();
@@ -58,15 +66,27 @@ namespace Game.Gameplay.Actors.Components.Client
             verticalVector = Vector3.SmoothDamp(verticalVector, targetVerticalVector,
                 ref verticalVectorVelocity, movementSmoothWeight);
 
-            transform.position += verticalVector;
+            horizontalVector = Vector3.SmoothDamp(horizontalVector, targetHorizontalVector,
+                ref horizontalVectorVelocity, movementSmoothWeight);
+
+            transform.position += verticalVector + horizontalVector;
+
+            // TODO: Clamp magnitude
         }
 
         private void UpdateRotation()
         {
-            verticalEuler = Vector3.SmoothDamp(verticalEuler, targetVerticalEuler,
-                ref verticalEulerVelocity, rotationSmoothWeight);
+            Vector3 targetRotation = targetVerticalEuler;
 
-            transform.rotation = Quaternion.LookRotation(verticalEuler);
+            Quaternion desiredRotation = targetRotation == Vector3.zero
+                ? transform.rotation
+                : Quaternion.Euler(targetRotation);
+
+            float angle = Mathf.SmoothDampAngle(transform.rotation.eulerAngles.y,
+                desiredRotation.eulerAngles.y, ref rotationVelocity, rotationSmoothWeight,
+                maxRotationSpeed);
+
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
         }
     }
 }
