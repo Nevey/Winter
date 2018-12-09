@@ -4,38 +4,25 @@ using Game.Network.Services;
 using Scripts.Gameplay.Players;
 using UnityEngine;
 
-namespace Game.Gameplay.Actors.Factories
+namespace Game.Factories
 {
-    // TODO: Separate Server vs Client code
-    public class ActorFactory : MonoBehaviour
+    public class ClientActorFactory : MonoBehaviour
     {
-        // Private
         [Header("Player Prefabs")]
-        [SerializeField] private ServerPlayer serverPlayerPrefab;
         [SerializeField] private ClientPlayer networkedClientPlayerPrefab;
         [SerializeField] private ClientPlayer localClientPlayerPrefab;
 
         private void Awake()
         {
-            ServerActorService.Instance.RegisterActorFactory(this);
             ClientActorService.Instance.RegisterActorFactory(this);
         }
 
         private void OnDestroy()
         {
-            ServerActorService.Instance.UnregisterActorFactory(this);
             ClientActorService.Instance.UnregisterActorFactory(this);
         }
 
-        public ServerPlayer SpawnServerPlayer(SpawnData spawnData)
-        {
-            ServerPlayer serverPlayer = Instantiate(serverPlayerPrefab);
-            serverPlayer.Initialize(spawnData.ownerID);
-
-            return serverPlayer;
-        }
-
-        public ClientPlayer SpawnClientPlayer(SpawnData spawnData)
+        public ClientPlayer SpawnPlayer(SpawnData spawnData)
         {
             ClientPlayer clientPlayerPrefab =
                 ClientNetworkService.Instance.Client.ID == spawnData.ownerID

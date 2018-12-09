@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using DarkRift.Server;
-using Game.Gameplay.Actors.Factories;
+using Game.Factories;
 using Game.Network.Data;
 using Game.Services;
 
@@ -14,12 +14,12 @@ namespace Game.Gameplay.Actors.Services
         // Private
         private readonly List<Actor> actors = new List<Actor>();
 
-        private ActorFactory actorFactory;
+        private ServerActorFactory actorFactory;
 
         // Public
         public List<Actor> Actors => actors;
 
-        public void RegisterActorFactory(ActorFactory actorFactory)
+        public void RegisterActorFactory(ServerActorFactory actorFactory)
         {
             if (this.actorFactory != null)
             {
@@ -29,7 +29,7 @@ namespace Game.Gameplay.Actors.Services
             this.actorFactory = actorFactory;
         }
 
-        public void UnregisterActorFactory(ActorFactory actorFactory)
+        public void UnregisterActorFactory(ServerActorFactory actorFactory)
         {
             if (this.actorFactory == null || this.actorFactory != actorFactory)
             {
@@ -61,7 +61,7 @@ namespace Game.Gameplay.Actors.Services
 
         public void SpawnActor(SpawnData spawnData)
         {
-            actorFactory.SpawnServerPlayer(spawnData);
+            actorFactory.SpawnPlayer(spawnData);
         }
 
         public void DestroyActorsOfClient(IClient client)

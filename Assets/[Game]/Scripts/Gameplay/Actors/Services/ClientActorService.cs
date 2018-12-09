@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Game.Gameplay.Actors.Factories;
+using Game.Factories;
 using Game.Network.Data;
 using Game.Services;
 
@@ -10,12 +10,12 @@ namespace Game.Gameplay.Actors.Services
         // Private
         private readonly List<Actor> actors = new List<Actor>();
 
-        private ActorFactory actorFactory;
+        private ClientActorFactory actorFactory;
 
         // Public
         public List<Actor> Actors => actors;
 
-        public void RegisterActorFactory(ActorFactory actorFactory)
+        public void RegisterActorFactory(ClientActorFactory actorFactory)
         {
             if (this.actorFactory != null)
             {
@@ -25,7 +25,7 @@ namespace Game.Gameplay.Actors.Services
             this.actorFactory = actorFactory;
         }
 
-        public void UnregisterActorFactory(ActorFactory actorFactory)
+        public void UnregisterActorFactory(ClientActorFactory actorFactory)
         {
             if (this.actorFactory == null || this.actorFactory != actorFactory)
             {
@@ -58,7 +58,7 @@ namespace Game.Gameplay.Actors.Services
         public void SpawnActor(SpawnData spawnData)
         {
             // TODO: Based on spawn data, spawn specific actor
-            actorFactory.SpawnClientPlayer(spawnData);
+            actorFactory.SpawnPlayer(spawnData);
         }
     }
 }
