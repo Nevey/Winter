@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clientID: 0
+  thirdPersonCameraPrefab: {fileID: 0}
 --- !u!114 &2379848203030902252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25,6 +26,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d4a39a026d349f5a1c62d1b88c39643, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &601339764144750920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2018591525585031474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b377b62aa4942858dfdfbf7d86e366b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2156211405735563024
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32,6 +45,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2018591525585031474}
+      propertyPath: m_Name
+      value: NetworkedClientPlayer
+      objectReference: {fileID: 0}
     - target: {fileID: 2018591525585031474}
       propertyPath: m_Name
       value: NetworkedClientPlayer

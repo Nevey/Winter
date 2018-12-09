@@ -23,7 +23,7 @@ namespace Scripts.Gameplay.Actors.Players
         protected override void OnInitialized()
         {
             // TODO: Do this via unity prefabs
-            AddComponent<PositionSyncer>();
+            AddComponent<ServerPositionSyncer>();
         }
     }
 }

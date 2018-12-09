@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace Game.Gameplay.Actors.Components.Client
 {
-    [AddComponentMenu("Winter/Client/PositionSyncer")]
-    public class PositionSyncer : ClientNetworkComponent<NetworkPositionData>
+    public class ClientPositionSyncer : ClientNetworkComponent<NetworkPositionData>
     {
         private Vector3 targetPosition;
 
@@ -20,14 +19,16 @@ namespace Game.Gameplay.Actors.Components.Client
             base.Update();
 
             // TODO: After splitting up sending and receiving, IsMine check should not longer be needed here...
-            if (IsMine)
-            {
-                SendPosition();
-            }
+            SendPosition();
         }
 
         private void SendPosition()
         {
+            if (!IsMine)
+            {
+                return;
+            }
+
             // TODO: Find a way to skip adding "ownerID" everywhere
             SendData(new NetworkPositionData(ownerID, transform.position));
         }
