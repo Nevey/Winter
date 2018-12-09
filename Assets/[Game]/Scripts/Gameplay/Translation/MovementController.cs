@@ -2,7 +2,7 @@ using Game.Gameplay.Camera;
 using Game.Gameplay.Controls.Services;
 using UnityEngine;
 
-namespace Game.Gameplay.Actors.Components.Client
+namespace Game.Gameplay.Translation
 {
     public class MovementController : MonoBehaviour
     {

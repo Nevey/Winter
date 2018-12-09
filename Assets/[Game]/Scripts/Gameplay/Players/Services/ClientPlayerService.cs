@@ -4,7 +4,7 @@ using Game.Network.Data;
 using Game.Network.Services;
 using Game.Services;
 
-namespace Scripts.Gameplay.Actors.Players.Services
+namespace Scripts.Gameplay.Players.Services
 {
     public class ClientPlayerService : Service<ClientPlayerService>
     {

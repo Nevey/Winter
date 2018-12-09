@@ -1,15 +1,11 @@
 using Game.Gameplay.Actors;
-using Game.Gameplay.Camera;
 using Game.Utilities;
-using Scripts.Gameplay.Actors.Players.Services;
-using UnityEngine;
+using Scripts.Gameplay.Players.Services;
 
-namespace Scripts.Gameplay.Actors.Players
+namespace Scripts.Gameplay.Players
 {
     public class ClientPlayer : ClientActor
     {
-        [SerializeField] private ThirdPersonCamera thirdPersonCameraPrefab;
-
         protected override void Awake()
         {
             base.Awake();
@@ -27,12 +23,6 @@ namespace Scripts.Gameplay.Actors.Players
         protected override void OnInitialized()
         {
             Log.Write($"Owner with ID <{ownerID}> Initialized this ClientPlayer");
-
-            if (IsMine)
-            {
-//                ThirdPersonCamera thirdPersonCamera = Instantiate(thirdPersonCameraPrefab);
-//                thirdPersonCamera.OverrideMainTarget(transform);
-            }
         }
     }
 }

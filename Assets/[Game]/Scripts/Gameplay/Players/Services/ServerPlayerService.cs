@@ -9,7 +9,7 @@ using Game.Network.Services;
 using Game.Services;
 using UnityEngine;
 
-namespace Scripts.Gameplay.Actors.Players.Services
+namespace Scripts.Gameplay.Players.Services
 {
     public class ServerPlayerService : Service<ServerPlayerService>
     {

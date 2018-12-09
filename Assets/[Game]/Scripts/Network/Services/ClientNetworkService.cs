@@ -5,7 +5,7 @@ using DarkRift.Client.Unity;
 using Game.Network.Data;
 using Game.Services;
 using Game.Utilities;
-using Scripts.Gameplay.Actors.Players.Services;
+using Scripts.Gameplay.Players.Services;
 using MessageReceivedEventArgs = DarkRift.Client.MessageReceivedEventArgs;
 
 namespace Game.Network.Services

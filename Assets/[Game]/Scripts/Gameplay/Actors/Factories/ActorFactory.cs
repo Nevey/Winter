@@ -1,7 +1,7 @@
 using Game.Gameplay.Actors.Services;
 using Game.Network.Data;
 using Game.Network.Services;
-using Scripts.Gameplay.Actors.Players;
+using Scripts.Gameplay.Players;
 using UnityEngine;
 
 namespace Game.Gameplay.Actors.Factories

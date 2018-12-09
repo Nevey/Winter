@@ -1,8 +1,7 @@
 using Game.Gameplay.Actors;
-using Game.Gameplay.Actors.Components.Server;
-using Scripts.Gameplay.Actors.Players.Services;
+using Scripts.Gameplay.Players.Services;
 
-namespace Scripts.Gameplay.Actors.Players
+namespace Scripts.Gameplay.Players
 {
     public class ServerPlayer : ServerActor
     {
@@ -22,8 +21,7 @@ namespace Scripts.Gameplay.Actors.Players
 
         protected override void OnInitialized()
         {
-            // TODO: Do this via unity prefabs
-            AddComponent<ServerPositionSyncer>();
+
         }
     }
 }
