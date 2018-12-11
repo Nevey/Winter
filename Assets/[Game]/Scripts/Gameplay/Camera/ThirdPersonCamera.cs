@@ -14,6 +14,7 @@ namespace Game.Gameplay.Camera
         [SerializeField] private float minRotationX = -90f;
         [SerializeField] private float maxRotationX = 90f;
         [SerializeField] private float lookSmoothWeight = 0.1f;
+        [SerializeField] private float heightOffset;
 
         [Header("Sensitivity Settings")]
         [SerializeField] private Vector2 lookSensitivity = new Vector2(150f, 150f);
@@ -32,7 +33,7 @@ namespace Game.Gameplay.Camera
         private float yVel;
         private float zVel;
 
-        private Vector3 offset;
+        private Vector3 cameraOffsetPosition;
 
         private void Awake()
         {
@@ -41,7 +42,7 @@ namespace Game.Gameplay.Camera
                 Log.Error("No Main Target is set!");
             }
 
-            offset = transform.position - mainTarget.transform.position;
+            cameraOffsetPosition = transform.position - mainTarget.transform.position;
             lookRotation = targetLookRotation = defaultLookRotation;
 
             // Automatically un-parent to make sure we'll never have to fight any global rotation
@@ -80,10 +81,17 @@ namespace Game.Gameplay.Camera
             transform.rotation = xQuaternion * yQuaternion;
 
             // Create a matrix based on camera pivot position and target rotation
-            Matrix4x4 matrix =
-                Matrix4x4.TRS(mainTarget.transform.position, transform.rotation, Vector3.one);
+            Matrix4x4 matrix = Matrix4x4.TRS(GetPivotPosition(), transform.rotation, Vector3.one);
 
-            transform.position = matrix.MultiplyPoint3x4(offset);
+            transform.position = matrix.MultiplyPoint3x4(cameraOffsetPosition);
+        }
+
+        private Vector3 GetPivotPosition()
+        {
+            Vector3 pivotPosition = mainTarget.transform.position;
+            pivotPosition.y += heightOffset;
+
+            return pivotPosition;
         }
     }
 }
