@@ -17,17 +17,19 @@ namespace Game.Gameplay.Translation
         [SerializeField] private float rotationSmoothWeight = 0.1f;
         [SerializeField] private float maxRotationSpeed = 500f;
 
+        // Horizontal movement fields
         private Vector3 horizontalVector;
         private Vector3 targetHorizontalVector;
         private Vector3 horizontalVectorVelocity;
 
+        // Vertical movement fields
         private Vector3 verticalVector;
         private Vector3 targetVerticalVector;
         private Vector3 verticalVectorVelocity;
 
+        // Rotation fields
         private Vector3 targetVerticalEuler;
         private float rotationVelocity;
-
 
         private void Awake()
         {
@@ -71,7 +73,7 @@ namespace Game.Gameplay.Translation
 
             transform.position += verticalVector + horizontalVector;
 
-            // TODO: Clamp magnitude
+            // TODO: Clamp movement magnitude
         }
 
         private void UpdateRotation()
