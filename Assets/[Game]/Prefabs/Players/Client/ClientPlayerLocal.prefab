@@ -29,7 +29,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   thirdPersonCamera: {fileID: 5088623933810543901}
-  movementSpeed: 5
+  horizontalMovementSpeed: 2.25
+  verticalMovementSpeed: 4
   movementSmoothWeight: 0.2
   rotationSmoothWeight: 0.1
   maxRotationSpeed: 500
@@ -66,6 +67,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5808561966272798755}
+      propertyPath: m_Name
+      value: ClientPlayerLocal
+      objectReference: {fileID: 0}
+    - target: {fileID: 5808561966272798755}
+      propertyPath: m_Name
+      value: ClientPlayerLocal
+      objectReference: {fileID: 0}
+    - target: {fileID: 5808561966272798755}
+      propertyPath: m_Name
+      value: ClientPlayerLocal
+      objectReference: {fileID: 0}
     - target: {fileID: 5808561966272798755}
       propertyPath: m_Name
       value: ClientPlayerLocal
