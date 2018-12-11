@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Game.Network.Data
 {
     [Serializable]
-    public class SpawnData : NetworkComponentData
+    public class SpawnData : NetworkData
     {
         public readonly float x;
         public readonly float y;

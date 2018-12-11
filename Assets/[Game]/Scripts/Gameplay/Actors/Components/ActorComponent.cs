@@ -1,4 +1,3 @@
-using Game.Network.Data;
 using UnityEngine;
 
 namespace Game.Gameplay.Actors.Components
@@ -24,11 +23,9 @@ namespace Game.Gameplay.Actors.Components
             // Do stuff...
         }
 
-        public void Initialize(int ownerID)
+        public virtual void Initialize(int ownerID)
         {
             this.ownerID = ownerID;
         }
-
-        public abstract void ReceiveData(NetworkComponentData data);
     }
 }

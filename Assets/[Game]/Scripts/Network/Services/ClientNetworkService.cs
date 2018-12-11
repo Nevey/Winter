@@ -19,7 +19,7 @@ namespace Game.Network.Services
         // Public
         public DarkRiftClient Client => unityClient.Client;
 
-        public event Action<NetworkComponentData> ComponentDataReceivedEvent;
+        public event Action<NetworkData> ComponentDataReceivedEvent;
 
         public void RegisterUnityClient(UnityClient unityClient)
         {
@@ -59,10 +59,10 @@ namespace Game.Network.Services
                     {
                         case Tags.NETWORK_COMPONENT_DATA:
 
-                            NetworkComponentData networkComponentData =
-                                ByteArrayUtility.ByteArrayToObject<NetworkComponentData>(reader.ReadBytes());
+                            NetworkData networkData =
+                                ByteArrayUtility.ByteArrayToObject<NetworkData>(reader.ReadBytes());
 
-                            ComponentDataReceivedEvent?.Invoke(networkComponentData);
+                            ComponentDataReceivedEvent?.Invoke(networkData);
 
                             break;
 

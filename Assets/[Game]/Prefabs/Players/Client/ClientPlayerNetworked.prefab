@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &738798829002521971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7537114264477523956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d4a39a026d349f5a1c62d1b88c39643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isStrict: 1
+--- !u!114 &4637347708631461180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7537114264477523956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06cef3218df04641a00efb435a288012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isStrict: 1
+--- !u!1001 &904169921412652508
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7537114264477523956}
+      propertyPath: m_Name
+      value: ClientPlayerNetworked
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761187978942019994}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211798736552493608, guid: 4e0223de2850a8b4289a45b850a9cb65,
+        type: 3}
+      propertyPath: m_Name
+      value: ClientPlayerNetworked
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4e0223de2850a8b4289a45b850a9cb65, type: 3}
+--- !u!1 &7537114264477523956 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7211798736552493608, guid: 4e0223de2850a8b4289a45b850a9cb65,
+    type: 3}
+  m_PrefabInstance: {fileID: 904169921412652508}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4761187978942019994 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5665355697032143942, guid: 4e0223de2850a8b4289a45b850a9cb65,
+    type: 3}
+  m_PrefabInstance: {fileID: 904169921412652508}
+  m_PrefabAsset: {fileID: 0}

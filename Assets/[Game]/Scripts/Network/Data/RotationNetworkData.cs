@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Game.Network.Data
 {
     [Serializable]
-    public class NetworkRotationData : NetworkComponentData
+    public class RotationNetworkData : NetworkData
     {
         private readonly float x;
         private readonly float y;
@@ -13,7 +13,7 @@ namespace Game.Network.Data
 
         public Quaternion Rotation => new Quaternion(x, y, z, w);
 
-        public NetworkRotationData(int ownerID, Quaternion rotation) : base(ownerID)
+        public RotationNetworkData(int ownerID, Quaternion rotation) : base(ownerID)
         {
             x = rotation.x;
             y = rotation.y;

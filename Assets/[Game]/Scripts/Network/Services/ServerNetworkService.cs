@@ -21,7 +21,7 @@ namespace Game.Network.Services
 
         public event Action<IClient> ClientDisconnectedEvent;
 
-        public event Action<NetworkComponentData> ComponentDataReceivedEvent;
+        public event Action<NetworkData> ComponentDataReceivedEvent;
 
         private void OnClientConnected(object sender, ClientConnectedEventArgs e)
         {
@@ -61,10 +61,10 @@ namespace Game.Network.Services
                     {
                         case Tags.NETWORK_COMPONENT_DATA:
 
-                            NetworkComponentData networkComponentData =
-                                ByteArrayUtility.ByteArrayToObject<NetworkComponentData>(reader.ReadBytes());
+                            NetworkData networkData =
+                                ByteArrayUtility.ByteArrayToObject<NetworkData>(reader.ReadBytes());
 
-                            ComponentDataReceivedEvent?.Invoke(networkComponentData);
+                            ComponentDataReceivedEvent?.Invoke(networkData);
 
                             break;
 
