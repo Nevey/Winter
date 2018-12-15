@@ -1,4 +1,4 @@
-using Game.Gameplay.Controls.Services;
+using Game.UserInput.Services;
 using Game.Utilities;
 using UnityEngine;
 
@@ -52,12 +52,12 @@ namespace Game.Gameplay.Camera
                 transform.parent = null;
             }
 
-            ControlsService.Instance.LookInputEvent += OnLookInput;
+            InputService.Instance.LookInputEvent += OnLookInput;
         }
 
         private void OnDestroy()
         {
-            ControlsService.Instance.LookInputEvent -= OnLookInput;
+            InputService.Instance.LookInputEvent -= OnLookInput;
         }
 
         private void OnLookInput(Vector2 input)

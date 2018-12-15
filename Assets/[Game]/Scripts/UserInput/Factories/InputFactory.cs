@@ -1,12 +1,12 @@
-using Game.Gameplay.Controls;
+using Game.UserInput;
 using UnityEngine;
 
-namespace Scripts.Gameplay.Controls.Factories
+namespace Scripts.UserInput.Factories
 {
-    public class ControlsFactory : MonoBehaviour
+    public class InputFactory : MonoBehaviour
     {
         // TODO: Add a way to automatically detect control type based on input tester
-        [SerializeField] private ControlType controlType;
+        [SerializeField] private InputType inputType;
 
         [SerializeField] private MouseInput mouseInputPrefab;
 
@@ -14,14 +14,14 @@ namespace Scripts.Gameplay.Controls.Factories
 
         private void Awake()
         {
-            switch (controlType)
+            switch (inputType)
             {
-                case ControlType.KeyboardMouse:
+                case InputType.KeyboardMouse:
                     Instantiate(mouseInputPrefab, transform);
                     Instantiate(keyboardInputPrefab, transform);
                     break;
 
-                case ControlType.Controller:
+                case InputType.Controller:
                     break;
             }
         }

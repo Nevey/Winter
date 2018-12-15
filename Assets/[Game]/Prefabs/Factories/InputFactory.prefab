@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7964796282423154948}
   - component: {fileID: 1287069200465171549}
   m_Layer: 0
-  m_Name: ControlsFactory
+  m_Name: InputFactory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b620f5ba244e44b3abca080e77d31cf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controlType: 0
+  inputType: 0
   mouseInputPrefab: {fileID: 1283568002938989007, guid: 242b5a452b345924f810c9bf40b9856f,
     type: 3}
   keyboardInputPrefab: {fileID: 8376392322394006598, guid: e4457d17f206c064ebc9db4fa1e37cf4,

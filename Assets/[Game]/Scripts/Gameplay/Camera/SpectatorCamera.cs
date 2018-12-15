@@ -1,4 +1,4 @@
-using Game.Gameplay.Controls.Services;
+using Game.UserInput.Services;
 using Game.Utilities;
 using UnityEngine;
 
@@ -31,20 +31,20 @@ namespace Game.Gameplay.Camera
         {
             horizontalDelta = transform.position;
 
-            ControlsService.Instance.LookInputEvent += OnLookInput;
-            ControlsService.Instance.HorizontalInputEvent += OnHorizontalInput;
-            ControlsService.Instance.VerticalInputEvent += OnVerticalInput;
-            ControlsService.Instance.SpectatorCameraUpEvent += OnSpectatorCameraUp;
-            ControlsService.Instance.SpectatorCameraDownEvent += OnSpectatorCameraDown;
+            InputService.Instance.LookInputEvent += OnLookInput;
+            InputService.Instance.HorizontalInputEvent += OnHorizontalInput;
+            InputService.Instance.VerticalInputEvent += OnVerticalInput;
+            InputService.Instance.SpectatorCameraUpEvent += OnSpectatorCameraUp;
+            InputService.Instance.SpectatorCameraDownEvent += OnSpectatorCameraDown;
         }
 
         private void OnDestroy()
         {
-            ControlsService.Instance.LookInputEvent -= OnLookInput;
-            ControlsService.Instance.HorizontalInputEvent -= OnHorizontalInput;
-            ControlsService.Instance.VerticalInputEvent -= OnVerticalInput;
-            ControlsService.Instance.SpectatorCameraUpEvent -= OnSpectatorCameraUp;
-            ControlsService.Instance.SpectatorCameraDownEvent -= OnSpectatorCameraDown;
+            InputService.Instance.LookInputEvent -= OnLookInput;
+            InputService.Instance.HorizontalInputEvent -= OnHorizontalInput;
+            InputService.Instance.VerticalInputEvent -= OnVerticalInput;
+            InputService.Instance.SpectatorCameraUpEvent -= OnSpectatorCameraUp;
+            InputService.Instance.SpectatorCameraDownEvent -= OnSpectatorCameraDown;
         }
 
         private void Update()

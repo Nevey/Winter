@@ -1,11 +1,10 @@
 using System;
 using Game.Services;
-using Scripts.Gameplay.Controls;
 using UnityEngine;
 
-namespace Game.Gameplay.Controls.Services
+namespace Game.UserInput.Services
 {
-    public class ControlsService : Service<ControlsService>
+    public class InputService : Service<InputService>
     {
         // Private
         private bool isInputPaused;

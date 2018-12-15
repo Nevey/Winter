@@ -541,7 +541,7 @@ PrefabInstance:
     - target: {fileID: 8979596772657807480, guid: 176bd720f470c454cbc2488b1d89bae6,
         type: 3}
       propertyPath: m_Name
-      value: ControlsFactory
+      value: InputFactory
       objectReference: {fileID: 0}
     - target: {fileID: 8979596772657807480, guid: 176bd720f470c454cbc2488b1d89bae6,
         type: 3}

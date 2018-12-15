@@ -1,8 +1,8 @@
 using System;
-using Game.Gameplay.Controls.Services;
+using Game.UserInput.Services;
 using UnityEngine;
 
-namespace Scripts.Gameplay.Controls
+namespace Game.UserInput
 {
     public class KeyboardInput : MonoBehaviour
     {
@@ -24,12 +24,12 @@ namespace Scripts.Gameplay.Controls
 
         private void Awake()
         {
-            ControlsService.Instance.RegisterKeyboardInput(this);
+            InputService.Instance.RegisterKeyboardInput(this);
         }
 
         private void OnDestroy()
         {
-            ControlsService.Instance.UnregisterKeyboardInput(this);
+            InputService.Instance.UnregisterKeyboardInput(this);
         }
 
         private void Update()

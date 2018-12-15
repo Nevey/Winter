@@ -1,6 +1,6 @@
-namespace Game.Gameplay.Controls
+namespace Game.UserInput
 {
-    public enum ControlType
+    public enum InputType
     {
         KeyboardMouse,
         Controller,

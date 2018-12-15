@@ -1,7 +1,6 @@
 using System;
 using Game.Gameplay.Camera;
-using Game.Gameplay.Controls.Services;
-using Game.Utilities;
+using Game.UserInput.Services;
 using UnityEngine;
 
 namespace Game.Gameplay.Translation
@@ -38,14 +37,14 @@ namespace Game.Gameplay.Translation
 
         private void Awake()
         {
-            ControlsService.Instance.HorizontalInputEvent += OnHorizontalInput;
-            ControlsService.Instance.VerticalInputEvent += OnVerticalInput;
+            InputService.Instance.HorizontalInputEvent += OnHorizontalInput;
+            InputService.Instance.VerticalInputEvent += OnVerticalInput;
         }
 
         private void OnDestroy()
         {
-            ControlsService.Instance.HorizontalInputEvent -= OnHorizontalInput;
-            ControlsService.Instance.VerticalInputEvent -= OnVerticalInput;
+            InputService.Instance.HorizontalInputEvent -= OnHorizontalInput;
+            InputService.Instance.VerticalInputEvent -= OnVerticalInput;
         }
 
         private void OnHorizontalInput(float inputHorizontal)

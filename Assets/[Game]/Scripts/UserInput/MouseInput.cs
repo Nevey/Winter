@@ -1,8 +1,8 @@
 using System;
-using Game.Gameplay.Controls.Services;
+using Game.UserInput.Services;
 using UnityEngine;
 
-namespace Scripts.Gameplay.Controls
+namespace Game.UserInput
 {
     public class MouseInput : MonoBehaviour
     {
@@ -19,12 +19,12 @@ namespace Scripts.Gameplay.Controls
         {
             currentMouseInput = new Vector2(Input.GetAxis(MOUSE_AXIS_X), Input.GetAxis(MOUSE_AXIS_Y));
 
-            ControlsService.Instance.RegisterMouseInput(this);
+            InputService.Instance.RegisterMouseInput(this);
         }
 
         private void OnDestroy()
         {
-            ControlsService.Instance.UnregisterMouseInput(this);
+            InputService.Instance.UnregisterMouseInput(this);
         }
 
         private void Update()
