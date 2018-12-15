@@ -20,6 +20,7 @@ namespace Game.UserInput.Services
         public event Action<float> CrouchInputEvent;
         public event Action<float> SpectatorCameraUpEvent;
         public event Action<float> SpectatorCameraDownEvent;
+        public event Action<float> ToggleConsoleEvent;
 
         protected override void OnInitialize()
         {
@@ -102,6 +103,11 @@ namespace Game.UserInput.Services
             SpectatorCameraDownEvent?.Invoke(cameraInput);
         }
 
+        private void OnToggleConsole(float input)
+        {
+            ToggleConsoleEvent?.Invoke(input);
+        }
+
         #endregion
 
         public void RegisterMouseInput(MouseInput mouseInput)
@@ -140,6 +146,7 @@ namespace Game.UserInput.Services
             this.keyboardInput.CrouchInputEvent += OnCrouchInput;
             this.keyboardInput.SpectatorCameraUpEvent += OnSpectatorCameraUp;
             this.keyboardInput.SpectatorCameraDownEvent += OnSpectatorCameraDown;
+            this.keyboardInput.ToggleConsoleEvent += OnToggleConsole;
         }
 
         public void UnregisterKeyboardInput(KeyboardInput keyboardInput)
@@ -151,6 +158,11 @@ namespace Game.UserInput.Services
 
             this.keyboardInput.HorizontalInputEvent -= OnHorizontalInput;
             this.keyboardInput.VerticalInputEvent -= OnVerticalInput;
+            this.keyboardInput.JumpInputEvent -= OnJumpInput;
+            this.keyboardInput.CrouchInputEvent -= OnCrouchInput;
+            this.keyboardInput.SpectatorCameraUpEvent -= OnSpectatorCameraUp;
+            this.keyboardInput.SpectatorCameraDownEvent -= OnSpectatorCameraDown;
+            this.keyboardInput.ToggleConsoleEvent -= OnToggleConsole;
             this.keyboardInput = null;
         }
 
