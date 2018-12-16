@@ -13,7 +13,6 @@ namespace Game.UserInput
         private const string CROUCH_AXIS = "Crouch";
         private const string SPECTATOR_CAMERA_UP = "Spectator Camera Up";
         private const string SPECTATOR_CAMERA_DOWN = "Spectator Camera Down";
-        private const string TOGGLE_CONSOLE = "Toggle Console";
 
         // Public
         public event Action<float> HorizontalInputEvent;
@@ -22,7 +21,7 @@ namespace Game.UserInput
         public event Action<float> CrouchInputEvent;
         public event Action<float> SpectatorCameraUpEvent;
         public event Action<float> SpectatorCameraDownEvent;
-        public event Action<float> ToggleConsoleEvent;
+        public event Action ToggleConsoleEvent;
 
         private void Awake()
         {
@@ -44,7 +43,11 @@ namespace Game.UserInput
             CrouchInputEvent?.Invoke(Input.GetAxis(CROUCH_AXIS));
             SpectatorCameraUpEvent?.Invoke(Input.GetAxis(SPECTATOR_CAMERA_UP));
             SpectatorCameraDownEvent?.Invoke(Input.GetAxis(SPECTATOR_CAMERA_DOWN));
-            ToggleConsoleEvent?.Invoke(Input.GetAxis(TOGGLE_CONSOLE));
+
+            if (Input.GetKeyDown(KeyCode.BackQuote))
+            {
+                ToggleConsoleEvent?.Invoke();
+            }
         }
     }
 }

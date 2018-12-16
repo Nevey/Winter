@@ -1,5 +1,5 @@
 using System.Collections;
-using TMPro;
+using Game.UserInput.Services;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,31 +9,45 @@ namespace Scripts.Console
     public class Console : MonoBehaviour
     {
         [SerializeField] private InputField inputField;
-//        [SerializeField] private TextMeshProUGUI log
 
-        private void Start()
+        private void Awake()
         {
-            ShowConsole();
+            InputService.Instance.ToggleConsoleEvent += OnToggleConsole;
+
+            gameObject.SetActive(false);
+            HideConsole();
         }
 
-        public void ShowConsole()
+        private void OnDestroy()
         {
-            FocusInputField();
-
-
+            InputService.Instance.ToggleConsoleEvent -= OnToggleConsole;
         }
 
-        public void HideConsole()
+        public void OnToggleConsole()
         {
-            StopCoroutine(ListenToEnterInput());
+            gameObject.SetActive(!gameObject.activeSelf);
+
+            if (gameObject.activeSelf)
+            {
+                ShowConsole();
+            }
+            else
+            {
+                HideConsole();
+            }
         }
 
-        private void FocusInputField()
+        private void ShowConsole()
         {
             EventSystem.current.SetSelectedGameObject(inputField.gameObject, null);
             inputField.OnPointerClick(new PointerEventData(EventSystem.current));
 
             StartCoroutine(ListenToEnterInput());
+        }
+
+        public void HideConsole()
+        {
+            StopCoroutine(ListenToEnterInput());
         }
 
         private IEnumerator ListenToEnterInput()
@@ -58,7 +72,7 @@ namespace Scripts.Console
             // try to execute inputField.text
             inputField.text = "";
 
-            FocusInputField();
+            ShowConsole();
         }
     }
 }

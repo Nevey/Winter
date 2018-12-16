@@ -1,5 +1,6 @@
 using System;
 using Game.Services;
+using Game.Utilities;
 using UnityEngine;
 
 namespace Game.UserInput.Services
@@ -20,7 +21,7 @@ namespace Game.UserInput.Services
         public event Action<float> CrouchInputEvent;
         public event Action<float> SpectatorCameraUpEvent;
         public event Action<float> SpectatorCameraDownEvent;
-        public event Action<float> ToggleConsoleEvent;
+        public event Action ToggleConsoleEvent;
 
         protected override void OnInitialize()
         {
@@ -103,9 +104,11 @@ namespace Game.UserInput.Services
             SpectatorCameraDownEvent?.Invoke(cameraInput);
         }
 
-        private void OnToggleConsole(float input)
+        private void OnToggleConsole()
         {
-            ToggleConsoleEvent?.Invoke(input);
+            isInputPaused = !isInputPaused;
+            
+            ToggleConsoleEvent?.Invoke();
         }
 
         #endregion
