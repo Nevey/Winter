@@ -2,6 +2,7 @@
 using System;
 using System.Net;
 using Game.Network.Services;
+using Scripts.Console;
 using UnityEngine;
 
 namespace DarkRift.Client.Unity
@@ -243,6 +244,17 @@ namespace DarkRift.Client.Unity
             //Remove resources
             Close();
             Debug.Log("Quit");
+        }
+
+        [ConsoleExecutable]
+        public void Connect(string ipString = null, string portString = null)
+        {
+            IPAddress ipAddress =
+                String.IsNullOrEmpty(ipString) ? Address : IPAddress.Parse(ipString);
+
+            int port = string.IsNullOrEmpty(portString) ? this.port : Convert.ToInt32(portString);
+
+            Connect(ipAddress, port, IPVersion.IPv4);
         }
 
         /// <summary>

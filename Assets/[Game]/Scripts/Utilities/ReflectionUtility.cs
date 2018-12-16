@@ -12,25 +12,105 @@ namespace Game.Utilities
         {
             Type type = typeof(T);
 
-            List<Type> types = new List<Type>();
+            List<Type> typeList = new List<Type>();
 
-            foreach (Assembly appDomain in AppDomain.CurrentDomain.GetAssemblies())
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            foreach (Assembly appDomain in assemblies)
             {
                 try
                 {
-                    List<Type> typesForDomain = appDomain.GetTypes()
-                        .Where(p => type.IsAssignableFrom(p)).ToList();
+                    Type[] types = appDomain.GetTypes().Where(p => type.IsAssignableFrom(p))
+                        .ToArray();
 
-                    types.AddRange(typesForDomain);
+                    typeList.AddRange(types);
                 }
                 catch (ReflectionTypeLoadException ex)
                 {
-                    Debug.LogErrorFormat(
+                    Log.Error(
                         $"Error while loading types for domain {appDomain.FullName}: {ex.Message}");
                 }
             }
 
-            return types.ToArray();
+            return typeList.ToArray();
+        }
+
+        public static Type GetType(string typeString)
+        {
+            Type type = null;
+
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            foreach (Assembly appDomain in assemblies)
+            {
+                try
+                {
+                    Type[] types = appDomain.GetTypes();
+
+                    for (int i = 0; i < types.Length; i++)
+                    {
+                        Type t = types[i];
+
+                        // This can easily cause ambiguous cases...
+                        if (t.Name == typeString)
+                        {
+                            type = t;
+                            break;
+                        }
+                    }
+
+                    if (type != null)
+                    {
+                        break;
+                    }
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    Log.Warn(
+                        $"Error while loading types for domain {appDomain.FullName}: {ex.Message}");
+                }
+            }
+
+            return type;
+        }
+
+        public static MethodInfo[] GetMethodsWithCustomAttribute<T>() where T : Attribute
+        {
+            List<MethodInfo> methodList = new List<MethodInfo>();
+
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            foreach (Assembly appDomain in assemblies)
+            {
+                try
+                {
+                    Type[] types = appDomain.GetTypes();
+
+                    foreach (Type type in types)
+                    {
+                        MethodInfo[] methods = type.GetMethods();
+
+                        foreach (MethodInfo methodInfo in methods)
+                        {
+                            T attribute = methodInfo.GetCustomAttribute<T>();
+
+                            if (attribute == null)
+                            {
+                                continue;
+                            }
+
+                            methodList.Add(methodInfo);
+                        }
+                    }
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    Log.Error(
+                        $"Error while loading types for domain {appDomain.FullName}: {ex.Message}");
+                }
+            }
+
+            return methodList.ToArray();
         }
     }
 }

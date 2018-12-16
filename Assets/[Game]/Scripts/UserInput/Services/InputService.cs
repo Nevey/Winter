@@ -107,7 +107,7 @@ namespace Game.UserInput.Services
         private void OnToggleConsole()
         {
             isInputPaused = !isInputPaused;
-            
+
             ToggleConsoleEvent?.Invoke();
         }
 
