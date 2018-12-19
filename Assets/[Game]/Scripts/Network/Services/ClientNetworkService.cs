@@ -75,6 +75,15 @@ namespace Game.Network.Services
                             ClientPlayerService.Instance.SpawnPlayer(spawnData);
 
                             break;
+
+                        case Tags.DESTROY:
+
+                            DestroyData destroyData = 
+                                ByteArrayUtility.ByteArrayToObject<DestroyData>(reader.ReadBytes());
+
+                            ClientPlayerService.Instance.DestroyPlayer(destroyData);
+
+                            break;
                     }
                 }
             }

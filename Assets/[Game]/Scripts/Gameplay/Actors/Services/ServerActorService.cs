@@ -64,6 +64,11 @@ namespace Game.Gameplay.Actors.Services
             actorFactory.SpawnPlayer(spawnData);
         }
 
+        public void DestroyActor(DestroyData destroyData)
+        {
+            // TODO: Add support for destroying an actor based on an actor ID (actor ID is not here yet...)
+        }
+
         public void DestroyActorsOfClient(IClient client)
         {
             for (int i = 0; i < actors.Count; i++)

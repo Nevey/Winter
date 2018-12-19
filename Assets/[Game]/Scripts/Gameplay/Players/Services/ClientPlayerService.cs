@@ -19,6 +19,19 @@ namespace Scripts.Gameplay.Players.Services
             ClientActorService.Instance.SpawnActor(spawnData);
         }
 
+        public void DestroyPlayer(DestroyData destroyData)
+        {
+            ClientActorService.Instance.DestroyActor(destroyData);
+
+            for (int i = players.Count - 1; i >= 0; i--)
+            {
+                if (players[i].OwnerID == destroyData.ownerID)
+                {
+                    players.RemoveAt(i);
+                }
+            }
+        }
+
         public void RegisterPlayer(ClientPlayer player)
         {
             players.Add(player);

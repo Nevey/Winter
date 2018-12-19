@@ -95,7 +95,7 @@ namespace Game.Gameplay.Actors
 
         public void Destroy()
         {
-            MonoBehaviour.Destroy(gameObject);
+            Destroy(gameObject);
         }
     }
 }

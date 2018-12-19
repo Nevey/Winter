@@ -34,9 +34,10 @@ namespace Scripts.Gameplay.Players.Services
 
         private void OnClientDisconnected(IClient client)
         {
-            ServerActorService.Instance.DestroyActorsOfClient(client);
+            ServerNetworkService.Instance.SendNewMessage(new DestroyData(client.ID), 
+                Tags.DESTROY, client, SendMode.Reliable);
 
-            // TODO: Tell other players
+            ServerActorService.Instance.DestroyActorsOfClient(client);
         }
 
         private void SpawnPlayer(IClient client)
@@ -46,8 +47,6 @@ namespace Scripts.Gameplay.Players.Services
             SpawnData spawnData = new SpawnData(client.ID, Vector3.zero);
 
             ServerActorService.Instance.SpawnActor(spawnData);
-
-            // TODO: Put the below in ServerActorFactory...
 
             // Send spawn message to all other clients
             ServerNetworkService.Instance.SendNewMessage(spawnData, Tags.SPAWN, client,

@@ -60,5 +60,17 @@ namespace Game.Gameplay.Actors.Services
             // TODO: Based on spawn data, spawn specific actor
             actorFactory.SpawnPlayer(spawnData);
         }
+
+        public void DestroyActor(DestroyData destroyData)
+        {
+            for (int i = 0; i < actors.Count; i++)
+            {
+                // TODO: Also compare actor ID from DestroyData
+                if (actors[i].OwnerID == destroyData.ownerID)
+                {
+                    actors[i].Destroy();
+                }
+            }
+        }
     }
 }
