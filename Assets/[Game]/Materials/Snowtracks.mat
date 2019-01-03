@@ -21,7 +21,7 @@ Material:
     m_TexEnvs:
     - _GroundTex:
         m_Texture: {fileID: 2800000, guid: 970246547a8f3e84fa391644e913e525, type: 3}
-        m_Scale: {x: 5, y: 5}
+        m_Scale: {x: 50, y: 50}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
@@ -29,14 +29,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SnowTex:
         m_Texture: {fileID: 2800000, guid: 1f50063edd1b99543a8fa5ef9e74fa11, type: 3}
-        m_Scale: {x: 5, y: 5}
+        m_Scale: {x: 50, y: 50}
         m_Offset: {x: 0, y: 0}
     - _Splat:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Displacement: 0.086
+    - _Displacement: 0.046
     - _Glossiness: 0.5
     - _Metallic: 0
     - _Tess: 32

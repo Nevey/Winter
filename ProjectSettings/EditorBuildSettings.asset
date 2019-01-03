@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/[Game]/Scenes/LevelScene.unity
     guid: ddf5a4812a78f66449a0b906080cff0f
+  - enabled: 1
+    path: Assets/[Game]/Scenes/Playgrounds/SnowPlayground.unity
+    guid: a9218e8582560fc4fa11a9c84d048c87
   - enabled: 1
     path: Assets/[Game]/Scenes/ConsoleScene.unity
     guid: ff366b8fc59afd1438d3e7fca676fb9d

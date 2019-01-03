@@ -67,6 +67,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7211798736552493608, guid: 4e0223de2850a8b4289a45b850a9cb65,
+        type: 3}
+      propertyPath: m_Name
+      value: ClientPlayerLocal
+      objectReference: {fileID: 0}
+    - target: {fileID: 1148294580546298883, guid: 4e0223de2850a8b4289a45b850a9cb65,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5808561966272798755}
       propertyPath: m_Name
       value: ClientPlayerLocal
@@ -151,11 +161,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7211798736552493608, guid: 4e0223de2850a8b4289a45b850a9cb65,
-        type: 3}
-      propertyPath: m_Name
-      value: ClientPlayerLocal
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e0223de2850a8b4289a45b850a9cb65, type: 3}
 --- !u!1 &5808561966272798755 stripped
@@ -177,6 +182,31 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8797287184237086285}
     m_Modifications:
+    - target: {fileID: 1156651699458014393, guid: ab4f1b7eba73e5947aad68de074eff69,
+        type: 3}
+      propertyPath: m_Name
+      value: ThirdPersonCamera
+      objectReference: {fileID: 0}
+    - target: {fileID: 2879602296219039403, guid: ab4f1b7eba73e5947aad68de074eff69,
+        type: 3}
+      propertyPath: minRotationX
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 2879602296219039403, guid: ab4f1b7eba73e5947aad68de074eff69,
+        type: 3}
+      propertyPath: maxRotationX
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 2879602296219039403, guid: ab4f1b7eba73e5947aad68de074eff69,
+        type: 3}
+      propertyPath: mainTarget
+      value: 
+      objectReference: {fileID: 8797287184237086285}
+    - target: {fileID: 2879602296219039403, guid: ab4f1b7eba73e5947aad68de074eff69,
+        type: 3}
+      propertyPath: heightOffset
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 1073700420844887177, guid: ab4f1b7eba73e5947aad68de074eff69,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -232,26 +262,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1156651699458014393, guid: ab4f1b7eba73e5947aad68de074eff69,
-        type: 3}
-      propertyPath: m_Name
-      value: ThirdPersonCamera
-      objectReference: {fileID: 0}
-    - target: {fileID: 2879602296219039403, guid: ab4f1b7eba73e5947aad68de074eff69,
-        type: 3}
-      propertyPath: minRotationX
-      value: -60
-      objectReference: {fileID: 0}
-    - target: {fileID: 2879602296219039403, guid: ab4f1b7eba73e5947aad68de074eff69,
-        type: 3}
-      propertyPath: maxRotationX
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 2879602296219039403, guid: ab4f1b7eba73e5947aad68de074eff69,
-        type: 3}
-      propertyPath: mainTarget
-      value: 
-      objectReference: {fileID: 8797287184237086285}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab4f1b7eba73e5947aad68de074eff69, type: 3}
 --- !u!114 &5088623933810543901 stripped

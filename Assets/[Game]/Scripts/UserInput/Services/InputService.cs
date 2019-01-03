@@ -27,8 +27,8 @@ namespace Game.UserInput.Services
         {
             base.OnInitialize();
 
-//            Cursor.lockState = CursorLockMode.Locked;
-//            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         #region Handle Input
