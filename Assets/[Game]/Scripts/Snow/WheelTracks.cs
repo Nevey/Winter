@@ -1,42 +1,39 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 
-public class DrawWithMouse : MonoBehaviour
+public class WheelTracks : MonoBehaviour
 {
-    public Camera camera;
-
     public Shader drawShader;
-
+    public GameObject terrain;
+    public Transform[] wheels;
     [Range(1, 500)] public float brushSize;
-    
     [Range(0, 1)] public float brushStrength;
-
-    private RenderTexture splatMap;
-
-    private Material snowMaterial, drawMaterial;
     
-    private RaycastHit hit;
+    private Material snowMaterial, drawMaterial;
+    private RaycastHit groundHit;
+    private int layerMask;
+    private RenderTexture splatMap;
     
     // Start is called before the first frame update
     void Start()
     {
+        layerMask = LayerMask.GetMask("Ground");
         drawMaterial = new Material(drawShader);
-        drawMaterial.SetVector("_Color", Color.red);
 
-        snowMaterial = GetComponent<MeshRenderer>().material;
+        snowMaterial = terrain.GetComponent<MeshRenderer>().material;
         splatMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGBFloat);
         snowMaterial.SetTexture("_Splat", splatMap);
     }
 
-    private void FixedUpdate()
+    // Update is called once per frame
+    void Update()
     {
-        if (Input.GetKey(KeyCode.Mouse0))
+        for (int i = 0; i < wheels.Length; i++)
         {
-            if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
+            if (Physics.Raycast(wheels[i].position, Vector3.down, out groundHit, 1f, layerMask))
             {
-                drawMaterial.SetVector("_Coordinate", new Vector4(hit.textureCoord.x, hit.textureCoord.y, 0f, 0f));
+                drawMaterial.SetVector("_Coordinate", new Vector4(groundHit.textureCoord.x, groundHit.textureCoord.y, 0f, 0f));
                 drawMaterial.SetFloat("_Strength", brushStrength);
                 drawMaterial.SetFloat("_Size", brushSize);
                 
@@ -49,10 +46,5 @@ public class DrawWithMouse : MonoBehaviour
                 RenderTexture.ReleaseTemporary(temp);
             }
         }
-    }
-
-    private void OnGUI()
-    {
-        GUI.DrawTexture(new Rect(0, 0, 256, 256), splatMap, ScaleMode.ScaleToFit, false, 1);
     }
 }
