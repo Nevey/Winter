@@ -88,7 +88,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
-  m_LightingDataAsset: {fileID: 112000002, guid: 088f2af41d91f5c4385b76223ef39c46,
+  m_LightingDataAsset: {fileID: 112000000, guid: 44043ff3695b567488208dde3365a824,
     type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -302,6 +302,7 @@ GameObject:
   - component: {fileID: 1110383145}
   - component: {fileID: 1110383144}
   - component: {fileID: 1110383143}
+  - component: {fileID: 1110383147}
   m_Layer: 9
   m_Name: Plane
   m_TagString: Untagged
@@ -382,6 +383,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1110383147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110383142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55bef30b4569b924e91f186381a73fd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  snowFallShader: {fileID: 4800000, guid: b6c36cdd58d03fd458030828aa0c4a16, type: 3}
+  flakeAmount: 0.001
+  flakeOpacity: 0.1
 --- !u!4 &1329713922 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 435324, guid: 55281349ab6ec74409da19efe96fa902,
