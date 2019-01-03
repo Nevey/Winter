@@ -1,5 +1,7 @@
 using Game.Gameplay.Actors.Services;
 using Game.Network.Data;
+using Game.Network.Services;
+using Game.Network.Types;
 using Scripts.Gameplay.Players;
 using UnityEngine;
 
@@ -12,6 +14,15 @@ namespace Game.Factories
 
         private void Awake()
         {
+#if CLIENT_BUILD
+            return;
+#elif UNITY_EDITOR
+            if (ServerNetworkService.Instance.NetworkFactory.NetworkType != NetworkType.Server)
+            {
+                return;
+            }
+#endif
+            
             ServerActorService.Instance.RegisterActorFactory(this);
         }
 

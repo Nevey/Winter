@@ -9,7 +9,7 @@ namespace Game.Gameplay.Actors
     public abstract class Actor : MonoBehaviour
     {
         // Private
-        // TODO: Create custom editor for such debugging purposes
+        // TODO: Create custom editor for these debugging purposes
         [SerializeField] private int clientID; // This is just here for inspector visualization
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Game.Gameplay.Actors
         /// <summary>
         /// Client ID of the owner
         /// </summary>
-        protected int ownerID;
+        protected int ownerID = -1;
 
         // Public
         public int OwnerID => ownerID;

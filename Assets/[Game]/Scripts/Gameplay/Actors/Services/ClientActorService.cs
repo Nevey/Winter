@@ -55,10 +55,10 @@ namespace Game.Gameplay.Actors.Services
             actors.Remove(actor);
         }
 
-        public void SpawnActor(SpawnData spawnData)
+        public void SpawnNetworkedActor(SpawnData spawnData)
         {
             // TODO: Based on spawn data, spawn specific actor
-            actorFactory.SpawnPlayer(spawnData);
+            actorFactory.SpawnNetworkedPlayer(spawnData);
         }
 
         public void DestroyActor(DestroyData destroyData)

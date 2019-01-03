@@ -14,9 +14,21 @@ namespace Scripts.Gameplay.Players.Services
         // Public
         public List<ClientPlayer> Players => players;
 
-        public void SpawnPlayer(SpawnData spawnData)
+        public void InitializeLocalPlayer(SpawnData spawnData)
         {
-            ClientActorService.Instance.SpawnActor(spawnData);
+            // Find un-initialized player, which is the local player, and initialize it!
+            for (int i = players.Count - 1; i >= 0; i--)
+            {
+                if (players[i].OwnerID == -1)
+                {
+                    players[i].Initialize(spawnData.ownerID);
+                }
+            }
+        }
+        
+        public void SpawnNetworkedPlayer(SpawnData spawnData)
+        {
+            ClientActorService.Instance.SpawnNetworkedActor(spawnData);
         }
 
         public void DestroyPlayer(DestroyData destroyData)

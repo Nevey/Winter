@@ -4,6 +4,7 @@ using System.Linq;
 using DarkRift;
 using DarkRift.Server;
 using Game.Network.Data;
+using Game.Network.Types;
 using Game.Services;
 using Game.Utilities;
 
@@ -12,44 +13,20 @@ namespace Game.Network.Services
     public class ServerNetworkService : Service<ServerNetworkService>
     {
         // Private
+        private NetworkFactory networkFactory;
+        
         private DarkRiftServer server;
 
         private readonly List<IClient> clients = new List<IClient>();
 
         // Public
+        public NetworkFactory NetworkFactory => networkFactory;
+
         public event Action<IClient> ClientConnectedEvent;
 
         public event Action<IClient> ClientDisconnectedEvent;
 
         public event Action<NetworkData> ComponentDataReceivedEvent;
-
-        private void OnClientConnected(object sender, ClientConnectedEventArgs e)
-        {
-            if (clients.Contains(e.Client))
-            {
-                throw Log.Exception(
-                    $"Client with ID {e.Client.ID} connected but is already connected!");
-            }
-
-            e.Client.MessageReceived += OnClientMessageReceived;
-            clients.Add(e.Client);
-
-            ClientConnectedEvent?.Invoke(e.Client);
-        }
-
-        private void OnClientDisconnected(object sender, ClientDisconnectedEventArgs e)
-        {
-            if (!clients.Contains(e.Client))
-            {
-                throw Log.Exception(
-                    $"Client with ID {e.Client.ID} disconnected but is not connected in the first place!");
-            }
-
-            e.Client.MessageReceived -= OnClientMessageReceived;
-            clients.Remove(e.Client);
-
-            ClientDisconnectedEvent?.Invoke(e.Client);
-        }
 
         private void OnClientMessageReceived(object sender, MessageReceivedEventArgs e)
         {
@@ -174,6 +151,60 @@ namespace Game.Network.Services
 
             this.server.ClientManager.ClientConnected -= OnClientConnected;
             this.server.ClientManager.ClientDisconnected -= OnClientDisconnected;
+        }
+        
+        public void RegisterNetworkFactory(NetworkFactory networkFactory)
+        {
+            if (this.networkFactory != null)
+            {
+                throw Log.Exception("Trying to register NetworkFactory, but it's already registered!");
+            }
+
+            this.networkFactory = networkFactory;
+        }
+
+        public void UnregisterNetworkFactory(NetworkFactory networkFactory)
+        {
+            if (this.networkFactory == null)
+            {
+                return;
+            }
+
+            if (this.networkFactory != networkFactory)
+            {
+                throw Log.Exception(
+                    "Trying to unregister NetworkFactory, but it's not registered in the first place!");
+            }
+
+            this.networkFactory = null;
+        }
+
+        private void OnClientConnected(object sender, ClientConnectedEventArgs e)
+        {
+            if (clients.Contains(e.Client))
+            {
+                throw Log.Exception(
+                    $"Client with ID {e.Client.ID} connected but is already connected!");
+            }
+
+            e.Client.MessageReceived += OnClientMessageReceived;
+            clients.Add(e.Client);
+
+            ClientConnectedEvent?.Invoke(e.Client);
+        }
+
+        private void OnClientDisconnected(object sender, ClientDisconnectedEventArgs e)
+        {
+            if (!clients.Contains(e.Client))
+            {
+                throw Log.Exception(
+                    $"Client with ID {e.Client.ID} disconnected but is not connected in the first place!");
+            }
+
+            e.Client.MessageReceived -= OnClientMessageReceived;
+            clients.Remove(e.Client);
+
+            ClientDisconnectedEvent?.Invoke(e.Client);
         }
     }
 }

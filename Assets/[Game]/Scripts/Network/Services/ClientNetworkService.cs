@@ -3,6 +3,7 @@ using DarkRift;
 using DarkRift.Client;
 using DarkRift.Client.Unity;
 using Game.Network.Data;
+using Game.Network.Types;
 using Game.Services;
 using Game.Utilities;
 using Scripts.Gameplay.Players.Services;
@@ -14,40 +15,16 @@ namespace Game.Network.Services
     {
         // TODO: Make simplified version of UnityClient
         // Private
+        private NetworkFactory networkFactory;
+        
         private UnityClient unityClient;
 
         // Public
+        public NetworkFactory NetworkFactory => networkFactory;
+
         public DarkRiftClient Client => unityClient.Client;
 
         public event Action<NetworkData> ComponentDataReceivedEvent;
-
-        public void RegisterUnityClient(UnityClient unityClient)
-        {
-            if (this.unityClient != null)
-            {
-                throw Log.Exception("Trying to register UnityClient, but it's already registered!");
-            }
-
-            this.unityClient = unityClient;
-            this.unityClient.MessageReceived += OnMessageReceived;
-        }
-
-        public void UnregisterUnityClient(UnityClient unityClient)
-        {
-            if (this.unityClient == null)
-            {
-                return;
-            }
-
-            if (this.unityClient != unityClient)
-            {
-                throw Log.Exception(
-                    "Trying to unregister UnityClient, but it's not registered in the first place!");
-            }
-
-            this.unityClient.MessageReceived -= OnMessageReceived;
-            this.unityClient = null;
-        }
 
         private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
@@ -68,11 +45,18 @@ namespace Game.Network.Services
 
                         case Tags.SPAWN:
 
-                            // Spawn a client-side actor
                             SpawnData spawnData =
                                 ByteArrayUtility.ByteArrayToObject<SpawnData>(reader.ReadBytes());
 
-                            ClientPlayerService.Instance.SpawnPlayer(spawnData);
+                            // Initialize local player or spawn a networked player
+                            if (spawnData.ownerID == unityClient.ID)
+                            {
+                                ClientPlayerService.Instance.InitializeLocalPlayer(spawnData);
+                            }
+                            else
+                            {
+                                ClientPlayerService.Instance.SpawnNetworkedPlayer(spawnData);
+                            }
 
                             break;
 
@@ -107,6 +91,60 @@ namespace Game.Network.Services
                     unityClient.Client.SendMessage(message, sendMode);
                 }
             }
+        }
+
+        public void RegisterNetworkFactory(NetworkFactory networkFactory)
+        {
+            if (this.networkFactory != null)
+            {
+                throw Log.Exception("Trying to register NetworkFactory, but it's already registered!");
+            }
+
+            this.networkFactory = networkFactory;
+        }
+
+        public void UnregisterNetworkFactory(NetworkFactory networkFactory)
+        {
+            if (this.networkFactory == null)
+            {
+                return;
+            }
+
+            if (this.networkFactory != networkFactory)
+            {
+                throw Log.Exception(
+                    "Trying to unregister NetworkFactory, but it's not registered in the first place!");
+            }
+
+            this.networkFactory = null;
+        }
+
+        public void RegisterUnityClient(UnityClient unityClient)
+        {
+            if (this.unityClient != null)
+            {
+                throw Log.Exception("Trying to register UnityClient, but it's already registered!");
+            }
+
+            this.unityClient = unityClient;
+            this.unityClient.MessageReceived += OnMessageReceived;
+        }
+
+        public void UnregisterUnityClient(UnityClient unityClient)
+        {
+            if (this.unityClient == null)
+            {
+                return;
+            }
+
+            if (this.unityClient != unityClient)
+            {
+                throw Log.Exception(
+                    "Trying to unregister UnityClient, but it's not registered in the first place!");
+            }
+
+            this.unityClient.MessageReceived -= OnMessageReceived;
+            this.unityClient = null;
         }
     }
 }

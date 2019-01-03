@@ -4,7 +4,7 @@ namespace Game.Gameplay.Actors.Components
 {
     public abstract class ActorComponent : MonoBehaviour
     {
-        protected int ownerID;
+        protected int ownerID = -1;
 
         public abstract System.Type DataFormatType { get; }
 

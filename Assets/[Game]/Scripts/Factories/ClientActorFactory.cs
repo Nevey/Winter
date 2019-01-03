@@ -1,6 +1,7 @@
 using Game.Gameplay.Actors.Services;
 using Game.Network.Data;
 using Game.Network.Services;
+using Game.Network.Types;
 using Scripts.Gameplay.Players;
 using UnityEngine;
 
@@ -14,7 +15,18 @@ namespace Game.Factories
 
         private void Awake()
         {
+#if SERVER_BUILD
+            return;
+#elif UNITY_EDITOR
+            if (ClientNetworkService.Instance.NetworkFactory.NetworkType != NetworkType.Client)
+            {
+                return;
+            }
+#endif
+            
             ClientActorService.Instance.RegisterActorFactory(this);
+
+            SpawnLocalPlayer();
         }
 
         private void OnDestroy()
@@ -22,14 +34,16 @@ namespace Game.Factories
             ClientActorService.Instance.UnregisterActorFactory(this);
         }
 
-        public ClientPlayer SpawnPlayer(SpawnData spawnData)
+        private ClientPlayer SpawnLocalPlayer()
         {
-            ClientPlayer clientPlayerPrefab =
-                ClientNetworkService.Instance.Client.ID == spawnData.ownerID
-                    ? localClientPlayerPrefab
-                    : networkedClientPlayerPrefab;
+            ClientPlayer clientPlayer = Instantiate(localClientPlayerPrefab);
 
-            ClientPlayer clientPlayer = Instantiate(clientPlayerPrefab);
+            return clientPlayer;
+        }
+
+        public ClientPlayer SpawnNetworkedPlayer(SpawnData spawnData)
+        {
+            ClientPlayer clientPlayer = Instantiate(networkedClientPlayerPrefab);
             clientPlayer.Initialize(spawnData.ownerID);
 
             return clientPlayer;

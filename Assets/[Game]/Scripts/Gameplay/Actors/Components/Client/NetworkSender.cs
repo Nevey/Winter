@@ -34,6 +34,11 @@ namespace Game.Gameplay.Actors.Components.Client
 
         protected void SendData(T networkData, SendMode sendMode = SendMode.Unreliable)
         {
+            if (ownerID == -1)
+            {
+                return;
+            }
+            
             ClientNetworkService.Instance.SendMessage(networkData, Tags.NETWORK_COMPONENT_DATA,
                 sendMode);
         }

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using DarkRift;
 using DarkRift.Server;
-using Game.Gameplay.Actors;
 using Game.Gameplay.Actors.Services;
 using Game.Network;
 using Game.Network.Data;
@@ -42,7 +41,7 @@ namespace Scripts.Gameplay.Players.Services
 
         private void SpawnPlayer(IClient client)
         {
-            // TODO: Given position will be based on a spawning system
+            // TODO: Given position will be based on client side position
             // Create spawn data
             SpawnData spawnData = new SpawnData(client.ID, Vector3.zero);
 
