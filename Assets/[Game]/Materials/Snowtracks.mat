@@ -40,6 +40,8 @@ Material:
     - _Glossiness: 0.5
     - _Metallic: 0
     - _Tess: 32
+    - _TessMaxDist: 59.3
+    - _TessMinDist: 10
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _GroundColor: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}

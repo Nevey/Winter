@@ -1,4 +1,4 @@
-﻿Shader "Unlit/DrawTracks"
+﻿Shader "Snow/DrawTracks"
 {
     Properties
     {

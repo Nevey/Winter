@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SnowFall"
+﻿Shader "Snow/SnowFall"
 {
     Properties
     {
