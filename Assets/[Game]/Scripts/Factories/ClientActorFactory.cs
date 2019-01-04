@@ -13,7 +13,7 @@ namespace Game.Factories
         [SerializeField] private ClientPlayer networkedClientPlayerPrefab;
         [SerializeField] private ClientPlayer localClientPlayerPrefab;
 
-        private void Awake()
+        private void Start()
         {
 #if SERVER_BUILD
             return;

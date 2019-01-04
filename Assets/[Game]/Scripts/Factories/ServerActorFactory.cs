@@ -12,7 +12,7 @@ namespace Game.Factories
         [Header("Player Prefabs")]
         [SerializeField] private ServerPlayer serverPlayerPrefab;
 
-        private void Awake()
+        private void Start()
         {
 #if CLIENT_BUILD
             return;
