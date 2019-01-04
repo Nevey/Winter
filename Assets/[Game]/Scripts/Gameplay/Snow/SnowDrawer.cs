@@ -21,7 +21,6 @@ namespace Game.Gameplay.Snow
             
             drawMaterial = new Material(drawShader);
 
-            splatMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGBFloat);
 
             MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
             Terrain terrain = GetComponent<Terrain>();
@@ -38,6 +37,13 @@ namespace Game.Gameplay.Snow
             {
                 throw Log.Exception("No proper material found to draw!");
             }
+            
+            // Convert existing splat texture to the new render texture
+            splatMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGBFloat);
+
+            Texture currentTexture = snowMaterial.GetTexture("_Splat");
+            
+            Graphics.Blit(currentTexture, splatMap);
             
             snowMaterial.SetTexture("_Splat", splatMap);
         }

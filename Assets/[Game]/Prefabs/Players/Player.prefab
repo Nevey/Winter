@@ -75,7 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55eb6aa02e6641a6b047ee34d5f22180, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brushSize: 1
+  brushSize: 4
   brushStrength: 1
 --- !u!1001 &228741009177883192
 PrefabInstance:
