@@ -1,3 +1,4 @@
+using Game.Utilities;
 using UnityEngine;
 
 namespace Game.Gameplay.Snow
@@ -21,8 +22,23 @@ namespace Game.Gameplay.Snow
             drawMaterial = new Material(drawShader);
 
             splatMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGBFloat);
+
+            MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+            Terrain terrain = GetComponent<Terrain>();
+
+            if (terrain != null)
+            {
+                snowMaterial = terrain.materialTemplate;
+            }
+            else if (meshRenderer != null)
+            {
+                snowMaterial = meshRenderer.material;
+            }
+            else
+            {
+                throw Log.Exception("No proper material found to draw!");
+            }
             
-            snowMaterial = GetComponent<MeshRenderer>().material;
             snowMaterial.SetTexture("_Splat", splatMap);
         }
 
