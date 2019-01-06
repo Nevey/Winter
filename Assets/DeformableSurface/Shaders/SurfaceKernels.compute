@@ -1,0 +1,171 @@
+﻿#pragma kernel GenerateNormalMap
+#pragma kernel Deform
+#pragma kernel BlurDepthHorizontal
+#pragma kernel BlurDepthVertical
+#pragma kernel NormalizeDepth
+#pragma kernel DenormalizeDepth
+#pragma kernel GetOffsetValue
+
+#define GROUP_THREADS_X 8
+#define GROUP_THREADS_Y 8
+
+struct OffsetValue
+{
+	float3 InPos;
+	float OutValue;
+};
+
+
+static const float GaussKernels[6][7] = 
+{
+	{ 0.44198, 0.27901, 0, 0, 0, 0, 0 },
+	{ 0.38774, 0.24477, 0.06136, 0, 0, 0, 0 },
+	{ 0.383103, 0.241843, 0.060626, 0.00598, 0, 0, 0 },
+	{ 0.382928, 0.241732, 0.060598, 0.005977, 0.000229, 0, 0 },
+	{ 0.382925, 0.24173, 0.060598, 0.005977, 0.000229, 0.000003, 0 },
+	{ 0.382925, 0.24173, 0.060598, 0.005977, 0.000229, 0.000003, 0 }
+};
+
+RWStructuredBuffer<OffsetValue> OutOffset;
+
+float DeformSpeed;
+float2 MinMaxFrac;
+float2 RtDimensions;
+float NormalIntensity;
+int BlurRadius;
+
+RWTexture2D<float4> BaseMap;
+RWTexture2D<float4> SrcMap;
+
+
+float GetDepthBlur(float2 xy, float2 dir)
+{	
+    float ca = SrcMap[xy].r * GaussKernels[BlurRadius][0];
+	float cb = 0;
+
+	for (int i = 1; i < BlurRadius + 2; i++)
+	{
+		float2 offset = dir * i;
+		float blurMul = GaussKernels[BlurRadius][i];
+
+        float rv = SrcMap[clamp(xy + offset, float2(0, 0), RtDimensions)].r;
+        float lv = SrcMap[clamp(xy - offset, float2(0, 0), RtDimensions)].r;
+
+        cb += rv * blurMul;
+        cb += lv * blurMul;
+    }
+
+	return (ca + cb);
+}
+
+float4x2 GetPixelOffsetXY(float2 xy)
+{
+	return float4x2
+	(
+		clamp(xy + float2(1, 0), float2(0, 0), RtDimensions),	//x		- z - 
+		clamp(xy + float2(-1, 0), float2(0, 0), RtDimensions),	//y		y - x
+		clamp(xy + float2(0, 1), float2(0, 0), RtDimensions),	//z		- w	-
+		clamp(xy + float2(0, -1), float2(0, 0), RtDimensions)	//w
+	);
+}
+
+float2 GetNormal(float4 near)
+{
+	float3 xy = normalize(float3(2, 0, near.x - near.y));
+	float3 zw = normalize(float3(0, 2, near.z - near.w));
+
+	return float2(cross(xy, zw).xy + float2(0.5, 0.5));
+}
+
+// --- 0
+// IO: BaseMap
+[numthreads(GROUP_THREADS_X, GROUP_THREADS_Y, 1)]
+void GenerateNormalMap(uint3 id : SV_DispatchThreadID)
+{
+	float4x2 o = GetPixelOffsetXY(id.xy);
+	float4 near = float4
+	( 
+		BaseMap[o[0]].r + BaseMap[o[0]].g,
+		BaseMap[o[1]].r + BaseMap[o[1]].g,
+		BaseMap[o[2]].r + BaseMap[o[2]].g,
+		BaseMap[o[3]].r + BaseMap[o[3]].g
+	);
+
+	float2 norm = GetNormal(near * NormalIntensity);
+	BaseMap[id.xy] = float4(BaseMap[id.xy].rg, norm);
+}
+
+// --- 1
+// IO: SrcMap, BaseMap 
+[numthreads(GROUP_THREADS_X, GROUP_THREADS_Y, 1)]
+void Deform(uint3 id : SV_DispatchThreadID)
+{	    
+    float min = BaseMap[id.xy].r * MinMaxFrac.x;
+    float max = min + (BaseMap[id.xy].g * MinMaxFrac.y);
+    float depth = SrcMap[id.xy].r;
+    float mu = MinMaxFrac.x / MinMaxFrac.y;
+    float tval = (depth >= min && depth <= max) * ((max - depth) * mu * DeformSpeed);
+
+    BaseMap[id.xy] = float4(BaseMap[id.xy].r, BaseMap[id.xy].g - tval, BaseMap[id.xy].ba);
+}
+
+// --- 2
+// IO: SrcMap
+[numthreads(GROUP_THREADS_X, GROUP_THREADS_Y, 1)]
+void BlurDepthHorizontal(uint3 id : SV_DispatchThreadID)
+{
+    if (SrcMap[id.xy].g != 1)
+        SrcMap[id.xy] = float4(GetDepthBlur(id.xy, float2(1, 0)), SrcMap[id.xy].gba);
+}
+
+// --- 3
+// IO: SrcMap
+[numthreads(GROUP_THREADS_X, GROUP_THREADS_Y, 1)]
+void BlurDepthVertical(uint3 id : SV_DispatchThreadID)
+{	
+    if (SrcMap[id.xy].g != 1)
+        SrcMap[id.xy] = float4(GetDepthBlur(id.xy, float2(0, 1)), SrcMap[id.xy].gba);		
+}
+
+
+// --- 4
+// IO: SrcMap, BaseMap
+[numthreads(GROUP_THREADS_X, GROUP_THREADS_Y, 1)]
+void NormalizeDepth(uint3 id : SV_DispatchThreadID)
+{    
+    float min = BaseMap[id.xy].r * MinMaxFrac.x;
+    float max = min + MinMaxFrac.y;
+    float depth = SrcMap[id.xy].r;
+
+    float n = (depth - min) / (max - min);
+    SrcMap[id.xy] = float4(n, SrcMap[id.xy].gb, n);
+}
+
+// --- 5
+// IO: SrcMap, BaseMap
+[numthreads(GROUP_THREADS_X, GROUP_THREADS_Y, 1)]
+void DenormalizeDepth(uint3 id : SV_DispatchThreadID)
+{    
+    float min = BaseMap[id.xy].r * MinMaxFrac.x;
+    float max = min + MinMaxFrac.y;
+    float depth = SrcMap[id.xy].r;
+    
+    float dn = depth * (max - min) + min;
+    SrcMap[id.xy] = float4(dn, SrcMap[id.xy].gba);
+}
+
+
+// --- 6
+// IO: BaseMap, OutOffsetValue
+[numthreads(1, 1, 1)]
+void GetOffsetValue(uint3 id : SV_DispatchThreadID)
+{	
+	float2 mapPos = float2(OutOffset[id.x].InPos.x, OutOffset[id.x].InPos.z);
+
+    float min = BaseMap[mapPos.xy].r * MinMaxFrac.x;
+    float max = min + (BaseMap[mapPos.xy].g * MinMaxFrac.y);
+
+    OutOffset[id.x].OutValue = (OutOffset[id.x].InPos.y >= min && OutOffset[id.x].InPos.y <= max) ? 
+        ((OutOffset[id.x].InPos.y - min) / (max - min)) : -1;
+}
+

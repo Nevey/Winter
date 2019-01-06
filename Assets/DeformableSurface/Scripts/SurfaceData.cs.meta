@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 840d01a018da7b54c9879657ee4c43ca
+timeCreated: 1544378709
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - MeshBase: {instanceID: 0}
+  - MeshCollider: {instanceID: 0}
+  - BaseMap: {instanceID: 0}
+  - _depthTextureShader: {fileID: 4800000, guid: 5a6a8b14e51d57f42b92efea5d33819b,
+      type: 3}
+  - SurfaceKernels: {fileID: 7200000, guid: 8d659996bb53b2849a8c569a1131a673, type: 3}
+  - SourceMaterial: {instanceID: 0}
+  - TargetTerrain: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
