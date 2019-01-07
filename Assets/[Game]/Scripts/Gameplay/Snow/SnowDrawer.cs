@@ -70,5 +70,10 @@ namespace Game.Gameplay.Snow
                 RenderTexture.ReleaseTemporary(tempSplatMap);
             }
         }
+
+        private void OnGUI()
+    {
+        GUI.DrawTexture(new Rect(0, 0, 256, 256), splatMap, ScaleMode.ScaleToFit, false, 1);
+    }
     }
 }
