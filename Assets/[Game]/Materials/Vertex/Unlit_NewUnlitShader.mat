@@ -41,12 +41,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Alpha: 1
-    - _AlphaMultiplier: 1.44
-    - _AlphaOffset: 0.069
-    - _Displacement: 2.02
+    - _AlphaMultiplier: 1
+    - _AlphaOffset: 0.241
+    - _Displacement: 1.83
     - _SplatMultiplier: -2.15
     - _Tess: 32
     m_Colors:
     - _AlphaOffset: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.9056604, g: 0.9056604, b: 0.9056604, a: 1}
     - _SpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}

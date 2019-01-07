@@ -51,6 +51,10 @@
 
             sampler2D _MainTex;
             fixed4 _Color;
+            
+            float quadraticIn(float t) {
+                return t * t;
+            }
 
             void surf (Input IN, inout SurfaceOutputStandard o) {
             
@@ -58,11 +62,17 @@
                 
                 half alpha = tex2D(_AlphaMap, IN.uv_AlphaMap).r;
                 
-                if (alpha > _AlphaOffset)
-                    alpha = 1;
+//                alpha = quadraticIn(alpha);
+                
+                float v = alpha / _AlphaOffset;
+                
+//                if (alpha > _AlphaOffset)
+//                    alpha = 1;
+//                else
+//                    alpha = 0.5;
                  
                 o.Albedo = c.rgb;
-                o.Alpha = alpha * _AlphaMultiplier;
+                o.Alpha = v;// alpha * _AlphaMultiplier;
             }
             ENDCG
         }
