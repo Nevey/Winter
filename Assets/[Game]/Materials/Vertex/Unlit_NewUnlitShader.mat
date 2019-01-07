@@ -43,7 +43,7 @@ Material:
     - _Alpha: 1
     - _AlphaMultiplier: 1
     - _AlphaOffset: 0.241
-    - _Displacement: 1.83
+    - _Displacement: 3.1
     - _SplatMultiplier: -2.15
     - _Tess: 32
     m_Colors:
