@@ -17,10 +17,12 @@ namespace Game.Deforming.Editor
         private SerializedProperty drawShader;
         private SerializedProperty alphaMap;
 
+        private SerializedProperty paintedSurfaceShader;
+
         private void OnEnable()
         {
             deformBrush = (DeformBrush)target;
-            deformBrush.Initialize();
+            
             
             brushSize = serializedObject.FindProperty("brushSize");
             brushOpacity = serializedObject.FindProperty("brushOpacity");
@@ -29,6 +31,8 @@ namespace Game.Deforming.Editor
 
             drawShader = serializedObject.FindProperty("drawShader");
             alphaMap = serializedObject.FindProperty("alphaMap");
+
+            paintedSurfaceShader = serializedObject.FindProperty("paintedSurfaceShader");
         }
 
         private void OnDisable()
@@ -39,9 +43,8 @@ namespace Game.Deforming.Editor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            
-            GUI.DrawTexture(new Rect(0, 0, 256, 256), (Texture)alphaMap.objectReferenceValue, ScaleMode.ScaleToFit, false, 1);
 
+            EditorGUILayout.PropertyField(paintedSurfaceShader);
             EditorGUILayout.PropertyField(drawShader);
             EditorGUILayout.PropertyField(alphaMap);
             
@@ -121,8 +124,7 @@ namespace Game.Deforming.Editor
 
             if (GUILayout.Button("Apply"))
             {
-                deformBrush.enabled = false;
-                deformBrush.enabled = true;
+                deformBrush.Initialize();
             }
         }
 
@@ -139,7 +141,7 @@ namespace Game.Deforming.Editor
             
             Event e = Event.current;
 
-            if (e.type == EventType.MouseDown)
+            if (e.type == EventType.MouseDrag)
             {
                 Vector2? textureCoord = GetTextureCoord(sceneViewCamera);
 
@@ -149,6 +151,8 @@ namespace Game.Deforming.Editor
                 }
                 
                 deformBrush.Draw(textureCoord.Value);
+                
+                Repaint();
             }
         }
 

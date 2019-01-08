@@ -1,8 +1,10 @@
+using System.Runtime.CompilerServices;
 using Game.Utilities;
 using UnityEngine;
 
 namespace Game.Deforming
 {
+    [ExecuteInEditMode]
     public class DeformBrush : MonoBehaviour
     {
         [SerializeField] private float brushSize;
@@ -13,49 +15,51 @@ namespace Game.Deforming
 
         // TODO: Add Material layers, shaders will be set automatically there
         [SerializeField] private Shader drawShader;
+
+        [SerializeField] private Shader paintedSurfaceShader;
         
         [SerializeField] private RenderTexture alphaMap;
+
+        private Material paintedSurfaceMaterial;
         
         private Material drawMaterial;
 
         
 //        private Material deformMaterial;
-        
-
-        private void OnEnable()
-        {
-            
-            
-//            alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGBFloat);
-        }
 
         public void Initialize()
         {
-            for (int i = 0; i < paints.Length; i++)
+            if (paints != null)
             {
-                paints[i].CreateRenderTexture(drawShader);
+                for (int i = 0; i < paints.Length; i++)
+                {
+                    paints[i].CreateRenderTexture(drawShader);
+                }
+            }
+
+            if (drawShader != null)
+            {
+                drawMaterial = new Material(drawShader);
             }
             
-            drawMaterial = new Material(drawShader);
-            drawMaterial.SetTexture("_MainTex", alphaMap);
             
-            
-            
-            
-            
+//            alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGBFloat);
 
-            MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-            
-//            deformMaterial = meshRenderer.sharedMaterial;
-            
-            // Convert existing splat texture to the new render texture
-            
+            if (paintedSurfaceShader != null)
+            {
+                paintedSurfaceMaterial = new Material(paintedSurfaceShader);
+                
+                MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+                meshRenderer.material = paintedSurfaceMaterial;
+                
+                // Convert existing splat texture to the new render texture
+                Texture currentTexture = paintedSurfaceMaterial.GetTexture("_AlphaMap");
+                
+                Graphics.Blit(currentTexture, alphaMap);
+                
+                paintedSurfaceMaterial.SetTexture("_AlphaMap", alphaMap);
+            }
 
-//            Texture currentTexture = deformMaterial.GetTexture("_AlphaMap");
-//            
-//            Graphics.Blit(currentTexture, alphaMap);
-//            
-//            deformMaterial.SetTexture("_AlphaMap", alphaMap);
         }
 
         public void Draw(Vector2 textureCoord)
@@ -75,7 +79,7 @@ namespace Game.Deforming
             drawMaterial.SetFloat("_Size", brushSize);
             
             RenderTexture tempSplatMap = RenderTexture.GetTemporary(alphaMap.width, alphaMap.height, 0,
-                RenderTextureFormat.ARGB32);
+                RenderTextureFormat.ARGBFloat);
             
             Graphics.Blit(alphaMap, tempSplatMap);
             Graphics.Blit(tempSplatMap, alphaMap, drawMaterial);
@@ -111,6 +115,11 @@ namespace Game.Deforming
             }
 
             paints = newPaintArray;
+        }
+
+        private void OnGUI()
+        {
+            GUI.DrawTexture(new Rect(0, 0, 256, 256), alphaMap, ScaleMode.ScaleToFit, false, 1);
         }
     }
 }
