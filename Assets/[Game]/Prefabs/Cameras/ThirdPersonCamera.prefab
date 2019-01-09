@@ -42,7 +42,7 @@ Camera:
   m_GameObject: {fileID: 1156651699458014393}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
@@ -99,6 +99,6 @@ MonoBehaviour:
   defaultLookRotation: {x: -10, y: 0}
   minRotationX: -90
   maxRotationX: 90
-  movementSmoothWeight: 0.05
-  rotationSmoothWeight: 0.1
+  lookSmoothWeight: 0.1
+  heightOffset: 0
   lookSensitivity: {x: 150, y: 150}

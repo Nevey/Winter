@@ -10,27 +10,26 @@ namespace Game.Deforming.Editor
 
         private SerializedProperty brushSize;
         private SerializedProperty brushOpacity;
-
+        private SerializedProperty defaultTexture;
+        private SerializedProperty defaultNormalMap;
+        private SerializedProperty defaultTextureTiling;
         private SerializedProperty paints;
-
-        private SerializedProperty drawShader;
-        private SerializedProperty alphaMap;
-
+        private SerializedProperty selectedPaintIndex;
+        private SerializedProperty brushShader;
         private SerializedProperty paintedSurfaceShader;
 
         private void OnEnable()
         {
             deformBrush = (DeformBrush)target;
             
-            
             brushSize = serializedObject.FindProperty("brushSize");
             brushOpacity = serializedObject.FindProperty("brushOpacity");
-
+            defaultTexture = serializedObject.FindProperty("defaultTexture");
+            defaultNormalMap = serializedObject.FindProperty("defaultNormalMap");
+            defaultTextureTiling = serializedObject.FindProperty("defaultTextureTiling");
             paints = serializedObject.FindProperty("paints");
-
-            drawShader = serializedObject.FindProperty("drawShader");
-            alphaMap = serializedObject.FindProperty("alphaMap");
-
+            selectedPaintIndex = serializedObject.FindProperty("selectedPaintIndex");
+            brushShader = serializedObject.FindProperty("brushShader");
             paintedSurfaceShader = serializedObject.FindProperty("paintedSurfaceShader");
         }
 
@@ -43,25 +42,63 @@ namespace Game.Deforming.Editor
         {
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(paintedSurfaceShader);
-            EditorGUILayout.PropertyField(drawShader);
-            EditorGUILayout.PropertyField(alphaMap);
-            
-            DrawBrushSettings();
-            DrawLayerSettings();
+            DrawShaderProperties();
+            DrawBrushProperties();
+            DrawDefaultTextureProperties();
+            DrawLayerProperties();
             
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void DrawBrushSettings()
+        private void DrawShaderProperties()
         {
-            EditorGUILayout.Slider(brushSize, 0, 500, "Brush Size");
-            EditorGUILayout.Slider(brushOpacity, 0, 1, "Brush Opacity");
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Shader Properties");
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.PropertyField(paintedSurfaceShader);
+            EditorGUILayout.PropertyField(brushShader);
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndVertical();
         }
 
-        private void DrawLayerSettings()
+        private void DrawBrushProperties()
         {
-            EditorGUILayout.Space();
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Brush Properties");
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.Slider(brushSize, 0, 500, "Brush Size");
+            EditorGUILayout.Slider(brushOpacity, 0, 1, "Brush Opacity");
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawDefaultTextureProperties()
+        {
+            EditorGUI.BeginChangeCheck();
+            
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Default Texture Properties");
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.ObjectField(defaultTexture, typeof(Texture));
+            EditorGUILayout.ObjectField(defaultNormalMap, typeof(Texture));
+            EditorGUILayout.PropertyField(defaultTextureTiling);
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndVertical();
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+                deformBrush.SetDefaultTextures();
+            }
+        }
+
+        private void DrawLayerProperties()
+        {
+            EditorGUI.BeginChangeCheck();
+            
+            EditorGUILayout.BeginVertical("box");
+            
+            EditorGUILayout.LabelField("Paint Layer Properties");
             
             EditorGUILayout.BeginHorizontal("box");
             
@@ -80,32 +117,47 @@ namespace Game.Deforming.Editor
             }
             
             EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.EndVertical();
 
             Vector2 offset = new Vector2(20, 30);
             
-            Rect lastGUIRect = GUILayoutUtility.GetLastRect();
-            lastGUIRect.y += lastGUIRect.height + offset.y;
-            lastGUIRect.width = 100;
-            lastGUIRect.height = 100;
+            Rect lastGuiRect = GUILayoutUtility.GetLastRect();
+            lastGuiRect.x += 5;
+            lastGuiRect.y += lastGuiRect.height + offset.y;
+            lastGuiRect.width = 100;
+            lastGuiRect.height = 100;
 
             for (int i = 0; i < paints.arraySize; i++)
             {
                 SerializedProperty paint = paints.GetArrayElementAtIndex(i);
 
-                SerializedProperty mainTextureProperty = paint.FindPropertyRelative("mainTexture");
+                SerializedProperty paintTextureProperty = paint.FindPropertyRelative("paintTexture");
                 SerializedProperty normalMapProperty = paint.FindPropertyRelative("normalMap");
+                SerializedProperty alphaMapProperty = paint.FindPropertyRelative("alphaMap");
+                SerializedProperty tilingProperty = paint.FindPropertyRelative("tiling");
 
-                Rect rect = lastGUIRect;
-                rect.y = lastGUIRect.y + (lastGUIRect.height + offset.y) * i;
+                Rect rect = lastGuiRect;
+                rect.y = lastGuiRect.y + (lastGuiRect.height + offset.y) * i;
 
                 Rect labelRect = rect;
                 labelRect.y -= 15;
+
+                Rect boxRect = rect;
+                boxRect.x -= 5;
+                boxRect.y -= 15;
+                boxRect.width = lastGuiRect.width * 3 + 10;
+                boxRect.height += 20;
+
+                GUI.color = selectedPaintIndex.intValue == i ? Color.blue : Color.white;
+                GUI.Box(boxRect, "");
+                GUI.color = Color.white;
                 
-                EditorGUI.LabelField(labelRect, "Main Texture");
+                EditorGUI.LabelField(labelRect, "Paint Texture");
                 
-                Texture mainTexture = mainTextureProperty.objectReferenceValue as Texture;
-                mainTexture = (Texture) EditorGUI.ObjectField(rect, mainTexture, typeof(Texture), false);
-                mainTextureProperty.objectReferenceValue = mainTexture;
+                Texture paintTexture = paintTextureProperty.objectReferenceValue as Texture;
+                paintTexture = (Texture) EditorGUI.ObjectField(rect, paintTexture, typeof(Texture), false);
+                paintTextureProperty.objectReferenceValue = paintTexture;
 
                 rect.x += rect.width + offset.x;
                 labelRect.x = rect.x;
@@ -115,25 +167,79 @@ namespace Game.Deforming.Editor
                 Texture normalMap = normalMapProperty.objectReferenceValue as Texture;
                 normalMap = (Texture) EditorGUI.ObjectField(rect, normalMap, typeof(Texture), false);
                 normalMapProperty.objectReferenceValue = normalMap;
+
+                rect.x += rect.width + offset.x;
+                labelRect.x = rect.x;
                 
-                GUILayout.Space(lastGUIRect.height + offset.y);
+                EditorGUI.LabelField(labelRect, "Alpha Map");
+                
+                RenderTexture alphaMap = alphaMapProperty.objectReferenceValue as RenderTexture;
+                alphaMap = (RenderTexture) EditorGUI.ObjectField(new Rect(rect.x, rect.y, 50, 50), alphaMap, typeof(RenderTexture));
+                alphaMapProperty.objectReferenceValue = alphaMap;
+
+                Rect tilingRect = rect;
+                tilingRect.y += tilingRect.height * 0.5f + 20;
+                tilingRect.width = 50;
+                tilingRect.height = 30;
+
+                labelRect.x = tilingRect.x;
+                labelRect.y = tilingRect.y - 15;
+                
+                EditorGUI.LabelField(labelRect, "Tiling");
+                
+                int tiling = tilingProperty.intValue;
+                tiling = EditorGUI.IntField(tilingRect, tiling);
+                tilingProperty.intValue = tiling;
+
+                Rect buttonRect = rect;
+                buttonRect.x += 70;
+                buttonRect.y -= 15;
+                buttonRect.width = 35;
+                buttonRect.height += 20;
+
+                if (selectedPaintIndex.intValue != i)
+                {
+                    if (GUI.Button(buttonRect, "Pick"))
+                    {
+                        selectedPaintIndex.intValue = i;
+                    }
+                }
+                
+                GUILayout.Space(lastGuiRect.height + offset.y);
             }
             
             EditorGUILayout.Space();
 
-            if (GUILayout.Button("Apply"))
+            if (EditorGUI.EndChangeCheck())
             {
-                deformBrush.Initialize();
+                serializedObject.ApplyModifiedProperties();
+                deformBrush.UpdatePaintSettings();
             }
         }
 
         private void OnSceneGUI()
         {
             Handles.BeginGUI();
-            if (alphaMap.objectReferenceValue != null)
+
+            if (paints.arraySize > 0)
             {
-                GUI.DrawTexture(new Rect(5, 5, 128, 128), (Texture)alphaMap.objectReferenceValue, ScaleMode.ScaleToFit, false, 1);
+                if (paints.GetArrayElementAtIndex(0).FindPropertyRelative("alphaMap").objectReferenceValue != null)
+                {
+                    Texture alphaMap = (Texture)paints.GetArrayElementAtIndex(0).FindPropertyRelative("alphaMap")
+                        .objectReferenceValue;
+                    
+                    GUI.DrawTexture(new Rect(5, 5, 128, 128), alphaMap, ScaleMode.ScaleToFit, false, 1);
+                }
+                
+                if (paints.arraySize > 1 && paints.GetArrayElementAtIndex(1).FindPropertyRelative("alphaMap").objectReferenceValue != null)
+                {
+                    Texture alphaMap = (Texture)paints.GetArrayElementAtIndex(1).FindPropertyRelative("alphaMap")
+                        .objectReferenceValue;
+                    
+                    GUI.DrawTexture(new Rect(138, 5, 128, 128), alphaMap, ScaleMode.ScaleToFit, false, 1);
+                }
             }
+            
             Handles.EndGUI();
             
             Camera sceneViewCamera = GetSceneViewCamera();
@@ -192,24 +298,6 @@ namespace Game.Deforming.Editor
             }
 
             return null;
-        }
-        
-        private Vector3 GetPointerPosition(Camera camera)
-        {
-            Ray mouseRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-
-            // TODO: Cache meshCollider
-            MeshCollider meshCollider = deformBrush.GetComponent<MeshCollider>();
-            
-            if (meshCollider.Raycast(mouseRay, out RaycastHit hit, float.MaxValue))
-                return hit.point;
-
-            // TODO: Check if this is needed?
-            Plane plane = new Plane(Vector3.up, deformBrush.transform.position);
-            float distance;
-            plane.Raycast(mouseRay, out distance);
-
-            return camera.transform.position + mouseRay.direction * distance;
         }
     }
 }

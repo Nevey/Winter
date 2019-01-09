@@ -6,23 +6,29 @@ namespace Game.Deforming
     [Serializable]
     public class Paint
     {
-        // Texture
-        // Normal map
-        // Auto-create "paint map" (like heightmap but only for texture painting)
-
-        [SerializeField] private Texture mainTexture;
+        [SerializeField] private Texture paintTexture;
 
         [SerializeField] private Texture normalMap;
 
-        [SerializeField] private RenderTexture paintMap;
+        [SerializeField] private RenderTexture alphaMap;
 
-        [SerializeField] private Material paintMaterial; 
+        [SerializeField] private Material brushMaterial;
 
-        public void CreateRenderTexture(Shader drawShader)
+        [SerializeField] private int tiling = 1;
+
+        public Texture PaintTexture => paintTexture;
+
+        public Texture NormalMap => normalMap;
+
+        public RenderTexture AlphaMap => alphaMap;
+
+        public Material BrushMaterial => brushMaterial;
+
+        public int Tiling => tiling;
+
+        public Paint(Shader brushShader)
         {
-            paintMap = new RenderTexture(512, 512, 0, RenderTextureFormat.Depth);
-            
-            paintMaterial = new Material(drawShader); 
+            brushMaterial = new Material(brushShader);
         }
     }
 }

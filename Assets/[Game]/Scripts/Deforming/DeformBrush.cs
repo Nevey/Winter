@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Game.Utilities;
 using UnityEngine;
 
@@ -11,75 +10,25 @@ namespace Game.Deforming
 
         [SerializeField] private float brushOpacity;
 
+        [SerializeField] private Texture defaultTexture;
+
+        [SerializeField] private Texture defaultNormalMap;
+
+        [SerializeField] private int defaultTextureTiling;
+
         [SerializeField] private Paint[] paints;
 
-        // TODO: Add Material layers, shaders will be set automatically there
-        [SerializeField] private Shader drawShader;
+        [SerializeField] private int selectedPaintIndex;
+
+        [SerializeField] private Shader brushShader;
 
         [SerializeField] private Shader paintedSurfaceShader;
-        
-        [SerializeField] private RenderTexture alphaMap;
 
         private Material paintedSurfaceMaterial;
-        
-        private Material drawMaterial;
 
-        
-//        private Material deformMaterial;
-
-        public void Initialize()
+        private void DrawOnAlphaMap(Vector2 textureCoord, Material drawMaterial, RenderTexture alphaMap, int appends = 1)
         {
-            if (paints != null)
-            {
-                for (int i = 0; i < paints.Length; i++)
-                {
-                    paints[i].CreateRenderTexture(drawShader);
-                }
-            }
-
-            if (drawShader != null)
-            {
-                drawMaterial = new Material(drawShader);
-            }
-            
-            
-//            alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGBFloat);
-
-            if (paintedSurfaceShader != null)
-            {
-                paintedSurfaceMaterial = new Material(paintedSurfaceShader);
-                
-                MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-                meshRenderer.material = paintedSurfaceMaterial;
-                
-                // Convert existing splat texture to the new render texture
-                Texture currentTexture = paintedSurfaceMaterial.GetTexture("_AlphaMap");
-                
-                Graphics.Blit(currentTexture, alphaMap);
-                
-                paintedSurfaceMaterial.SetTexture("_AlphaMap", alphaMap);
-            }
-
-        }
-
-        public void Draw(Vector2 textureCoord)
-        {
-//            for (int i = 0; i < paints.Length; i++)
-//            {
-//                
-//            }
-            
-            DrawAlphaMap(textureCoord, 1);
-        }
-
-        public void Erase(Vector2 textureCoord)
-        {
-            DrawAlphaMap(textureCoord, 0);
-        }
-
-        private void DrawAlphaMap(Vector2 textureCoord, int appends)
-        {
-            if (drawMaterial == null)
+            if (drawMaterial == null || alphaMap == null)
             {
                 return;
             }
@@ -98,15 +47,43 @@ namespace Game.Deforming
             RenderTexture.ReleaseTemporary(tempSplatMap);
         }
 
+        public void Draw(Vector2 textureCoord)
+        {
+            DrawOnAlphaMap(textureCoord, paints[selectedPaintIndex].BrushMaterial, paints[selectedPaintIndex].AlphaMap, 1);
+
+            for (int i = 0; i < paints.Length; i++)
+            {
+                if (i == selectedPaintIndex)
+                {
+                    continue;
+                }
+                
+                DrawOnAlphaMap(textureCoord, paints[i].BrushMaterial, paints[i].AlphaMap, 0);
+            }
+        }
+
+        public void Erase(Vector2 textureCoord)
+        {
+            for (int i = 0; i < paints.Length; i++)
+            {
+                DrawOnAlphaMap(textureCoord, paints[i].BrushMaterial, paints[i].AlphaMap, 0);
+            }
+        }
+
         public void AddPaint()
         {
+            if (brushShader == null)
+            {
+                throw Log.Exception("No brush shader was set! Not adding a new paint layer...");
+            }
+            
             Paint[] newPaintArray = new Paint[paints.Length + 1];
 
             for (int i = 0; i < newPaintArray.Length; i++)
             {
                 if (i > paints.Length - 1)
                 {
-                    newPaintArray[i] = new Paint();
+                    newPaintArray[i] = new Paint(brushShader);
                     continue;
                 }
                 
@@ -118,6 +95,11 @@ namespace Game.Deforming
 
         public void RemovePaint()
         {
+            if (paints.Length == 0)
+            {
+                return;
+            }
+            
             Paint[] newPaintArray = new Paint[paints.Length - 1];
 
             for (int i = 0; i < newPaintArray.Length; i++)
@@ -126,6 +108,57 @@ namespace Game.Deforming
             }
 
             paints = newPaintArray;
+        }
+
+        public void SetDefaultTextures()
+        {
+            if (defaultTexture == null)
+            {
+                return;
+            }
+            
+            // Create new material if it wasn't created yet...
+            if (paintedSurfaceShader != null && paintedSurfaceMaterial == null)
+            {
+                paintedSurfaceMaterial = new Material(paintedSurfaceShader);
+                MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+                meshRenderer.material = paintedSurfaceMaterial;
+            }
+                    
+            paintedSurfaceMaterial.SetTexture("_MainTex", defaultTexture);
+            paintedSurfaceMaterial.SetTexture("_MainNormal", defaultNormalMap);
+
+            if (defaultTextureTiling < 1)
+            {
+                defaultTextureTiling = 1;
+            }
+
+            Vector2 tiling = new Vector2(defaultTextureTiling, defaultTextureTiling);
+            
+            paintedSurfaceMaterial.SetTextureScale("_MainTex", tiling);
+            paintedSurfaceMaterial.SetTextureScale("_MainNormal", tiling);
+        }
+
+        public void UpdatePaintSettings()
+        {
+            if (paintedSurfaceMaterial == null)
+            {
+                SetDefaultTextures();
+            }
+            
+            for (int i = 0; i < paints.Length; i++)
+            {
+                Paint paint = paints[i];
+                
+                paintedSurfaceMaterial.SetTexture("_PaintTex" + i, paint.PaintTexture);
+                paintedSurfaceMaterial.SetTexture("_PaintNormal" + i, paint.NormalMap);
+                paintedSurfaceMaterial.SetTexture("_PaintAlpha" + i, paint.AlphaMap);
+                
+                Vector2 tiling = new Vector2(paint.Tiling, paint.Tiling);
+            
+                paintedSurfaceMaterial.SetTextureScale("_PaintTex" + i, tiling);
+                paintedSurfaceMaterial.SetTextureScale("_PaintNormal" + i, tiling);
+            }
         }
     }
 }
