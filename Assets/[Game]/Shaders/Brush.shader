@@ -7,6 +7,7 @@ Shader "Paint/Brush"
         _Color ("DrawColor", Color) = (1,0,0,0)
         _Size ("Size", Range(1, 500)) = 1
         _Strength ("Strength", Range(0, 1)) = 1
+        _Appends ("Appends", Int) = 1
     }
     SubShader
     {
@@ -37,6 +38,7 @@ Shader "Paint/Brush"
             float4 _MainTex_ST;
             fixed4 _Coordinate, _Color;
             half _Size, _Strength;
+            fixed _Appends;
 
             v2f vert (appdata v)
             {
@@ -55,8 +57,16 @@ Shader "Paint/Brush"
                 float draw = pow(saturate(1 - distance(i.uv, _Coordinate.xy)), 500 / _Size);
                 fixed4 drawCol = _Color * (draw * _Strength);
                 
-                return saturate(col + drawCol);
+                if (_Appends >= 1)
+                {
+                    return saturate(col + drawCol);
+                }
+                else
+                {
+                    return saturate(col - drawCol);
+                }
             }
+            
             ENDCG
         }
     }

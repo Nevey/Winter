@@ -69,11 +69,22 @@ namespace Game.Deforming
 //                
 //            }
             
-            DrawAlphaMap(textureCoord);
+            DrawAlphaMap(textureCoord, 1);
         }
 
-        private void DrawAlphaMap(Vector2 textureCoord)
+        public void Erase(Vector2 textureCoord)
         {
+            DrawAlphaMap(textureCoord, 0);
+        }
+
+        private void DrawAlphaMap(Vector2 textureCoord, int appends)
+        {
+            if (drawMaterial == null)
+            {
+                return;
+            }
+            
+            drawMaterial.SetFloat("_Appends", appends);
             drawMaterial.SetVector("_Coordinate", new Vector4(textureCoord.x, textureCoord.y, 0f, 0f));
             drawMaterial.SetFloat("_Strength", brushOpacity);
             drawMaterial.SetFloat("_Size", brushSize);
@@ -115,11 +126,6 @@ namespace Game.Deforming
             }
 
             paints = newPaintArray;
-        }
-
-        private void OnGUI()
-        {
-            GUI.DrawTexture(new Rect(0, 0, 256, 256), alphaMap, ScaleMode.ScaleToFit, false, 1);
         }
     }
 }

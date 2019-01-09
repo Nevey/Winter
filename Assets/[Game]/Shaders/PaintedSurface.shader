@@ -5,8 +5,6 @@ Shader "Paint/PaintedSurface" {
             _DispTex ("Disp Texture", 2D) = "gray" {}
             _AlphaMap ("Alpha Map", 2D) = "white" {}
             _Displacement ("Displacement", Range(0, 10.0)) = 0.3
-            _AlphaMultiplier ("Alpha Multiplier", Range(0, 10)) = 1
-            _AlphaOffset ("Alpha Offset", Range(0, 1)) = 0
             _Color ("Color", color) = (1,1,1,0)
         }
         SubShader {
@@ -34,8 +32,6 @@ Shader "Paint/PaintedSurface" {
             sampler2D _AlphaMap;
             
             float _Displacement;
-            float _AlphaMultiplier;
-            float _AlphaOffset;
 
             void disp (inout appdata v)
             {
@@ -61,8 +57,6 @@ Shader "Paint/PaintedSurface" {
                 half4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
                 
                 half alpha = tex2D(_AlphaMap, IN.uv_AlphaMap).r;
-                
-                float v = alpha / _AlphaOffset;
                  
                 o.Albedo = c.rgb;
                 o.Alpha = alpha;

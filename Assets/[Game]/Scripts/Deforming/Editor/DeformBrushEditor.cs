@@ -1,4 +1,3 @@
-using Game.Utilities;
 using UnityEditor;
 using UnityEngine;
 
@@ -130,6 +129,13 @@ namespace Game.Deforming.Editor
 
         private void OnSceneGUI()
         {
+            Handles.BeginGUI();
+            if (alphaMap.objectReferenceValue != null)
+            {
+                GUI.DrawTexture(new Rect(5, 5, 128, 128), (Texture)alphaMap.objectReferenceValue, ScaleMode.ScaleToFit, false, 1);
+            }
+            Handles.EndGUI();
+            
             Camera sceneViewCamera = GetSceneViewCamera();
 
             if (sceneViewCamera == null)
@@ -145,12 +151,19 @@ namespace Game.Deforming.Editor
             {
                 Vector2? textureCoord = GetTextureCoord(sceneViewCamera);
 
-                if (textureCoord == null)
+                if (textureCoord == null || e.button != 0)
                 {
                     return;
                 }
-                
-                deformBrush.Draw(textureCoord.Value);
+
+                if (e.shift)
+                {
+                    deformBrush.Erase(textureCoord.Value);
+                }
+                else
+                {
+                    deformBrush.Draw(textureCoord.Value);
+                }
                 
                 Repaint();
             }
