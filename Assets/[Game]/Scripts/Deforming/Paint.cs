@@ -36,5 +36,15 @@ namespace Game.Deforming
             
             brushMaterial = new Material(brushShader);
         }
+
+        public void SetPaintTexture()
+        {
+            
+        }
+
+        public void SetNormalMap()
+        {
+            
+        }
     }
 }

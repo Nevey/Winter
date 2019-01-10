@@ -1,3 +1,4 @@
+using Game.Utilities;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,7 +14,9 @@ namespace Game.Deforming.Editor
         private SerializedProperty defaultTexture;
         private SerializedProperty defaultNormalMap;
         private SerializedProperty defaultTextureTiling;
-        private SerializedProperty paints;
+        private SerializedProperty paintType;
+        private SerializedProperty surfacePaints;
+        private SerializedProperty deformPaints;
         private SerializedProperty selectedPaintIndex;
         private SerializedProperty brushShader;
         private SerializedProperty paintedSurfaceShader;
@@ -27,7 +30,9 @@ namespace Game.Deforming.Editor
             defaultTexture = serializedObject.FindProperty("defaultTexture");
             defaultNormalMap = serializedObject.FindProperty("defaultNormalMap");
             defaultTextureTiling = serializedObject.FindProperty("defaultTextureTiling");
-            paints = serializedObject.FindProperty("paints");
+            paintType = serializedObject.FindProperty("paintType");
+            surfacePaints = serializedObject.FindProperty("surfacePaints");
+            deformPaints = serializedObject.FindProperty("deformPaints");
             selectedPaintIndex = serializedObject.FindProperty("selectedPaintIndex");
             brushShader = serializedObject.FindProperty("brushShader");
             paintedSurfaceShader = serializedObject.FindProperty("paintedSurfaceShader");
@@ -92,49 +97,85 @@ namespace Game.Deforming.Editor
             }
         }
 
+        private SerializedProperty GetPaintArray()
+        {
+            return paintType.intValue == 0 ? surfacePaints : deformPaints;
+        }
+
         private void DrawLayerProperties()
         {
-            EditorGUI.BeginChangeCheck();
-            
             EditorGUILayout.BeginVertical("box");
             
             EditorGUILayout.LabelField("Paint Layer Properties");
             
+            DrawAddRemovePaintButtons();
+            
+            EditorGUILayout.EndVertical();
+            
+            Rect toolbarRect = GUILayoutUtility.GetLastRect();
+            toolbarRect.y += 60;
+            toolbarRect.height = 20;
+
+            EditorGUI.BeginChangeCheck();
+            
+            paintType.intValue = GUI.Toolbar(toolbarRect, paintType.intValue, new[] {"Surface", "Deformable"});
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+            }
+            
+            DrawPaints();
+        }
+
+        private void DrawAddRemovePaintButtons()
+        {
             EditorGUILayout.BeginHorizontal("box");
+            
+            EditorGUI.BeginChangeCheck();
+
+            SerializedProperty paints = GetPaintArray();
 
             if (paints.arraySize < DeformBrush.MAX_PAINTS)
             {
                 if (GUILayout.Button("Add Layer"))
                 {
                     deformBrush.AddPaint();
-                    paints = serializedObject.FindProperty("paints");
-                    
                     SceneView.RepaintAll();
                 }
             }
-
+            
             if (paints.arraySize > 0)
             {
                 if (GUILayout.Button("Remove Layer"))
                 {
                     deformBrush.RemovePaint();
-                    paints = serializedObject.FindProperty("paints");
-                    
                     SceneView.RepaintAll();
                 }
             }
             
-            EditorGUILayout.EndHorizontal();
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+                deformBrush.UpdatePaintSettings();
+            }
             
-            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndHorizontal();
+        }
 
+        private void DrawPaints()
+        {
             Vector2 offset = new Vector2(20, 30);
             
             Rect lastGuiRect = GUILayoutUtility.GetLastRect();
             lastGuiRect.x += 5;
-            lastGuiRect.y += lastGuiRect.height + offset.y;
+            lastGuiRect.y += lastGuiRect.height + offset.y + 30;
             lastGuiRect.width = 100;
             lastGuiRect.height = 100;
+            
+            SerializedProperty paints = GetPaintArray();
+            
+            EditorGUI.BeginChangeCheck();            
 
             for (int i = 0; i < paints.arraySize; i++)
             {
@@ -142,7 +183,6 @@ namespace Game.Deforming.Editor
 
                 SerializedProperty paintTextureProperty = paint.FindPropertyRelative("paintTexture");
                 SerializedProperty normalMapProperty = paint.FindPropertyRelative("normalMap");
-                SerializedProperty alphaMapProperty = paint.FindPropertyRelative("alphaMap");
                 SerializedProperty tilingProperty = paint.FindPropertyRelative("tiling");
 
                 Rect rect = lastGuiRect;
@@ -205,10 +245,12 @@ namespace Game.Deforming.Editor
                     }
                 }
                 
+                serializedObject.ApplyModifiedProperties();
+                
                 GUILayout.Space(lastGuiRect.height + offset.y);
             }
             
-            EditorGUILayout.Space();
+            GUILayout.Space(30);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -220,6 +262,8 @@ namespace Game.Deforming.Editor
         private void OnSceneGUI()
         {
             Handles.BeginGUI();
+            
+            SerializedProperty paints = GetPaintArray();
 
             for (int i = 0; i < paints.arraySize; i++)
             {
@@ -282,9 +326,9 @@ namespace Game.Deforming.Editor
             Ray mouseRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 
             // TODO: Cache meshCollider
-            MeshCollider meshCollider = deformBrush.GetComponent<MeshCollider>();
+            Collider collider = deformBrush.GetComponent<Collider>();
 
-            if (meshCollider.Raycast(mouseRay, out RaycastHit hit, float.MaxValue))
+            if (collider.Raycast(mouseRay, out RaycastHit hit, float.MaxValue))
             {
                 return hit.textureCoord;
             }

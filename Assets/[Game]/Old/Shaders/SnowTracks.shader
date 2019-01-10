@@ -110,8 +110,8 @@
             // Albedo comes from a texture tinted by color
             o.Albedo = c.rgb;
             // Metallic and smoothness come from slider variables
-            o.Metallic = _Metallic;
-            o.Smoothness = _Glossiness;
+//            o.Metallic = _Metallic;
+//            o.Smoothness = _Glossiness;
             o.Alpha = c.a;
             
             o.Normal = UnpackNormal (tex2D (_BumpMap, IN.uv_BumpMap));
