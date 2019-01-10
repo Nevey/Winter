@@ -1,10 +1,14 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Paint/PaintedSurface" {
+
     Properties {
-        _Tess ("Tessellation", Range(1,32)) = 4
-        
         [HideInInspector] _MainTex ("Ground Texture", 2D) = "white" {}
         [HideInInspector] _MainNormal ("Ground Normal Map", 2D) = "bump" {}
         
+        [HideInInspector] _DeformTex ("Deformed Texture", 2D) = "white" {}
+        [HideInInspector] _DeformDispTex ("Deformed Displacement Texture", 2D) = "white" {}
+        [HideInInspector] _DeformAlpha ("Deformed Alpha Map", 2D) = "black" {}
         
         [HideInInspector] _PaintTex0 ("Painted Texture 1", 2D) = "white" {}
         [HideInInspector] _PaintNormal0 ("Painted Normal Map 1", 2D) = "bump" {}
@@ -26,41 +30,32 @@ Shader "Paint/PaintedSurface" {
         [HideInInspector] _PaintNormal4 ("Painted Normal Map 5", 2D) = "bump" {}
         [HideInInspector] _PaintAlpha4 ("Painted Alpha Map 5", 2D) = "black" {}
         
-        
-        [HideInInspector] _DeformTex0 ("Deformed Texture 1", 2D) = "white" {}
-        [HideInInspector] _DeformAlpha0 ("Deformed Alpha Map 1", 2D) = "black" {}
-        
-        [HideInInspector] _DeformTex1 ("Deformed Texture 2", 2D) = "white" {}
-        [HideInInspector] _DeformAlpha1 ("Deformed Alpha Map 2", 2D) = "black" {}
-        
-        [HideInInspector] _DeformTex2 ("Deformed Texture 3", 2D) = "white" {}
-        [HideInInspector] _DeformAlpha2 ("Deformed Alpha Map 3", 2D) = "black" {}
-        
-        [HideInInspector] _DeformTex3 ("Deformed Texture 4", 2D) = "white" {}
-        [HideInInspector] _DeformAlpha3 ("Deformed Alpha Map 4", 2D) = "black" {}
-        
-        [HideInInspector] _DeformTex4 ("Deformed Texture 5", 2D) = "white" {}
-        [HideInInspector] _DeformAlpha4 ("Deformed Alpha Map 5", 2D) = "black" {}
+        _Tess ("Tessellation", Range(1,32)) = 16
         
         _Displacement ("Displacement", Range(0, 10.0)) = 0.3
         
         _Color ("Color", color) = (1,1,1,0)
         
         _AlphaOffset ("Alpha Offset", Range(0, 1)) = 0
-        
-        _AlphaMultiplier ("Alpha Multiplier", Range(0, 100)) = 1
     }
     SubShader {
     
-        Tags { "Queue"="AlphaTest" "RenderType"="Opaque" }
-        LOD 200
+//        Tags { "Queue"="AlphaTest" "RenderType"="Opaque" }
         
+        Tags {
+	"Queue"="AlphaTest" 
+	"IgnoreProjector"="True" 
+	"RenderType"="Transparent"
+	}
+	        
+        LOD 200
+        ZWrite Off
         Blend SrcAlpha OneMinusSrcAlpha
         
         // 1st pass - surface texture
         CGPROGRAM
         
-        #pragma surface surf Standard addshadow fullforwardshadows nolightmap
+        #pragma surface surf Standard addshadow fullforwardshadows
         #pragma target 4.6
 
         struct appdata {
@@ -92,7 +87,7 @@ Shader "Paint/PaintedSurface" {
         // 2nd pass - surface paint
         CGPROGRAM
         
-        #pragma surface surf Standard addshadow fullforwardshadows nolightmap keepalpha
+        #pragma surface surf BlinnPhong addshadow fullforwardshadows alpha:fade
         #pragma target 4.6
 
         struct Input {
@@ -136,24 +131,8 @@ Shader "Paint/PaintedSurface" {
         sampler2D _PaintTex4;
         sampler2D _PaintNormal4;
         sampler2D _PaintAlpha4;
-        
-        float quadraticOut(float t) {
-            return -t * (t - 2.0);
-        }
-        
-        float quadraticIn(float t) {
-            return t * t;
-        }
-        
-        float exponentialOut(float t) {
-            return t == 1.0 ? t : 1.0 - pow(2.0, -10.0 * t);
-        }
-        
-        float exponentialIn(float t) {
-            return t == 0.0 ? t : pow(2.0, 10.0 * (t - 1.0));
-        }
 
-        void surf (Input IN, inout SurfaceOutputStandard o)
+        void surf (Input IN, inout SurfaceOutput o)
         {            
             half4 c0 = tex2D(_PaintTex0, IN.uv_PaintTex0);
             half4 c1 = tex2D(_PaintTex1, IN.uv_PaintTex1);
@@ -174,6 +153,8 @@ Shader "Paint/PaintedSurface" {
                         + c4.rgb * alpha4;
                         
             o.Alpha = alpha0 + alpha1 + alpha2 + alpha3 + alpha4;
+            
+            // TODO: Normals...
 //            o.Normal = UnpackNormal (tex2D (_PaintNormal0, IN.uv_PaintNormal0)); 
         }
         
@@ -183,7 +164,7 @@ Shader "Paint/PaintedSurface" {
         // 3nd pass - deform paint
         CGPROGRAM
         
-        #pragma surface surf Standard addshadow fullforwardshadows vertex:disp tessellate:tessFixed nolightmap keepalpha
+        #pragma surface surf BlinnPhong addshadow fullforwardshadows vertex:disp tessellate:tessFixed alpha:fade approxview
         #pragma target 4.6
 
         struct appdata {
@@ -206,96 +187,37 @@ Shader "Paint/PaintedSurface" {
         float _Displacement;
 
         struct Input {
-            float2 uv_DeformTex0;
-            float2 uv_DeformAlpha0;
-            
-            float2 uv_DeformTex1;
-            float2 uv_DeformAlpha1;
-            
-            float2 uv_DeformTex2;
-            float2 uv_DeformAlpha2;
-            
-            float2 uv_DeformTex3;
-            float2 uv_DeformAlpha3;
-            
-            float2 uv_DeformTex4;
-            float2 uv_DeformAlpha4;
+            float2 uv_DeformTex;
+            float2 uv_DeformDispTex;
+            float2 uv_DeformAlpha;
         };
         
-        sampler2D _DeformTex0;
-        sampler2D _DeformAlpha0;
-        
-        sampler2D _DeformTex1;
-        sampler2D _DeformAlpha1;
-        
-        sampler2D _DeformTex2;
-        sampler2D _DeformAlpha2;
-        
-        sampler2D _DeformTex3;
-        sampler2D _DeformAlpha3;
-        
-        sampler2D _DeformTex4;
-        sampler2D _DeformAlpha4;
+        sampler2D _DeformTex;
+        sampler2D _DeformDispTex;
+        sampler2D _DeformAlpha;
         
         fixed4 _Color;
         float _AlphaOffset;
-        float _AlphaMultiplier;
-        
-        float quadraticOut(float t) {
-            return -t * (t - 2.0);
-        }
-        
-        float quadraticIn(float t) {
-            return t * t;
-        }
-        
-        float exponentialOut(float t) {
-            return t == 1.0 ? t : 1.0 - pow(2.0, -10.0 * t);
-        }
-        
-        float exponentialIn(float t) {
-            return t == 0.0 ? t : pow(2.0, 10.0 * (t - 1.0));
-        }
         
         void disp (inout appdata v)
         {
-            half alpha0 = tex2Dlod(_DeformAlpha0, float4(v.texcoord.xy,0,0)).r;
-//            half alpha1 = tex2Dlod(_DeformAlpha1, float4(v.texcoord.xy,0,0)).r;
-//            half alpha2 = tex2Dlod(_DeformAlpha2, float4(v.texcoord.xy,0,0)).r;
-//            half alpha3 = tex2Dlod(_DeformAlpha3, float4(v.texcoord.xy,0,0)).r;
-//            half alpha4 = tex2Dlod(_DeformAlpha4, float4(v.texcoord.xy,0,0)).r;
-//            
-//            half alpha = alpha0 + alpha1 + alpha2 + alpha3 + alpha4;
-             
-            // TODO: Use a _DisplacementTex per texture
-            float d = tex2Dlod(_DeformTex0, float4(v.texcoord.xy,0,0)).r * _Displacement * alpha0;
-            v.vertex.xyz += v.normal * d;
+            half alpha = tex2Dlod(_DeformAlpha, float4(v.texcoord.xy,0,0)).r;
+            float disp = tex2Dlod(_DeformDispTex, float4(v.texcoord.xy,0,0)).r * _Displacement * alpha;
+            
+            v.vertex.xyz += v.normal * disp;
         }
 
-        void surf (Input IN, inout SurfaceOutputStandard o)
+        void surf (Input IN, inout SurfaceOutput o)
         {
-            half4 c0 = tex2D(_DeformTex0, IN.uv_DeformTex0);
-//            half4 c1 = tex2D(_DeformTex1, IN.uv_DeformTex1);
-//            half4 c2 = tex2D(_DeformTex2, IN.uv_DeformTex2);
-//            half4 c3 = tex2D(_DeformTex3, IN.uv_DeformTex3);
-//            half4 c4 = tex2D(_DeformTex4, IN.uv_DeformTex4);
-//            
-            half alpha0 = tex2D(_DeformAlpha0, IN.uv_DeformAlpha0).r;
-//            half alpha1 = tex2D(_DeformAlpha1, IN.uv_DeformAlpha1).r;
-//            half alpha2 = tex2D(_DeformAlpha2, IN.uv_DeformAlpha2).r;
-//            half alpha3 = tex2D(_DeformAlpha3, IN.uv_DeformAlpha3).r;
-//            half alpha4 = tex2D(_DeformAlpha4, IN.uv_DeformAlpha4).r;
-//            
-//            half alpha = alpha0 + alpha1 + alpha2 + alpha3 + alpha4;
+            half4 c = tex2D(_DeformTex, IN.uv_DeformTex);
+            half alpha = tex2D(_DeformAlpha, IN.uv_DeformAlpha).r;
             
-            o.Albedo = c0.rgb;
-            o.Alpha = alpha0 / _AlphaOffset;
-
-//            o.Albedo = c0.rgb * alpha0 + c1.rgb * alpha1 + c2.rgb * alpha2 + c3.rgb * alpha3 + c4.rgb * alpha4;
-//            o.Alpha = alpha / _AlphaOffset;
+            o.Albedo = c.rgb;
+            o.Alpha = alpha / _AlphaOffset;
         }
       
         ENDCG
+ 
     }
     
     FallBack "Diffuse"

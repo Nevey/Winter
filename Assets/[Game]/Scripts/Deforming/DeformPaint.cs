@@ -4,11 +4,11 @@ using UnityEngine;
 namespace Game.Deforming
 {
     [Serializable]
-    internal class Paint
+    internal class DeformPaint
     {
-        [SerializeField] private Texture paintTexture;
+        [SerializeField] private Texture deformTexture;
 
-        [SerializeField] private Texture normalMap;
+        [SerializeField] private Texture dispMap;
 
         [SerializeField] private RenderTexture alphaMap;
 
@@ -16,12 +16,12 @@ namespace Game.Deforming
 
         [SerializeField] private int tiling = 1;
 
-        public Texture PaintTexture => paintTexture;
+        public Texture DeformTexture => deformTexture;
 
-        public Texture NormalMap
+        public Texture DispMap
         {
-            get => normalMap;
-            set => normalMap = value;
+            get => dispMap;
+            set => dispMap = value;
         }
 
         public RenderTexture AlphaMap => alphaMap;
@@ -30,21 +30,11 @@ namespace Game.Deforming
 
         public int Tiling => tiling;
 
-        public Paint(Shader brushShader)
+        public DeformPaint(Shader brushShader)
         {
             alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32);
             
             brushMaterial = new Material(brushShader);
-        }
-
-        public void SetPaintTexture()
-        {
-            
-        }
-
-        public void SetNormalMap()
-        {
-            
         }
     }
 }

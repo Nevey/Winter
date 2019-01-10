@@ -11,13 +11,19 @@ namespace Game.Deforming.Editor
 
         private SerializedProperty brushSize;
         private SerializedProperty brushOpacity;
+        
         private SerializedProperty defaultTexture;
         private SerializedProperty defaultNormalMap;
         private SerializedProperty defaultTextureTiling;
+        
+        private SerializedProperty deformPaint;
+        
         private SerializedProperty paintType;
+        
         private SerializedProperty surfacePaints;
-        private SerializedProperty deformPaints;
+        
         private SerializedProperty selectedPaintIndex;
+        
         private SerializedProperty brushShader;
         private SerializedProperty paintedSurfaceShader;
 
@@ -27,13 +33,19 @@ namespace Game.Deforming.Editor
             
             brushSize = serializedObject.FindProperty("brushSize");
             brushOpacity = serializedObject.FindProperty("brushOpacity");
+            
             defaultTexture = serializedObject.FindProperty("defaultTexture");
             defaultNormalMap = serializedObject.FindProperty("defaultNormalMap");
             defaultTextureTiling = serializedObject.FindProperty("defaultTextureTiling");
+            
+            deformPaint = serializedObject.FindProperty("deformPaint");
+            
             paintType = serializedObject.FindProperty("paintType");
+            
             surfacePaints = serializedObject.FindProperty("surfacePaints");
-            deformPaints = serializedObject.FindProperty("deformPaints");
+            
             selectedPaintIndex = serializedObject.FindProperty("selectedPaintIndex");
+            
             brushShader = serializedObject.FindProperty("brushShader");
             paintedSurfaceShader = serializedObject.FindProperty("paintedSurfaceShader");
         }
@@ -50,7 +62,9 @@ namespace Game.Deforming.Editor
             DrawShaderProperties();
             DrawBrushProperties();
             DrawDefaultTextureProperties();
-            DrawLayerProperties();
+            DrawDeformTextureProperties();
+            DrawPaintTypeProperties();
+            DrawSurfacePaintProperties();
             
             serializedObject.ApplyModifiedProperties();
         }
@@ -97,89 +111,79 @@ namespace Game.Deforming.Editor
             }
         }
 
-        private SerializedProperty GetPaintArray()
+        private void DrawDeformTextureProperties()
         {
-            return paintType.intValue == 0 ? surfacePaints : deformPaints;
+            if (deformPaint == null)
+            {
+                deformBrush.CheckDeformSetup();
+            }
+            
+            EditorGUI.BeginChangeCheck();
+
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Deform Texture Properties");
+            EditorGUILayout.BeginVertical("box");
+
+            SerializedProperty deformTextureProperty = deformPaint.FindPropertyRelative("deformTexture");
+            SerializedProperty dispMapProperty = deformPaint.FindPropertyRelative("dispMap");
+            SerializedProperty tilingProperty = deformPaint.FindPropertyRelative("tiling");
+            
+            EditorGUILayout.PropertyField(deformTextureProperty);
+            EditorGUILayout.PropertyField(dispMapProperty);
+            EditorGUILayout.PropertyField(tilingProperty);
+            
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndVertical();
+            
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+                deformBrush.SetDeformTextures();
+            }
         }
 
-        private void DrawLayerProperties()
+        private void DrawPaintTypeProperties()
+        {
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Brush Type");
+            EditorGUILayout.BeginVertical("box");
+            
+            EditorGUI.BeginChangeCheck();
+
+            paintType.intValue = GUILayout.Toolbar(paintType.intValue, new[] {"SURFACE", "DEFORMABLE"});
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+            }
+            
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawSurfacePaintProperties()
         {
             EditorGUILayout.BeginVertical("box");
             
-            EditorGUILayout.LabelField("Paint Layer Properties");
+            EditorGUILayout.LabelField("Surface Paint Properties");
             
             DrawAddRemovePaintButtons();
             
             EditorGUILayout.EndVertical();
             
-            Rect toolbarRect = GUILayoutUtility.GetLastRect();
-            toolbarRect.y += 60;
-            toolbarRect.height = 20;
-
-            EditorGUI.BeginChangeCheck();
-            
-            paintType.intValue = GUI.Toolbar(toolbarRect, paintType.intValue, new[] {"Surface", "Deformable"});
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedObject.ApplyModifiedProperties();
-            }
-            
-            DrawPaints();
-        }
-
-        private void DrawAddRemovePaintButtons()
-        {
-            EditorGUILayout.BeginHorizontal("box");
-            
-            EditorGUI.BeginChangeCheck();
-
-            SerializedProperty paints = GetPaintArray();
-
-            if (paints.arraySize < DeformBrush.MAX_PAINTS)
-            {
-                if (GUILayout.Button("Add Layer"))
-                {
-                    deformBrush.AddPaint();
-                    SceneView.RepaintAll();
-                }
-            }
-            
-            if (paints.arraySize > 0)
-            {
-                if (GUILayout.Button("Remove Layer"))
-                {
-                    deformBrush.RemovePaint();
-                    SceneView.RepaintAll();
-                }
-            }
-            
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedObject.ApplyModifiedProperties();
-                deformBrush.UpdatePaintSettings();
-            }
-            
-            EditorGUILayout.EndHorizontal();
-        }
-
-        private void DrawPaints()
-        {
             Vector2 offset = new Vector2(20, 30);
             
             Rect lastGuiRect = GUILayoutUtility.GetLastRect();
             lastGuiRect.x += 5;
-            lastGuiRect.y += lastGuiRect.height + offset.y + 30;
+            lastGuiRect.y += lastGuiRect.height + offset.y;
             lastGuiRect.width = 100;
             lastGuiRect.height = 100;
             
-            SerializedProperty paints = GetPaintArray();
-            
             EditorGUI.BeginChangeCheck();            
 
-            for (int i = 0; i < paints.arraySize; i++)
+            for (int i = 0; i < surfacePaints.arraySize; i++)
             {
-                SerializedProperty paint = paints.GetArrayElementAtIndex(i);
+                SerializedProperty paint = surfacePaints.GetArrayElementAtIndex(i);
 
                 SerializedProperty paintTextureProperty = paint.FindPropertyRelative("paintTexture");
                 SerializedProperty normalMapProperty = paint.FindPropertyRelative("normalMap");
@@ -250,7 +254,7 @@ namespace Game.Deforming.Editor
                 GUILayout.Space(lastGuiRect.height + offset.y);
             }
             
-            GUILayout.Space(30);
+            EditorGUILayout.Space();
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -259,17 +263,49 @@ namespace Game.Deforming.Editor
             }
         }
 
+        private void DrawAddRemovePaintButtons()
+        {
+            EditorGUILayout.BeginHorizontal("box");
+            
+            EditorGUI.BeginChangeCheck();
+
+            if (surfacePaints.arraySize < DeformBrush.MAX_PAINTS)
+            {
+                if (GUILayout.Button("Add Layer"))
+                {
+                    deformBrush.AddPaint();
+                    SceneView.RepaintAll();
+                }
+            }
+            
+            if (surfacePaints.arraySize > 0)
+            {
+                if (GUILayout.Button("Remove Layer"))
+                {
+                    deformBrush.RemovePaint();
+                    SceneView.RepaintAll();
+                }
+            }
+            
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+                deformBrush.UpdatePaintSettings();
+            }
+            
+            EditorGUILayout.EndHorizontal();
+        }
+
         private void OnSceneGUI()
         {
             Handles.BeginGUI();
-            
-            SerializedProperty paints = GetPaintArray();
 
-            for (int i = 0; i < paints.arraySize; i++)
+            // TODO: Clean this up, and add option to enable/disable drawing of alpha maps on screen
+            for (int i = 0; i < surfacePaints.arraySize; i++)
             {
-                if (paints.GetArrayElementAtIndex(i).FindPropertyRelative("alphaMap").objectReferenceValue != null)
+                if (surfacePaints.GetArrayElementAtIndex(i).FindPropertyRelative("alphaMap").objectReferenceValue != null)
                 {
-                    Texture alphaMap = (Texture)paints.GetArrayElementAtIndex(i).FindPropertyRelative("alphaMap")
+                    Texture alphaMap = (Texture)surfacePaints.GetArrayElementAtIndex(i).FindPropertyRelative("alphaMap")
                         .objectReferenceValue;
                     
                     GUI.DrawTexture(new Rect(5, 5 + 74 * i, 64, 64), alphaMap, ScaleMode.ScaleToFit, false, 1);
