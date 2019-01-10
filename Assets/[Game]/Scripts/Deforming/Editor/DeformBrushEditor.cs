@@ -101,19 +101,23 @@ namespace Game.Deforming.Editor
             EditorGUILayout.LabelField("Paint Layer Properties");
             
             EditorGUILayout.BeginHorizontal("box");
-            
-            if (GUILayout.Button("Add Layer"))
-            {
-                deformBrush.AddPaint();
 
-                paints = serializedObject.FindProperty("paints");
+            if (paints.arraySize < DeformBrush.MAX_PAINTS)
+            {
+                if (GUILayout.Button("Add Layer"))
+                {
+                    deformBrush.AddPaint();
+                    paints = serializedObject.FindProperty("paints");
+                }
             }
-            
-            if (GUILayout.Button("Remove Layer"))
-            {
-                deformBrush.RemovePaint();
 
-                paints = serializedObject.FindProperty("paints");
+            if (paints.arraySize > 0)
+            {
+                if (GUILayout.Button("Remove Layer"))
+                {
+                    deformBrush.RemovePaint();
+                    paints = serializedObject.FindProperty("paints");
+                }
             }
             
             EditorGUILayout.EndHorizontal();
@@ -221,22 +225,14 @@ namespace Game.Deforming.Editor
         {
             Handles.BeginGUI();
 
-            if (paints.arraySize > 0)
+            for (int i = 0; i < paints.arraySize; i++)
             {
-                if (paints.GetArrayElementAtIndex(0).FindPropertyRelative("alphaMap").objectReferenceValue != null)
+                if (paints.GetArrayElementAtIndex(i).FindPropertyRelative("alphaMap").objectReferenceValue != null)
                 {
-                    Texture alphaMap = (Texture)paints.GetArrayElementAtIndex(0).FindPropertyRelative("alphaMap")
+                    Texture alphaMap = (Texture)paints.GetArrayElementAtIndex(i).FindPropertyRelative("alphaMap")
                         .objectReferenceValue;
                     
-                    GUI.DrawTexture(new Rect(5, 5, 128, 128), alphaMap, ScaleMode.ScaleToFit, false, 1);
-                }
-                
-                if (paints.arraySize > 1 && paints.GetArrayElementAtIndex(1).FindPropertyRelative("alphaMap").objectReferenceValue != null)
-                {
-                    Texture alphaMap = (Texture)paints.GetArrayElementAtIndex(1).FindPropertyRelative("alphaMap")
-                        .objectReferenceValue;
-                    
-                    GUI.DrawTexture(new Rect(138, 5, 128, 128), alphaMap, ScaleMode.ScaleToFit, false, 1);
+                    GUI.DrawTexture(new Rect(5, 5 + 74 * i, 64, 64), alphaMap, ScaleMode.ScaleToFit, false, 1);
                 }
             }
             

@@ -83,6 +83,18 @@ Shader "Paint/PaintedSurface" {
             float2 uv_PaintTex1;
             float2 uv_PaintNormal1;
             float2 uv_PaintAlpha1;
+            
+            float2 uv_PaintTex2;
+            float2 uv_PaintNormal2;
+            float2 uv_PaintAlpha2;
+            
+            float2 uv_PaintTex3;
+            float2 uv_PaintNormal3;
+            float2 uv_PaintAlpha3;
+            
+            float2 uv_PaintTex4;
+            float2 uv_PaintNormal4;
+            float2 uv_PaintAlpha4;
         };
         
         sampler2D _PaintTex0;
@@ -92,6 +104,18 @@ Shader "Paint/PaintedSurface" {
         sampler2D _PaintTex1;
         sampler2D _PaintNormal1;
         sampler2D _PaintAlpha1;
+        
+        sampler2D _PaintTex2;
+        sampler2D _PaintNormal2;
+        sampler2D _PaintAlpha2;
+        
+        sampler2D _PaintTex3;
+        sampler2D _PaintNormal3;
+        sampler2D _PaintAlpha3;
+        
+        sampler2D _PaintTex4;
+        sampler2D _PaintNormal4;
+        sampler2D _PaintAlpha4;
         
         float quadraticOut(float t) {
             return -t * (t - 2.0);
@@ -110,16 +134,27 @@ Shader "Paint/PaintedSurface" {
         }
 
         void surf (Input IN, inout SurfaceOutputStandard o)
-        {
+        {            
             half4 c0 = tex2D(_PaintTex0, IN.uv_PaintTex0);
             half4 c1 = tex2D(_PaintTex1, IN.uv_PaintTex1);
+            half4 c2 = tex2D(_PaintTex2, IN.uv_PaintTex2);
+            half4 c3 = tex2D(_PaintTex3, IN.uv_PaintTex3);
+            half4 c4 = tex2D(_PaintTex4, IN.uv_PaintTex4);
             
             half alpha0 = tex2D(_PaintAlpha0, IN.uv_PaintAlpha0).r;
-            half alpha1 = tex2D(_PaintAlpha1, IN.uv_PaintAlpha1).r; 
+            half alpha1 = tex2D(_PaintAlpha1, IN.uv_PaintAlpha1).r;
+            half alpha2 = tex2D(_PaintAlpha2, IN.uv_PaintAlpha2).r;
+            half alpha3 = tex2D(_PaintAlpha3, IN.uv_PaintAlpha3).r;
+            half alpha4 = tex2D(_PaintAlpha4, IN.uv_PaintAlpha4).r;
             
-            o.Albedo = c0.rgb * alpha0 + c1.rgb * alpha1;
-            o.Alpha = saturate(alpha0 + alpha1);
-            o.Normal = UnpackNormal (tex2D (_PaintNormal0, IN.uv_PaintNormal0)); 
+            o.Albedo = c0.rgb * alpha0 
+                        + c1.rgb * alpha1
+                        + c2.rgb * alpha2
+                        + c3.rgb * alpha3
+                        + c4.rgb * alpha4;
+                        
+            o.Alpha = saturate(alpha0 + alpha1 + alpha2 + alpha3 + alpha4);
+//            o.Normal = UnpackNormal (tex2D (_PaintNormal0, IN.uv_PaintNormal0)); 
         }
         
         ENDCG

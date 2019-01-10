@@ -6,6 +6,8 @@ namespace Game.Deforming
     [ExecuteInEditMode]
     public class DeformBrush : MonoBehaviour
     {
+        public const int MAX_PAINTS = 5;
+        
         [SerializeField] private float brushSize;
 
         [SerializeField] private float brushOpacity;
@@ -23,7 +25,7 @@ namespace Game.Deforming
         [SerializeField] private Shader brushShader;
 
         [SerializeField] private Shader paintedSurfaceShader;
-
+        
         private Material paintedSurfaceMaterial;
 
         private void DrawOnAlphaMap(Vector2 textureCoord, Material drawMaterial, RenderTexture alphaMap, int appends = 1)
@@ -72,6 +74,11 @@ namespace Game.Deforming
 
         public void AddPaint()
         {
+            if (paints.Length == MAX_PAINTS)
+            {
+                return;
+            }
+            
             if (brushShader == null)
             {
                 throw Log.Exception("No brush shader was set! Not adding a new paint layer...");
