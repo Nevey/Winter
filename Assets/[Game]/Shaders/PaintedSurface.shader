@@ -2,26 +2,26 @@ Shader "Paint/PaintedSurface" {
     Properties {
         _Tess ("Tessellation", Range(1,32)) = 4
         [HideInInspector] _MainTex ("Ground Texture", 2D) = "white" {}
-        [HideInInspector] _MainNormal ("Ground Normal Map", 2D) = "white" {}
+        [HideInInspector] _MainNormal ("Ground Normal Map", 2D) = "bump" {}
         
         [HideInInspector] _PaintTex0 ("Painted Texture 1", 2D) = "white" {}
-        [HideInInspector] _PaintNormal0 ("Painted Normal Map 1", 2D) = "white" {}
+        [HideInInspector] _PaintNormal0 ("Painted Normal Map 1", 2D) = "bump" {}
         [HideInInspector] _PaintAlpha0 ("Painted Alpha Map 1", 2D) = "black" {}
         
         [HideInInspector] _PaintTex1 ("Painted Texture 2", 2D) = "white" {}
-        [HideInInspector] _PaintNormal1 ("Painted Normal Map 2", 2D) = "white" {}
+        [HideInInspector] _PaintNormal1 ("Painted Normal Map 2", 2D) = "bump" {}
         [HideInInspector] _PaintAlpha1 ("Painted Alpha Map 2", 2D) = "black" {}
         
         [HideInInspector] _PaintTex2 ("Painted Texture 3", 2D) = "white" {}
-        [HideInInspector] _PaintNormal2 ("Painted Normal Map 3", 2D) = "white" {}
+        [HideInInspector] _PaintNormal2 ("Painted Normal Map 3", 2D) = "bump" {}
         [HideInInspector] _PaintAlpha2 ("Painted Alpha Map 3", 2D) = "black" {}
         
         [HideInInspector] _PaintTex3 ("Painted Texture 4", 2D) = "white" {}
-        [HideInInspector] _PaintNormal3 ("Painted Normal Map 4", 2D) = "white" {}
+        [HideInInspector] _PaintNormal3 ("Painted Normal Map 4", 2D) = "bump" {}
         [HideInInspector] _PaintAlpha3 ("Painted Alpha Map 4", 2D) = "black" {}
         
         [HideInInspector] _PaintTex4 ("Painted Texture 5", 2D) = "white" {}
-        [HideInInspector] _PaintNormal4 ("Painted Normal Map 5", 2D) = "white" {}
+        [HideInInspector] _PaintNormal4 ("Painted Normal Map 5", 2D) = "bump" {}
         [HideInInspector] _PaintAlpha4 ("Painted Alpha Map 5", 2D) = "black" {}
         
         [HideInInspector] _DispTex ("Displacement Texture", 2D) = "black" {}
@@ -35,9 +35,12 @@ Shader "Paint/PaintedSurface" {
         _AlphaOffset ("Alpha Offset", Range(0, 1)) = 0
     }
     SubShader {
-        Tags {"RenderType"="Transparent"}
+        Tags {"Queue"="Transparent" "RenderType"="Transparent"}
         
-        // 1st pass
+        ZWrite Off
+        Blend SrcAlpha OneMinusSrcAlpha
+        
+        // 1st pass - surface texture
         CGPROGRAM
         
         #pragma surface surf Standard addshadow fullforwardshadows nolightmap alpha:fade
@@ -153,7 +156,7 @@ Shader "Paint/PaintedSurface" {
                         + c3.rgb * alpha3
                         + c4.rgb * alpha4;
                         
-            o.Alpha = saturate(alpha0 + alpha1 + alpha2 + alpha3 + alpha4);
+            o.Alpha = alpha0 + alpha1 + alpha2 + alpha3 + alpha4;
 //            o.Normal = UnpackNormal (tex2D (_PaintNormal0, IN.uv_PaintNormal0)); 
         }
         

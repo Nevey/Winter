@@ -18,7 +18,7 @@ namespace Game.Deforming
 
         [SerializeField] private int defaultTextureTiling;
 
-        [SerializeField] private Paint[] paints;
+        [SerializeField] private Paint[] paints = new Paint[0];
 
         [SerializeField] private int selectedPaintIndex;
 
@@ -72,8 +72,50 @@ namespace Game.Deforming
             }
         }
 
+        public void SetDefaultTextures()
+        {
+            if (defaultTexture == null)
+            {
+                return;
+            }
+            
+            // Create new material if it wasn't created yet...
+            if (paintedSurfaceShader != null && paintedSurfaceMaterial == null)
+            {
+                paintedSurfaceMaterial = new Material(paintedSurfaceShader);
+                MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+                meshRenderer.material = paintedSurfaceMaterial;
+            }
+                    
+            paintedSurfaceMaterial.SetTexture("_MainTex", defaultTexture);
+
+            if (defaultNormalMap == null)
+            {
+                defaultNormalMap = paintedSurfaceMaterial.GetTexture("_MainNormal");
+            }
+            else
+            {
+                paintedSurfaceMaterial.SetTexture("_MainNormal", defaultNormalMap);
+            }
+
+            if (defaultTextureTiling < 1)
+            {
+                defaultTextureTiling = 1;
+            }
+
+            Vector2 tiling = new Vector2(defaultTextureTiling, defaultTextureTiling);
+            
+            paintedSurfaceMaterial.SetTextureScale("_MainTex", tiling);
+            paintedSurfaceMaterial.SetTextureScale("_MainNormal", tiling);
+        }
+
         public void AddPaint()
         {
+            if (paintedSurfaceMaterial == null)
+            {
+                SetDefaultTextures();
+            }
+            
             if (paints.Length == MAX_PAINTS)
             {
                 return;
@@ -90,7 +132,11 @@ namespace Game.Deforming
             {
                 if (i > paints.Length - 1)
                 {
-                    newPaintArray[i] = new Paint(brushShader);
+                    Paint paint = new Paint(brushShader);
+                    paint.NormalMap = paintedSurfaceMaterial.GetTexture("_PaintNormal" + i);
+                    
+                    newPaintArray[i] = paint;
+                    
                     continue;
                 }
                 
@@ -117,35 +163,6 @@ namespace Game.Deforming
             paints = newPaintArray;
         }
 
-        public void SetDefaultTextures()
-        {
-            if (defaultTexture == null)
-            {
-                return;
-            }
-            
-            // Create new material if it wasn't created yet...
-            if (paintedSurfaceShader != null && paintedSurfaceMaterial == null)
-            {
-                paintedSurfaceMaterial = new Material(paintedSurfaceShader);
-                MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-                meshRenderer.material = paintedSurfaceMaterial;
-            }
-                    
-            paintedSurfaceMaterial.SetTexture("_MainTex", defaultTexture);
-            paintedSurfaceMaterial.SetTexture("_MainNormal", defaultNormalMap);
-
-            if (defaultTextureTiling < 1)
-            {
-                defaultTextureTiling = 1;
-            }
-
-            Vector2 tiling = new Vector2(defaultTextureTiling, defaultTextureTiling);
-            
-            paintedSurfaceMaterial.SetTextureScale("_MainTex", tiling);
-            paintedSurfaceMaterial.SetTextureScale("_MainNormal", tiling);
-        }
-
         public void UpdatePaintSettings()
         {
             if (paintedSurfaceMaterial == null)
@@ -153,18 +170,32 @@ namespace Game.Deforming
                 SetDefaultTextures();
             }
             
-            for (int i = 0; i < paints.Length; i++)
+            for (int i = 0; i < MAX_PAINTS; i++)
             {
-                Paint paint = paints[i];
+                if (i <= paints.Length - 1)
+                {
+                    Paint paint = paints[i];
+                    
+                    paintedSurfaceMaterial.SetTexture("_PaintTex" + i, paint.PaintTexture);
+                    paintedSurfaceMaterial.SetTexture("_PaintNormal" + i, paint.NormalMap);
+                    paintedSurfaceMaterial.SetTexture("_PaintAlpha" + i, paint.AlphaMap);
+                    
+                    Vector2 tiling = new Vector2(paint.Tiling, paint.Tiling);
                 
-                paintedSurfaceMaterial.SetTexture("_PaintTex" + i, paint.PaintTexture);
-                paintedSurfaceMaterial.SetTexture("_PaintNormal" + i, paint.NormalMap);
-                paintedSurfaceMaterial.SetTexture("_PaintAlpha" + i, paint.AlphaMap);
+                    paintedSurfaceMaterial.SetTextureScale("_PaintTex" + i, tiling);
+                    paintedSurfaceMaterial.SetTextureScale("_PaintNormal" + i, tiling);
+                }
+                else
+                {
+                    paintedSurfaceMaterial.SetTexture("_PaintTex" + i, null);
+                    paintedSurfaceMaterial.SetTexture("_PaintNormal" + i, null);
+                    paintedSurfaceMaterial.SetTexture("_PaintAlpha" + i, null);
+                    
+                    Vector2 tiling = new Vector2(1, 1);
                 
-                Vector2 tiling = new Vector2(paint.Tiling, paint.Tiling);
-            
-                paintedSurfaceMaterial.SetTextureScale("_PaintTex" + i, tiling);
-                paintedSurfaceMaterial.SetTextureScale("_PaintNormal" + i, tiling);
+                    paintedSurfaceMaterial.SetTextureScale("_PaintTex" + i, tiling);
+                    paintedSurfaceMaterial.SetTextureScale("_PaintNormal" + i, tiling);
+                }
             }
         }
     }

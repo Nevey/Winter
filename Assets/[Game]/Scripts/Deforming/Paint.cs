@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Game.Deforming
 {
     [Serializable]
-    public class Paint
+    internal class Paint
     {
         [SerializeField] private Texture paintTexture;
 
@@ -18,7 +18,11 @@ namespace Game.Deforming
 
         public Texture PaintTexture => paintTexture;
 
-        public Texture NormalMap => normalMap;
+        public Texture NormalMap
+        {
+            get => normalMap;
+            set => normalMap = value;
+        }
 
         public RenderTexture AlphaMap => alphaMap;
 
@@ -28,6 +32,8 @@ namespace Game.Deforming
 
         public Paint(Shader brushShader)
         {
+            alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32);
+            
             brushMaterial = new Material(brushShader);
         }
     }

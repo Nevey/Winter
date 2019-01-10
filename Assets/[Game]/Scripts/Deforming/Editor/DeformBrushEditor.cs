@@ -108,6 +108,8 @@ namespace Game.Deforming.Editor
                 {
                     deformBrush.AddPaint();
                     paints = serializedObject.FindProperty("paints");
+                    
+                    SceneView.RepaintAll();
                 }
             }
 
@@ -117,6 +119,8 @@ namespace Game.Deforming.Editor
                 {
                     deformBrush.RemovePaint();
                     paints = serializedObject.FindProperty("paints");
+                    
+                    SceneView.RepaintAll();
                 }
             }
             
@@ -172,16 +176,8 @@ namespace Game.Deforming.Editor
                 normalMap = (Texture) EditorGUI.ObjectField(rect, normalMap, typeof(Texture), false);
                 normalMapProperty.objectReferenceValue = normalMap;
 
-                rect.x += rect.width + offset.x;
-                labelRect.x = rect.x;
-                
-                EditorGUI.LabelField(labelRect, "Alpha Map");
-                
-                RenderTexture alphaMap = alphaMapProperty.objectReferenceValue as RenderTexture;
-                alphaMap = (RenderTexture) EditorGUI.ObjectField(new Rect(rect.x, rect.y, 50, 50), alphaMap, typeof(RenderTexture));
-                alphaMapProperty.objectReferenceValue = alphaMap;
-
                 Rect tilingRect = rect;
+                tilingRect.x += rect.width + offset.x;
                 tilingRect.y += tilingRect.height * 0.5f + 20;
                 tilingRect.width = 50;
                 tilingRect.height = 30;
@@ -195,11 +191,11 @@ namespace Game.Deforming.Editor
                 tiling = EditorGUI.IntField(tilingRect, tiling);
                 tilingProperty.intValue = tiling;
 
-                Rect buttonRect = rect;
+                Rect buttonRect = tilingRect;
                 buttonRect.x += 70;
-                buttonRect.y -= 15;
+                buttonRect.y = rect.y - 15;
                 buttonRect.width = 35;
-                buttonRect.height += 20;
+                buttonRect.height = rect.height + 20;
 
                 if (selectedPaintIndex.intValue != i)
                 {
