@@ -25,10 +25,11 @@ namespace Game.Deforming.Editor
 
         private SerializedProperty surfaceData;
 
+        private string dataId;
+
         private void OnEnable()
         {
             surfacePainter = (SurfacePainter)target;
-            surfacePainter.CreateNewSurfaceData();
             
             brushSize = serializedObject.FindProperty("brushSize");
             brushOpacity = serializedObject.FindProperty("brushOpacity");
@@ -56,7 +57,13 @@ namespace Game.Deforming.Editor
         {
             serializedObject.Update();
 
-            DrawSaveButton();
+            DrawSurfaceDataProperties();
+
+            if (surfaceData.objectReferenceValue == null)
+            {
+                return;
+            }
+            
             DrawShaderProperties();
             DrawBrushProperties();
             DrawDefaultTextureProperties();
@@ -67,22 +74,60 @@ namespace Game.Deforming.Editor
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void DrawSaveButton()
+        private void DrawSurfaceDataProperties()
         {
-            if (GUILayout.Button("SAVE"))
+            if (string.IsNullOrEmpty(dataId))
             {
-                AssetUtility.CreateAsset<SurfaceData>(surfaceData.objectReferenceValue, "Assets/[Game]/Data/SurfaceData.asset");
-//                string path = EditorUtility.SaveFilePanel(
-//                    "Save Surface Data",
-//                    "",
-//                    "SurfaceData.asset",
-//                    "asset");
-//
-//                if (path.Length > 0)
-//                {
-//                    AssetUtility.CreateAsset<SurfaceData>(surfaceData.objectReferenceValue, path);
-//                }
+                dataId = "SurfaceData_" + surfacePainter.gameObject.name;
             }
+
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Surface Paint Data");
+            EditorGUILayout.BeginVertical("box");
+            
+            dataId = EditorGUILayout.TextField("ID", dataId);
+            
+            if (GUILayout.Button(surfaceData.objectReferenceValue == null ? "INITIALIZE" : "SAVE"))
+            {
+                SurfaceData existingData = AssetUtility.LoadAsset<SurfaceData>($"{dataId}.asset");
+
+                if (existingData)
+                {
+                    if (EditorUtility.DisplayDialog("Overwrite existing data",
+                        "Do you wish to overwrite existing data?",
+                        "Yes", "No"))
+                    {
+                        surfaceData.objectReferenceValue = CreateInstance<SurfaceData>();
+                    
+                        AssetUtility.CreateAsset<SurfaceData>(surfaceData.objectReferenceValue,
+                            $"Assets/[Game]/Data/{dataId}.asset");
+                    }
+                }
+                else
+                {
+                    surfaceData.objectReferenceValue = CreateInstance<SurfaceData>();
+                    
+                    AssetUtility.CreateAsset<SurfaceData>(surfaceData.objectReferenceValue,
+                        $"Assets/[Game]/Data/{dataId}.asset");
+                }
+            }
+
+            if (GUILayout.Button("LOAD"))
+            {
+                SurfaceData loadedData = AssetUtility.LoadAsset<SurfaceData>($"{dataId}.asset");
+
+                if (loadedData == null)
+                {
+                    EditorUtility.DisplayDialog("Data not found", $"SurfaceData with ID {dataId} was not found!", "OK");
+                }
+                else
+                {
+                    surfaceData.objectReferenceValue = loadedData;
+                }
+            }
+            
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndVertical();
         }
 
         private void DrawShaderProperties()
@@ -326,6 +371,11 @@ namespace Game.Deforming.Editor
 
         private void OnSceneGUI()
         {
+            if (surfaceData.objectReferenceValue == null)
+            {
+                return;
+            }
+            
             Handles.BeginGUI();
             
             SerializedObject surfaceDataObject = new SerializedObject(surfaceData.objectReferenceValue);

@@ -1,4 +1,5 @@
 using Game.Utilities;
+using UnityEditor;
 using UnityEngine;
 
 namespace Game.Deforming
@@ -123,12 +124,6 @@ namespace Game.Deforming
             RenderTexture.ReleaseTemporary(tempSplatMap);
         }
 
-        public void CreateNewSurfaceData()
-        {
-            if (surfaceData == null)
-                surfaceData = ScriptableObject.CreateInstance<SurfaceData>();
-        }
-
         public void Draw(Vector2 textureCoord)
         {
             if (paintType == 0)
@@ -190,6 +185,8 @@ namespace Game.Deforming
                 || surfaceData.DeformPaint.BrushMaterial == null)
             {
                 surfaceData.DeformPaint = new DeformPaint(brushShader);
+                AssetDatabase.AddObjectToAsset(surfaceData.DeformPaint.AlphaMap, surfaceData);
+                AssetDatabase.AddObjectToAsset(surfaceData.DeformPaint.BrushMaterial, surfaceData);
             }
         }
 
@@ -235,7 +232,9 @@ namespace Game.Deforming
             {
                 if (i > surfaceData.SurfacePaints.Length - 1)
                 {
-                    newSurfacePaintArray[i] = new SurfacePaint(brushShader);   
+                    newSurfacePaintArray[i] = new SurfacePaint(brushShader);
+                    AssetDatabase.AddObjectToAsset(newSurfacePaintArray[i].AlphaMap, surfaceData);
+                    AssetDatabase.AddObjectToAsset(newSurfacePaintArray[i].BrushMaterial, surfaceData);
                     continue;
                 }
                 
