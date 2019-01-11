@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Game.Deforming
 {
     [Serializable]
-    internal class DeformPaint
+    public class DeformPaint
     {
         [SerializeField] private Texture deformTexture;
 
@@ -24,9 +24,17 @@ namespace Game.Deforming
             set => dispMap = value;
         }
 
-        public RenderTexture AlphaMap => alphaMap;
+        public RenderTexture AlphaMap
+        {
+            get => alphaMap;
+            set => alphaMap = value;
+        }
 
-        public Material BrushMaterial => brushMaterial;
+        public Material BrushMaterial
+        {
+            get => brushMaterial;
+            set => brushMaterial = value;
+        }
 
         public int Tiling => tiling;
 

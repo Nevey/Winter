@@ -199,6 +199,22 @@ Shader "Paint/PaintedSurface" {
         fixed4 _Color;
         float _AlphaOffset;
         
+        float quadraticOut(float t) {
+            return -t * (t - 2.0);
+        }
+        
+        float quadraticIn(float t) {
+            return t * t;
+        }
+        
+        float exponentialOut(float t) {
+            return t == 1.0 ? t : 1.0 - pow(2.0, -10.0 * t);
+        }
+        
+        float exponentialIn(float t) {
+            return t == 0.0 ? t : pow(2.0, 10.0 * (t - 1.0));
+        }
+        
         void disp (inout appdata v)
         {
             half alpha = tex2Dlod(_DeformAlpha, float4(v.texcoord.xy,0,0)).r;
@@ -213,7 +229,7 @@ Shader "Paint/PaintedSurface" {
             half alpha = tex2D(_DeformAlpha, IN.uv_DeformAlpha).r;
             
             o.Albedo = c.rgb;
-            o.Alpha = alpha / _AlphaOffset;
+            o.Alpha = exponentialIn(alpha / _AlphaOffset);
         }
       
         ENDCG
