@@ -11,41 +11,32 @@ namespace Game.Deforming.Editor
         private SurfacePainter surfacePainter;
 
         private SerializedProperty brushSize;
-        private SerializedProperty brushOpacity;
         
-        private SerializedProperty defaultTexture;
-        private SerializedProperty defaultNormalMap;
-        private SerializedProperty defaultTextureTiling;
+        private SerializedProperty brushOpacity;
         
         private SerializedProperty paintType;
         
         private SerializedProperty selectedPaintIndex;
-        
-        private SerializedProperty brushShader;
-        private SerializedProperty paintedSurfaceShader;
 
         private SerializedProperty surfaceData;
+        
+        private SerializedObject surfaceDataObject;
 
         private string dataId;
-        private bool isInitialized;
+
+        private bool isPainting;
 
         private void OnEnable()
         {
             surfacePainter = (SurfacePainter)target;
             
             brushSize = serializedObject.FindProperty("brushSize");
-            brushOpacity = serializedObject.FindProperty("brushOpacity");
             
-            defaultTexture = serializedObject.FindProperty("defaultTexture");
-            defaultNormalMap = serializedObject.FindProperty("defaultNormalMap");
-            defaultTextureTiling = serializedObject.FindProperty("defaultTextureTiling");
+            brushOpacity = serializedObject.FindProperty("brushOpacity");
             
             paintType = serializedObject.FindProperty("paintType");
             
             selectedPaintIndex = serializedObject.FindProperty("selectedPaintIndex");
-            
-            brushShader = serializedObject.FindProperty("brushShader");
-            paintedSurfaceShader = serializedObject.FindProperty("paintedSurfaceShader");
 
             surfaceData = serializedObject.FindProperty("surfaceData");
         }
@@ -62,6 +53,7 @@ namespace Game.Deforming.Editor
             DrawSurfaceDataProperties(out bool didInit);
 
             // Use this to skip one frame as "surfaceData.objectReferenceValue" is being disposed when initializing
+            // making the null check throw an exception
             if (didInit)
             {
                 return;
@@ -72,13 +64,23 @@ namespace Game.Deforming.Editor
                 return;
             }
             
-            DrawShaderProperties();
+            // TODO: Don't do this every frame, but timing is important
+            surfaceDataObject = new SerializedObject(surfaceData.objectReferenceValue);
+            
+            bool areShaderPropertiesSet = DrawShaderProperties();
+
+            if (!areShaderPropertiesSet)
+            {
+                return;
+            }
+            
             DrawBrushProperties();
             DrawDefaultTextureProperties();
             DrawDeformTextureProperties();
             DrawPaintTypeProperties();
             DrawSurfacePaintProperties();
-            
+
+            surfaceDataObject.ApplyModifiedProperties();
             serializedObject.ApplyModifiedProperties();
         }
 
@@ -107,34 +109,14 @@ namespace Game.Deforming.Editor
                         "Do you wish to overwrite existing data?",
                         "Yes", "No"))
                     {
-                        surfaceData.objectReferenceValue = CreateInstance<SurfaceData>();
-                    
-                        AssetUtility.CreateAsset<SurfaceData>(surfaceData.objectReferenceValue,
-                            $"Assets/[Game]/Data/{dataId}.asset");
-                        
-                        serializedObject.ApplyModifiedProperties();
-                
-                        surfacePainter.Initialize();
-                
-                        AssetDatabase.SaveAssets();
-                        AssetDatabase.Refresh();
+                        CreateSurfaceData();
 
                         didInit = true;
                     }
                 }
                 else
                 {
-                    surfaceData.objectReferenceValue = CreateInstance<SurfaceData>();
-                    
-                    AssetUtility.CreateAsset<SurfaceData>(surfaceData.objectReferenceValue,
-                        $"Assets/[Game]/Data/{dataId}.asset");
-
-                    serializedObject.ApplyModifiedProperties();
-
-                    surfacePainter.Initialize();
-                
-                    AssetDatabase.SaveAssets();
-                    AssetDatabase.Refresh();
+                    CreateSurfaceData();
 
                     didInit = true;
                 }
@@ -151,6 +133,10 @@ namespace Game.Deforming.Editor
                 else
                 {
                     surfaceData.objectReferenceValue = loadedData;
+                    
+                    serializedObject.ApplyModifiedProperties();
+                    
+                    surfacePainter.Load();
 
                     didInit = true;
                 }
@@ -160,15 +146,59 @@ namespace Game.Deforming.Editor
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawShaderProperties()
+        private void CreateSurfaceData()
+        {
+            surfaceData.objectReferenceValue = CreateInstance<SurfaceData>();
+                    
+            AssetUtility.CreateAsset<SurfaceData>(surfaceData.objectReferenceValue,
+                $"Assets/[Game]/Data/{dataId}.asset");
+                        
+            serializedObject.ApplyModifiedProperties();
+                
+            surfacePainter.Initialize();
+                
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+
+        private bool DrawShaderProperties()
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("Shader Properties");
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.PropertyField(paintedSurfaceShader);
-            EditorGUILayout.PropertyField(brushShader);
+            
+            EditorGUI.BeginChangeCheck();
+            SerializedProperty brushShaderProperty = surfaceDataObject.FindProperty("brushShader");
+            EditorGUILayout.PropertyField(brushShaderProperty);
+            if (EditorGUI.EndChangeCheck())
+            {
+                surfaceDataObject.ApplyModifiedProperties();
+                serializedObject.ApplyModifiedProperties();
+                
+                surfacePainter.CreateBrushMaterial();
+            }
+            
+            EditorGUI.BeginChangeCheck();
+            SerializedProperty paintedSurfaceShaderProperty = surfaceDataObject.FindProperty("paintedSurfaceShader");
+            EditorGUILayout.PropertyField(paintedSurfaceShaderProperty);
+            if (EditorGUI.EndChangeCheck())
+            {
+                surfaceDataObject.ApplyModifiedProperties();
+                serializedObject.ApplyModifiedProperties();
+                
+                surfacePainter.CreatePaintedSurfaceMaterial();
+            }
+
+            if (GUILayout.Button("Update Material"))
+            {
+                surfacePainter.UpdateMaterial();
+            }
+            
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndVertical();
+
+            return brushShaderProperty.objectReferenceValue != null &&
+                   paintedSurfaceShaderProperty.objectReferenceValue != null;
         }
 
         private void DrawBrushProperties()
@@ -189,16 +219,18 @@ namespace Game.Deforming.Editor
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("Default Texture Properties");
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.ObjectField(defaultTexture, typeof(Texture));
-            EditorGUILayout.ObjectField(defaultNormalMap, typeof(Texture));
-            EditorGUILayout.PropertyField(defaultTextureTiling);
+            EditorGUILayout.ObjectField(surfaceDataObject.FindProperty("mainTexture"), typeof(Texture));
+            EditorGUILayout.ObjectField(surfaceDataObject.FindProperty("mainNormal"), typeof(Texture));
+            EditorGUILayout.PropertyField(surfaceDataObject.FindProperty("mainTextureTiling"));
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndVertical();
 
             if (EditorGUI.EndChangeCheck())
             {
+                surfaceDataObject.ApplyModifiedProperties();
                 serializedObject.ApplyModifiedProperties();
-                surfacePainter.SetDefaultTextures();
+                
+                surfacePainter.UpdateMainTextures();
                 
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -207,13 +239,7 @@ namespace Game.Deforming.Editor
 
         private void DrawDeformTextureProperties()
         {
-            SerializedObject surfaceDataObject = new SerializedObject(surfaceData.objectReferenceValue);
             SerializedProperty deformPaint = surfaceDataObject.FindProperty("deformPaint");
-            
-            if (deformPaint == null)
-            {
-                surfacePainter.CheckDeformSetup();
-            }
             
             EditorGUI.BeginChangeCheck();
 
@@ -236,7 +262,8 @@ namespace Game.Deforming.Editor
             {
                 surfaceDataObject.ApplyModifiedProperties();
                 serializedObject.ApplyModifiedProperties();
-                surfacePainter.SetDeformTextures();
+                
+                surfacePainter.UpdateDeformTextures();
                 
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -282,7 +309,6 @@ namespace Game.Deforming.Editor
             
             EditorGUI.BeginChangeCheck();
 
-            SerializedObject surfaceDataObject = new SerializedObject(surfaceData.objectReferenceValue);
             SerializedProperty surfacePaints = surfaceDataObject.FindProperty("surfacePaints");
 
             for (int i = 0; i < surfacePaints.arraySize; i++)
@@ -364,7 +390,8 @@ namespace Game.Deforming.Editor
             {
                 surfaceDataObject.ApplyModifiedProperties();
                 serializedObject.ApplyModifiedProperties();
-                surfacePainter.UpdatePaintSettings();
+                
+                surfacePainter.UpdateSurfaceTextures();
                 
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -377,7 +404,6 @@ namespace Game.Deforming.Editor
             
             EditorGUI.BeginChangeCheck();
             
-            SerializedObject surfaceDataObject = new SerializedObject(surfaceData.objectReferenceValue);
             SerializedProperty surfacePaints = surfaceDataObject.FindProperty("surfacePaints");
 
             if (surfacePaints.arraySize < SurfacePainter.MAX_PAINTS)
@@ -402,7 +428,8 @@ namespace Game.Deforming.Editor
             {
                 surfaceDataObject.ApplyModifiedProperties();
                 serializedObject.ApplyModifiedProperties();
-                surfacePainter.UpdatePaintSettings();
+                
+                surfacePainter.UpdateSurfaceTextures();
                 
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -418,6 +445,13 @@ namespace Game.Deforming.Editor
                 return;
             }
             
+            DrawSurfaceAlphaMapsInSceneView();
+            
+            UpdateMouseInput();
+        }
+
+        private void DrawSurfaceAlphaMapsInSceneView()
+        {
             Handles.BeginGUI();
             
             SerializedObject surfaceDataObject = new SerializedObject(surfaceData.objectReferenceValue);
@@ -436,24 +470,31 @@ namespace Game.Deforming.Editor
             }
             
             Handles.EndGUI();
-            
-            Camera sceneViewCamera = GetSceneViewCamera();
+        }
 
-            if (sceneViewCamera == null)
-            {
-                return;
-            }
-            
+        private void UpdateMouseInput()
+        {
+            // TODO: Research... not happy with current behaviour
             HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
             
             Event e = Event.current;
 
-            if (e.type == EventType.MouseDown || 
-                e.type == EventType.MouseDrag)
+            if (e.type == EventType.MouseDown)
             {
-                Vector2? textureCoord = GetTextureCoord(sceneViewCamera);
+                isPainting = true;
+            }
 
-                if (textureCoord == null || e.button != 0)
+            if (isPainting)
+            {
+                Vector2? textureCoord = GetTextureCoord();
+
+                if (e.button != 0)
+                {
+                    isPainting = false;
+                    return;
+                }
+                
+                if (textureCoord == null)
                 {
                     return;
                 }
@@ -469,19 +510,20 @@ namespace Game.Deforming.Editor
                 
                 Repaint();
             }
-        }
 
-        private Camera GetSceneViewCamera()
-        {
-            if (SceneView.lastActiveSceneView != null && SceneView.lastActiveSceneView.camera != null)
+            if (e.type == EventType.MouseUp)
             {
-                return SceneView.lastActiveSceneView.camera;
+                isPainting = false;
+                
+                surfaceDataObject.ApplyModifiedProperties();
+                serializedObject.ApplyModifiedProperties();
+                
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
             }
-
-            return null;
         }
 
-        private Vector2? GetTextureCoord(Camera camera)
+        private Vector2? GetTextureCoord()
         {
             Ray mouseRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 

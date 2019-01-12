@@ -12,17 +12,11 @@ namespace Game.Deforming
 
         [SerializeField] private RenderTexture alphaMap;
 
-        [SerializeField] private Material brushMaterial;
-
         [SerializeField] private int tiling = 1;
 
         public Texture PaintTexture => paintTexture;
 
-        public Texture NormalMap
-        {
-            get => normalMap;
-            set => normalMap = value;
-        }
+        public Texture NormalMap => normalMap;
 
         public RenderTexture AlphaMap
         {
@@ -30,20 +24,23 @@ namespace Game.Deforming
             set => alphaMap = value;
         }
 
-        public Material BrushMaterial
+        public int Tiling
         {
-            get => brushMaterial;
-            set => brushMaterial = value;
+            get
+            {
+                if (tiling < 1)
+                {
+                    tiling = 1;
+                }
+
+                return tiling;
+            }
         }
 
-        public int Tiling => tiling;
-
-        public SurfacePaint(Shader brushShader)
+        public SurfacePaint()
         {
             alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32);
             alphaMap.name = "surfaceAlphaMap";
-            
-            brushMaterial = new Material(brushShader);
         }
     }
 }

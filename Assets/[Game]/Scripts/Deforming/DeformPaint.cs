@@ -6,13 +6,12 @@ namespace Game.Deforming
     [Serializable]
     public class DeformPaint
     {
+        // Is reference to Asset in project
         [SerializeField] private Texture deformTexture;
-
         [SerializeField] private Texture dispMap;
 
+        // Is added as Asset to instance of this ScriptableObject
         [SerializeField] private RenderTexture alphaMap;
-
-        [SerializeField] private Material brushMaterial;
 
         [SerializeField] private int tiling = 1;
 
@@ -30,20 +29,23 @@ namespace Game.Deforming
             set => alphaMap = value;
         }
 
-        public Material BrushMaterial
+        public int Tiling
         {
-            get => brushMaterial;
-            set => brushMaterial = value;
+            get
+            {
+                if (tiling < 1)
+                {
+                    tiling = 1;
+                }
+
+                return tiling;
+            }
         }
 
-        public int Tiling => tiling;
-
-        public DeformPaint(Shader brushShader)
+        public DeformPaint()
         {
             alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32);
             alphaMap.name = "deformAlphaMap";
-            
-            brushMaterial = new Material(brushShader);
         }
     }
 }
