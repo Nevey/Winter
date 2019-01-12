@@ -41,6 +41,7 @@ namespace Game.Deforming
         public SurfacePaint(Shader brushShader)
         {
             alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32);
+            alphaMap.name = "surfaceAlphaMap";
             
             brushMaterial = new Material(brushShader);
         }

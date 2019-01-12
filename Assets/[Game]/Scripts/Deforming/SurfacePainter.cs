@@ -8,9 +8,9 @@ namespace Game.Deforming
     {
         public const int MAX_PAINTS = 5;
         
-        [SerializeField] private float brushSize;
+        [SerializeField] private float brushSize = 10;
 
-        [SerializeField] private float brushOpacity;
+        [SerializeField] private float brushOpacity = 0.25f;
 
         [SerializeField] private Texture defaultTexture;
 
@@ -20,7 +20,7 @@ namespace Game.Deforming
 
         [SerializeField] private int paintType;
 
-        [SerializeField] private int selectedPaintIndex;
+        [SerializeField] private int selectedPaintIndex = -1;
 
         [SerializeField] private Shader brushShader;
 
@@ -124,6 +124,12 @@ namespace Game.Deforming
             RenderTexture.ReleaseTemporary(tempSplatMap);
         }
 
+        public void Initialize()
+        {
+            SetDefaultTextures();
+            SetDeformTextures();
+        }
+
         public void Draw(Vector2 textureCoord)
         {
             if (paintType == 0)
@@ -178,18 +184,6 @@ namespace Game.Deforming
             paintedSurfaceMaterial.SetTextureScale("_MainNormal", tiling);
         }
 
-        public void CheckDeformSetup()
-        {
-            if (surfaceData.DeformPaint == null
-                || surfaceData.DeformPaint.AlphaMap == null
-                || surfaceData.DeformPaint.BrushMaterial == null)
-            {
-                surfaceData.DeformPaint = new DeformPaint(brushShader);
-                AssetDatabase.AddObjectToAsset(surfaceData.DeformPaint.AlphaMap, surfaceData);
-                AssetDatabase.AddObjectToAsset(surfaceData.DeformPaint.BrushMaterial, surfaceData);
-            }
-        }
-
         public void SetDeformTextures()
         {
             if (paintedSurfaceMaterial == null)
@@ -207,6 +201,18 @@ namespace Game.Deforming
             
             paintedSurfaceMaterial.SetTextureScale("_DeformTex", tiling);
             paintedSurfaceMaterial.SetTextureScale("_DeformDispTex", tiling);
+        }
+
+        public void CheckDeformSetup()
+        {
+            if (surfaceData.DeformPaint == null
+                || surfaceData.DeformPaint.AlphaMap == null
+                || surfaceData.DeformPaint.BrushMaterial == null)
+            {
+                surfaceData.DeformPaint = new DeformPaint(brushShader);
+                AssetDatabase.AddObjectToAsset(surfaceData.DeformPaint.AlphaMap, surfaceData);
+                AssetDatabase.AddObjectToAsset(surfaceData.DeformPaint.BrushMaterial, surfaceData);
+            }
         }
 
         public void AddPaint()
@@ -232,9 +238,13 @@ namespace Game.Deforming
             {
                 if (i > surfaceData.SurfacePaints.Length - 1)
                 {
-                    newSurfacePaintArray[i] = new SurfacePaint(brushShader);
-                    AssetDatabase.AddObjectToAsset(newSurfacePaintArray[i].AlphaMap, surfaceData);
-                    AssetDatabase.AddObjectToAsset(newSurfacePaintArray[i].BrushMaterial, surfaceData);
+                    SurfacePaint surfacePaint = new SurfacePaint(brushShader);
+                    
+                    AssetDatabase.AddObjectToAsset(surfacePaint.AlphaMap, surfaceData);
+                    AssetDatabase.AddObjectToAsset(surfacePaint.BrushMaterial, surfaceData);
+
+                    newSurfacePaintArray[i] = surfacePaint;
+                    
                     continue;
                 }
                 
@@ -250,6 +260,11 @@ namespace Game.Deforming
             {
                 return;
             }
+            
+            // Remove objects from the SurfaceData asset
+            SurfacePaint surfacePaint = surfaceData.SurfacePaints[surfaceData.SurfacePaints.Length - 1];
+            AssetDatabase.RemoveObjectFromAsset(surfacePaint.BrushMaterial);
+            AssetDatabase.RemoveObjectFromAsset(surfacePaint.AlphaMap);
             
             SurfacePaint[] newSurfacePaintArray = new SurfacePaint[surfaceData.SurfacePaints.Length - 1];
 
