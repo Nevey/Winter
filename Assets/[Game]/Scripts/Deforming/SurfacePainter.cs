@@ -30,9 +30,13 @@ namespace Game.Deforming
                 selectedPaintIndex = surfaceData.SurfacePaints.Length - 1;
             }
             
-            RenderTexture paintedAlphaMap = surfaceData.SurfacePaints[selectedPaintIndex].AlphaMap;
-            DrawOnAlphaMap(textureCoord, ref paintedAlphaMap, 1);
-            surfaceData.SurfacePaints[selectedPaintIndex].AlphaMap = paintedAlphaMap;
+            Material selectedBrushMaterial = surfaceData.SurfacePaints[selectedPaintIndex].BrushMaterial;
+            RenderTexture selectedErasedAlphaMap = surfaceData.SurfacePaints[selectedPaintIndex].AlphaMap;
+                
+            DrawOnAlphaMap(textureCoord, ref selectedBrushMaterial, ref selectedErasedAlphaMap, 1);
+
+            surfaceData.SurfacePaints[selectedPaintIndex].BrushMaterial = selectedBrushMaterial;
+            surfaceData.SurfacePaints[selectedPaintIndex].AlphaMap = selectedErasedAlphaMap;
 
             for (int i = 0; i < surfaceData.SurfacePaints.Length; i++)
             {
@@ -41,16 +45,24 @@ namespace Game.Deforming
                     continue;
                 }
                 
+                Material brushMaterial = surfaceData.SurfacePaints[i].BrushMaterial;
                 RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].AlphaMap;
-                DrawOnAlphaMap(textureCoord, ref erasedAlphaMap, 0);
+                
+                DrawOnAlphaMap(textureCoord, ref brushMaterial, ref erasedAlphaMap, 0);
+
+                surfaceData.SurfacePaints[i].BrushMaterial = brushMaterial;
                 surfaceData.SurfacePaints[i].AlphaMap = erasedAlphaMap;
             }
         }
 
         private void DrawDeform(Vector2 textureCoord)
         {
+            Material brushMaterial = surfaceData.DeformPaint.BrushMaterial;
             RenderTexture alphaMap = surfaceData.DeformPaint.AlphaMap;
-            DrawOnAlphaMap(textureCoord, ref alphaMap, 1);
+            
+            DrawOnAlphaMap(textureCoord, ref brushMaterial, ref alphaMap, 1);
+
+            surfaceData.DeformPaint.BrushMaterial = brushMaterial;
             surfaceData.DeformPaint.AlphaMap = alphaMap;
         }
 
@@ -58,40 +70,44 @@ namespace Game.Deforming
         {
             for (int i = 0; i < surfaceData.SurfacePaints.Length; i++)
             {
+                Material brushMaterial = surfaceData.SurfacePaints[i].BrushMaterial;
                 RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].AlphaMap;
-                DrawOnAlphaMap(textureCoord, ref erasedAlphaMap, 0);
+                
+                DrawOnAlphaMap(textureCoord, ref brushMaterial, ref erasedAlphaMap, 0);
+
+                surfaceData.SurfacePaints[i].BrushMaterial = brushMaterial;
                 surfaceData.SurfacePaints[i].AlphaMap = erasedAlphaMap;
             }
         }
 
         private void EraseDeform(Vector2 textureCoord)
         {
-            Material brushMaterial = surfaceData.BrushMaterial;
+            Material brushMaterial = surfaceData.DeformPaint.BrushMaterial;
             RenderTexture alphaMap = surfaceData.DeformPaint.AlphaMap;
             
-            DrawOnAlphaMap(textureCoord, ref alphaMap, 0);
+            DrawOnAlphaMap(textureCoord, ref brushMaterial, ref alphaMap, 0);
 
-            surfaceData.BrushMaterial = brushMaterial;
+            surfaceData.DeformPaint.BrushMaterial = brushMaterial;
             surfaceData.DeformPaint.AlphaMap = alphaMap;
         }
         
-        private void DrawOnAlphaMap(Vector2 textureCoord, ref RenderTexture alphaMap, int appends = 1)
+        private void DrawOnAlphaMap(Vector2 textureCoord, ref Material brushMaterial, ref RenderTexture alphaMap, int appends = 1)
         {
-            if (surfaceData.BrushMaterial == null || alphaMap == null)
+            if (brushMaterial == null || alphaMap == null)
             {
                 return;
             }
             
-            surfaceData.BrushMaterial.SetFloat("_Appends", appends);
-            surfaceData.BrushMaterial.SetVector("_Coordinate", new Vector4(textureCoord.x, textureCoord.y, 0f, 0f));
-            surfaceData.BrushMaterial.SetFloat("_Strength", brushOpacity);
-            surfaceData.BrushMaterial.SetFloat("_Size", brushSize);
+            brushMaterial.SetFloat("_Appends", appends);
+            brushMaterial.SetVector("_Coordinate", new Vector4(textureCoord.x, textureCoord.y, 0f, 0f));
+            brushMaterial.SetFloat("_Strength", brushOpacity);
+            brushMaterial.SetFloat("_Size", brushSize);
             
             RenderTexture tempSplatMap = RenderTexture.GetTemporary(alphaMap.width, alphaMap.height, 0,
                 RenderTextureFormat.ARGB32);
             
             Graphics.Blit(alphaMap, tempSplatMap);
-            Graphics.Blit(tempSplatMap, alphaMap, surfaceData.BrushMaterial);
+            Graphics.Blit(tempSplatMap, alphaMap, brushMaterial);
             
             RenderTexture.ReleaseTemporary(tempSplatMap);
         }
@@ -100,7 +116,6 @@ namespace Game.Deforming
         {
             // SurfaceData is created before this method is called...
             
-            surfaceData.CreateBrushMaterial();
             surfaceData.CreatePaintedSurfaceMaterial();
             surfaceData.CreateDeformPaint();
             surfaceData.UpdateMainTextures();
@@ -119,11 +134,6 @@ namespace Game.Deforming
         {
             MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
             meshRenderer.material = surfaceData.PaintedSurfaceMaterial;
-        }
-
-        public void CreateBrushMaterial()
-        {
-            surfaceData.CreateBrushMaterial();
         }
 
         public void CreatePaintedSurfaceMaterial()

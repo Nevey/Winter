@@ -12,6 +12,8 @@ namespace Game.Deforming
 
         [SerializeField] private RenderTexture alphaMap;
 
+        [SerializeField] private Material brushMaterial;
+
         [SerializeField] private int tiling = 1;
 
         public Texture PaintTexture => paintTexture;
@@ -22,6 +24,12 @@ namespace Game.Deforming
         {
             get => alphaMap;
             set => alphaMap = value;
+        }
+        
+        public Material BrushMaterial
+        {
+            get => brushMaterial;
+            set => brushMaterial = value;
         }
 
         public int Tiling
@@ -37,10 +45,12 @@ namespace Game.Deforming
             }
         }
 
-        public SurfacePaint()
+        public SurfacePaint(Shader brushShader)
         {
             alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32);
             alphaMap.name = "surfaceAlphaMap";
+            
+            brushMaterial = new Material(brushShader);
         }
     }
 }

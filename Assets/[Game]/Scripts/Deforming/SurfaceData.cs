@@ -23,29 +23,11 @@ namespace Game.Deforming
         [SerializeField] private SurfacePaint[] surfacePaints = new SurfacePaint[0];
         [SerializeField] private DeformPaint deformPaint;
 
-        public Material BrushMaterial
-        {
-            get => brushMaterial;
-            set => brushMaterial = value;
-        }
-
         public Material PaintedSurfaceMaterial => paintedSurfaceMaterial;
 
         public SurfacePaint[] SurfacePaints => surfacePaints;
 
         public DeformPaint DeformPaint => deformPaint;
-
-        public void CreateBrushMaterial()
-        {
-            if (brushShader == null)
-            {
-                return;
-            }
-            
-            brushMaterial = new Material(brushShader);
-            
-            AssetDatabase.AddObjectToAsset(brushMaterial, this);
-        }
 
         public void CreatePaintedSurfaceMaterial()
         {
@@ -61,7 +43,7 @@ namespace Game.Deforming
 
         public void CreateDeformPaint()
         {
-            deformPaint = new DeformPaint();
+            deformPaint = new DeformPaint(brushShader);
                 
             AssetDatabase.AddObjectToAsset(deformPaint.AlphaMap, this);
         }
@@ -155,7 +137,7 @@ namespace Game.Deforming
             {
                 if (i > surfacePaints.Length - 1)
                 {
-                    SurfacePaint surfacePaint = new SurfacePaint();
+                    SurfacePaint surfacePaint = new SurfacePaint(brushShader);
                     
                     // Add objects to the Asset
                     AssetDatabase.AddObjectToAsset(surfacePaint.AlphaMap, this);

@@ -155,8 +155,6 @@ namespace Game.Deforming.Editor
                         
             serializedObject.ApplyModifiedProperties();
                 
-            surfacePainter.Initialize();
-                
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
@@ -174,8 +172,6 @@ namespace Game.Deforming.Editor
             {
                 surfaceDataObject.ApplyModifiedProperties();
                 serializedObject.ApplyModifiedProperties();
-                
-                surfacePainter.CreateBrushMaterial();
             }
             
             EditorGUI.BeginChangeCheck();
@@ -185,13 +181,16 @@ namespace Game.Deforming.Editor
             {
                 surfaceDataObject.ApplyModifiedProperties();
                 serializedObject.ApplyModifiedProperties();
-                
-                surfacePainter.CreatePaintedSurfaceMaterial();
             }
 
-            if (GUILayout.Button("Update Material"))
+            if (brushShaderProperty.objectReferenceValue != null &&
+                paintedSurfaceShaderProperty.objectReferenceValue != null)
             {
-                surfacePainter.UpdateMaterial();
+                if (GUILayout.Button("Update Material"))
+                {
+                    surfacePainter.UpdateMaterial();
+                    surfacePainter.Initialize();
+                }
             }
             
             EditorGUILayout.EndVertical();
