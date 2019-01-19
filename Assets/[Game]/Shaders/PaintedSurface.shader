@@ -1,9 +1,11 @@
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 Shader "Paint/PaintedSurface" {
 
     Properties {
-        _MainTex ("Ground Texture", 2D) = "white" {}
+        [HideInInspector] _MainTex ("Ground Texture", 2D) = "white" {}
         [HideInInspector] _MainNormal ("Ground Normal Map", 2D) = "bump" {}
         
         [HideInInspector] _DeformTex ("Deformed Texture", 2D) = "white" {}
@@ -31,6 +33,8 @@ Shader "Paint/PaintedSurface" {
         [HideInInspector] _PaintAlpha4 ("Painted Alpha Map 5", 2D) = "black" {}
         
         _Tess ("Tessellation", Range(1,32)) = 16
+        _TessMinDist ("Tessellation Min Distance", Range(0, 10)) = 0
+        _TessMaxDist ("Tessellation Max Distance", Range(0, 20)) = 20
         
         _Displacement ("Displacement", Range(0, 10.0)) = 0.3
         
@@ -40,13 +44,15 @@ Shader "Paint/PaintedSurface" {
     }
     SubShader {
     
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Opaque" "Queue"="AlphaTest" }
         LOD 200
+        Blend SrcAlpha OneMinusSrcAlpha
         
         // 1st pass - surface texture
         CGPROGRAM
         
-        #pragma surface surf BlinnPhong addshadow fullforwardshadows
+        #pragma surface surf BlinnPhong 
+        //addshadow fullforwardshadows
         #pragma target 4.6
 
         struct appdata {
@@ -75,10 +81,12 @@ Shader "Paint/PaintedSurface" {
         
         ENDCG
         
+        
         // 2nd pass - surface paint
         CGPROGRAM
         
-        #pragma surface surf BlinnPhong addshadow fullforwardshadows alpha:fade
+        #pragma surface surf BlinnPhong keepalpha
+        //addshadow fullforwardshadows
         #pragma target 4.6
 
         struct Input {
@@ -150,13 +158,15 @@ Shader "Paint/PaintedSurface" {
         }
         
         ENDCG
-        
+
         
         // 3nd pass - deform paint
         CGPROGRAM
         
-        #pragma surface surf BlinnPhong addshadow fullforwardshadows vertex:disp tessellate:tessFixed alpha:fade approxview
+        #pragma surface surf BlinnPhong addshadow fullforwardshadows keepalpha vertex:disp tessellate:tessDistance
         #pragma target 4.6
+        
+        #include "Tessellation.cginc"
 
         struct appdata {
             float4 vertex : POSITION;
@@ -166,10 +176,13 @@ Shader "Paint/PaintedSurface" {
         };
 
         float _Tess;
+        float _TessMinDist;
+        float _TessMaxDist;
 
-        float4 tessFixed()
-        {
-            return _Tess;
+        float4 tessDistance (appdata v0, appdata v1, appdata v2) {
+            float minDist = _TessMinDist;
+            float maxDist = _TessMaxDist;
+            return UnityDistanceBasedTess(v0.vertex, v1.vertex, v2.vertex, minDist, maxDist, _Tess);
         }
 
         sampler2D _DispTex;
@@ -189,22 +202,7 @@ Shader "Paint/PaintedSurface" {
         
         fixed4 _Color;
         float _AlphaOffset;
-        
-        float quadraticOut(float t) {
-            return -t * (t - 2.0);
-        }
-        
-        float quadraticIn(float t) {
-            return t * t;
-        }
-        
-        float exponentialOut(float t) {
-            return t == 1.0 ? t : 1.0 - pow(2.0, -10.0 * t);
-        }
-        
-        float exponentialIn(float t) {
-            return t == 0.0 ? t : pow(2.0, 10.0 * (t - 1.0));
-        }
+        float4x4 _World2Camera;
         
         void disp (inout appdata v)
         {
@@ -212,6 +210,8 @@ Shader "Paint/PaintedSurface" {
             float disp = tex2Dlod(_DeformDispTex, float4(v.texcoord.xy,0,0)).r * _Displacement * alpha;
             
             v.vertex.xyz += v.normal * disp;
+            float4 vertex_view = mul(_World2Camera, mul(unity_ObjectToWorld, v.vertex));
+            
         }
 
         void surf (Input IN, inout SurfaceOutput o)
@@ -220,11 +220,11 @@ Shader "Paint/PaintedSurface" {
             half alpha = tex2D(_DeformAlpha, IN.uv_DeformAlpha).r;
             
             o.Albedo = c.rgb;
-            o.Alpha = exponentialIn(alpha / _AlphaOffset);
+            o.Alpha = saturate(alpha / _AlphaOffset);
         }
       
         ENDCG
- 
+        UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
     }
     
     FallBack "Diffuse"

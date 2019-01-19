@@ -20,6 +20,18 @@ namespace Game.Deforming
 
         [SerializeField] private SurfaceData surfaceData;
 
+        private void Update()
+        {
+            Camera camera = FindObjectOfType<Camera>();
+
+            if (camera == null)
+            {
+                return;
+            }
+            
+            surfaceData.PaintedSurfaceMaterial.SetMatrix("_World2Camera", camera.worldToCameraMatrix);
+        }
+
         private void DrawSurface(Vector2 textureCoord)
         {
             if (selectedPaintIndex == -1)

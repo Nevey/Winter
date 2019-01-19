@@ -108,34 +108,20 @@ namespace Game.Deforming
             
             for (int i = 0; i < MAX_PAINTS; i++)
             {
-                if (i <= surfacePaints.Count - 1)
-                {
-                    // Setup texture slots
-                    SurfacePaint surfacePaint = surfacePaints[i];
-                    
-                    paintedSurfaceMaterial.SetTexture("_PaintTex" + i, surfacePaint.PaintTexture);
-                    paintedSurfaceMaterial.SetTexture("_PaintNormal" + i, surfacePaint.NormalMap);
-                    
-                    if (init)
-                        paintedSurfaceMaterial.SetTexture("_PaintAlpha" + i, surfacePaint.AlphaMap);
-                    
-                    Vector2 tiling = new Vector2(surfacePaint.Tiling, surfacePaint.Tiling);
+                SurfacePaint surfacePaint = surfacePaints[i];
                 
-                    paintedSurfaceMaterial.SetTextureScale("_PaintTex" + i, tiling);
-                    paintedSurfaceMaterial.SetTextureScale("_PaintNormal" + i, tiling);
-                }
-                else
+                paintedSurfaceMaterial.SetTexture("_PaintTex" + i, surfacePaint.PaintTexture);
+                paintedSurfaceMaterial.SetTexture("_PaintNormal" + i, surfacePaint.NormalMap);
+
+                if (init)
                 {
-                    // Reset unused texture slots
-                    paintedSurfaceMaterial.SetTexture("_PaintTex" + i, null);
-                    paintedSurfaceMaterial.SetTexture("_PaintNormal" + i, null);
-                    paintedSurfaceMaterial.SetTexture("_PaintAlpha" + i, null);
-                    
-                    Vector2 tiling = new Vector2(1, 1);
-                
-                    paintedSurfaceMaterial.SetTextureScale("_PaintTex" + i, tiling);
-                    paintedSurfaceMaterial.SetTextureScale("_PaintNormal" + i, tiling);
+                    paintedSurfaceMaterial.SetTexture("_PaintAlpha" + i, surfacePaint.AlphaMap);
                 }
+                
+                Vector2 tiling = new Vector2(surfacePaint.Tiling, surfacePaint.Tiling);
+            
+                paintedSurfaceMaterial.SetTextureScale("_PaintTex" + i, tiling);
+                paintedSurfaceMaterial.SetTextureScale("_PaintNormal" + i, tiling);
             }
         }
     }
