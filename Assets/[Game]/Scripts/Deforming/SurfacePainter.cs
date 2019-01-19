@@ -45,12 +45,12 @@ namespace Game.Deforming
             }
             
             Material selectedBrushMaterial = surfaceData.SurfacePaints[selectedPaintIndex].BrushMaterial;
-            RenderTexture selectedErasedAlphaMap = surfaceData.SurfacePaints[selectedPaintIndex].alphaMap;
+            RenderTexture selectedErasedAlphaMap = surfaceData.SurfacePaints[selectedPaintIndex].AlphaMap;
                 
             DrawOnAlphaMap(textureCoord, ref selectedBrushMaterial, ref selectedErasedAlphaMap, 1);
 
             surfaceData.SurfacePaints[selectedPaintIndex].BrushMaterial = selectedBrushMaterial;
-            surfaceData.SurfacePaints[selectedPaintIndex].alphaMap = selectedErasedAlphaMap;
+            surfaceData.SurfacePaints[selectedPaintIndex].AlphaMap = selectedErasedAlphaMap;
 
             for (int i = 0; i < surfaceData.SurfacePaints.Length; i++)
             {
@@ -60,12 +60,12 @@ namespace Game.Deforming
                 }
                 
                 Material brushMaterial = surfaceData.SurfacePaints[i].BrushMaterial;
-                RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].alphaMap;
+                RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].AlphaMap;
                 
                 DrawOnAlphaMap(textureCoord, ref brushMaterial, ref erasedAlphaMap, 0);
 
                 surfaceData.SurfacePaints[i].BrushMaterial = brushMaterial;
-                surfaceData.SurfacePaints[i].alphaMap = erasedAlphaMap;
+                surfaceData.SurfacePaints[i].AlphaMap = erasedAlphaMap;
             }
         }
 
@@ -85,12 +85,12 @@ namespace Game.Deforming
             for (int i = 0; i < surfaceData.SurfacePaints.Length; i++)
             {
                 Material brushMaterial = surfaceData.SurfacePaints[i].BrushMaterial;
-                RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].alphaMap;
+                RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].AlphaMap;
                 
                 DrawOnAlphaMap(textureCoord, ref brushMaterial, ref erasedAlphaMap, 0);
 
                 surfaceData.SurfacePaints[i].BrushMaterial = brushMaterial;
-                surfaceData.SurfacePaints[i].alphaMap = erasedAlphaMap;
+                surfaceData.SurfacePaints[i].AlphaMap = erasedAlphaMap;
             }
         }
 

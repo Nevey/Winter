@@ -1,4 +1,3 @@
-using System.Collections;
 using Game.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -9,6 +8,7 @@ namespace Game.Deforming.Editor
     public class SurfacePainterEditor : UnityEditor.Editor
     {
         private SurfacePainter surfacePainter;
+        
         private SerializedProperty brushSize;
         private SerializedProperty brushOpacity;
         private SerializedProperty paintType;
@@ -497,6 +497,9 @@ namespace Game.Deforming.Editor
                 isPainting = false;
                 
                 surfaceDataObject.ApplyModifiedProperties();
+                serializedObject.ApplyModifiedProperties();
+                
+                AssetDatabase.SaveAssets();
             }
         }
 

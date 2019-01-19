@@ -53,7 +53,7 @@ namespace Game.Deforming
         {
             for (int i = 0; i < MAX_PAINTS; i++)
             {
-                SurfacePaint surfacePaint = new SurfacePaint(brushShader);
+                SurfacePaint surfacePaint = new SurfacePaint(brushShader, name);
                 surfacePaints.Add(surfacePaint);
                     
                 // Add objects to the Asset
