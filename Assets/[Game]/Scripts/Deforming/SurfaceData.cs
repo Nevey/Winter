@@ -58,6 +58,7 @@ namespace Game.Deforming
                     
                 // Add objects to the Asset
                 AssetDatabase.AddObjectToAsset(surfacePaint.AlphaMap, this);
+                AssetDatabase.AddObjectToAsset(surfacePaint.BrushMaterial, this);
             }
         }
         
