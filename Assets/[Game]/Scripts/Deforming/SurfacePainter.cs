@@ -125,20 +125,13 @@ namespace Game.Deforming
 
         public void Load()
         {
-//            surfaceData.UpdateMainTextures();
-//            surfaceData.UpdateDeformTextures();
-//            surfaceData.UpdateSurfaceTextures();
+            UpdateMaterial();
         }
 
         public void UpdateMaterial()
         {
             MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
             meshRenderer.material = surfaceData.PaintedSurfaceMaterial;
-        }
-
-        public void CreatePaintedSurfaceMaterial()
-        {
-            surfaceData.CreatePaintedSurfaceMaterial();
         }
 
         public void UpdateMainTextures()

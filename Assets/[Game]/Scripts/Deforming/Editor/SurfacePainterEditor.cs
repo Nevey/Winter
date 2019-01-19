@@ -188,8 +188,11 @@ namespace Game.Deforming.Editor
             {
                 if (GUILayout.Button("Update Material"))
                 {
-                    surfacePainter.UpdateMaterial();
                     surfacePainter.Initialize();
+                    surfacePainter.UpdateMaterial();
+                    
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
                 }
             }
             

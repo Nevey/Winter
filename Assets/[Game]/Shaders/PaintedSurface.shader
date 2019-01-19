@@ -3,7 +3,7 @@
 Shader "Paint/PaintedSurface" {
 
     Properties {
-        [HideInInspector] _MainTex ("Ground Texture", 2D) = "white" {}
+        _MainTex ("Ground Texture", 2D) = "white" {}
         [HideInInspector] _MainNormal ("Ground Normal Map", 2D) = "bump" {}
         
         [HideInInspector] _DeformTex ("Deformed Texture", 2D) = "white" {}
@@ -40,22 +40,13 @@ Shader "Paint/PaintedSurface" {
     }
     SubShader {
     
-//        Tags { "Queue"="AlphaTest" "RenderType"="Opaque" }
-        
-        Tags {
-	"Queue"="AlphaTest" 
-	"IgnoreProjector"="True" 
-	"RenderType"="Transparent"
-	}
-	        
+        Tags { "RenderType"="Opaque" }
         LOD 200
-        ZWrite Off
-        Blend SrcAlpha OneMinusSrcAlpha
         
         // 1st pass - surface texture
         CGPROGRAM
         
-        #pragma surface surf Standard addshadow fullforwardshadows
+        #pragma surface surf BlinnPhong addshadow fullforwardshadows
         #pragma target 4.6
 
         struct appdata {
@@ -73,7 +64,7 @@ Shader "Paint/PaintedSurface" {
         sampler2D _MainNormal;
         fixed4 _Color;
 
-        void surf (Input IN, inout SurfaceOutputStandard o)
+        void surf (Input IN, inout SurfaceOutput o)
         {
             half4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
              
