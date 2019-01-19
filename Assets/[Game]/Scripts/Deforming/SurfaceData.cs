@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Utilities;
 
 // TODO: Remove Editor dependencies for builds
@@ -18,14 +19,13 @@ namespace Game.Deforming
         [SerializeField] private int mainTextureTiling;
 
         // Is added as Asset to instance of this ScriptableObject
-        [SerializeField] private Material brushMaterial;
         [SerializeField] private Material paintedSurfaceMaterial;
-        [SerializeField] private SurfacePaint[] surfacePaints = new SurfacePaint[0];
+        [SerializeField] private List<SurfacePaint> surfacePaints = new List<SurfacePaint>();
         [SerializeField] private DeformPaint deformPaint;
 
         public Material PaintedSurfaceMaterial => paintedSurfaceMaterial;
 
-        public SurfacePaint[] SurfacePaints => surfacePaints;
+        public SurfacePaint[] SurfacePaints => surfacePaints.ToArray();
 
         public DeformPaint DeformPaint => deformPaint;
 
@@ -46,6 +46,19 @@ namespace Game.Deforming
             deformPaint = new DeformPaint(brushShader);
                 
             AssetDatabase.AddObjectToAsset(deformPaint.AlphaMap, this);
+        }
+        
+        // create all paint slots
+        public void CreateSurfacePaints()
+        {
+            for (int i = 0; i < MAX_PAINTS; i++)
+            {
+                SurfacePaint surfacePaint = new SurfacePaint(brushShader);
+                surfacePaints.Add(surfacePaint);
+                    
+                // Add objects to the Asset
+                AssetDatabase.AddObjectToAsset(surfacePaint.AlphaMap, this);
+            }
         }
         
         public void UpdateMainTextures()
@@ -86,7 +99,7 @@ namespace Game.Deforming
             paintedSurfaceMaterial.SetTextureScale("_DeformDispTex", tiling);
         }
         
-        public void UpdateSurfaceTextures()
+        public void UpdateSurfaceTextures(bool init = false)
         {
             if (paintedSurfaceMaterial == null)
             {
@@ -95,14 +108,16 @@ namespace Game.Deforming
             
             for (int i = 0; i < MAX_PAINTS; i++)
             {
-                if (i <= surfacePaints.Length - 1)
+                if (i <= surfacePaints.Count - 1)
                 {
                     // Setup texture slots
                     SurfacePaint surfacePaint = surfacePaints[i];
                     
                     paintedSurfaceMaterial.SetTexture("_PaintTex" + i, surfacePaint.PaintTexture);
                     paintedSurfaceMaterial.SetTexture("_PaintNormal" + i, surfacePaint.NormalMap);
-                    paintedSurfaceMaterial.SetTexture("_PaintAlpha" + i, surfacePaint.AlphaMap);
+                    
+                    if (init)
+                        paintedSurfaceMaterial.SetTexture("_PaintAlpha" + i, surfacePaint.AlphaMap);
                     
                     Vector2 tiling = new Vector2(surfacePaint.Tiling, surfacePaint.Tiling);
                 
@@ -122,57 +137,6 @@ namespace Game.Deforming
                     paintedSurfaceMaterial.SetTextureScale("_PaintNormal" + i, tiling);
                 }
             }
-        }
-        
-        public void AddPaint()
-        {
-            if (surfacePaints.Length == MAX_PAINTS)
-            {
-                return;
-            }
-            
-            SurfacePaint[] newSurfacePaintArray = new SurfacePaint[surfacePaints.Length + 1];
-
-            for (int i = 0; i < newSurfacePaintArray.Length; i++)
-            {
-                if (i > surfacePaints.Length - 1)
-                {
-                    SurfacePaint surfacePaint = new SurfacePaint(brushShader);
-                    
-                    // Add objects to the Asset
-                    AssetDatabase.AddObjectToAsset(surfacePaint.AlphaMap, this);
-
-                    newSurfacePaintArray[i] = surfacePaint;
-                    
-                    continue;
-                }
-                
-                newSurfacePaintArray[i] = surfacePaints[i];
-            }
-
-            surfacePaints = newSurfacePaintArray;
-        }
-        
-        public void RemovePaint()
-        {
-            if (surfacePaints.Length == 0)
-            {
-                return;
-            }
-            
-            // Remove objects the Asset
-            SurfacePaint surfacePaint = surfacePaints[surfacePaints.Length - 1];
-            
-            AssetDatabase.RemoveObjectFromAsset(surfacePaint.AlphaMap);
-            
-            SurfacePaint[] newSurfacePaintArray = new SurfacePaint[surfacePaints.Length - 1];
-
-            for (int i = 0; i < newSurfacePaintArray.Length; i++)
-            {
-                newSurfacePaintArray[i] = surfacePaints[i];
-            }
-
-            surfacePaints = newSurfacePaintArray;
         }
     }
 }

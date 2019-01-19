@@ -16,6 +16,8 @@ namespace Game.Deforming
 
         [SerializeField] private int selectedPaintIndex = -1;
 
+        [SerializeField] private int visibleSurfacePaintCount;
+
         [SerializeField] private SurfaceData surfaceData;
 
         private void DrawSurface(Vector2 textureCoord)
@@ -118,9 +120,11 @@ namespace Game.Deforming
             
             surfaceData.CreatePaintedSurfaceMaterial();
             surfaceData.CreateDeformPaint();
+            surfaceData.CreateSurfacePaints();
+            
             surfaceData.UpdateMainTextures();
             surfaceData.UpdateDeformTextures();
-            surfaceData.UpdateSurfaceTextures();
+            surfaceData.UpdateSurfaceTextures(true);
         }
 
         public void Load()
@@ -147,16 +151,6 @@ namespace Game.Deforming
         public void UpdateSurfaceTextures()
         {
             surfaceData.UpdateSurfaceTextures();
-        }
-
-        public void AddPaint()
-        {
-            surfaceData.AddPaint();
-        }
-
-        public void RemovePaint()
-        {
-            surfaceData.RemovePaint();
         }
 
         public void Draw(Vector2 textureCoord)

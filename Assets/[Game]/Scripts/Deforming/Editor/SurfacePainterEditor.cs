@@ -9,21 +9,16 @@ namespace Game.Deforming.Editor
     public class SurfacePainterEditor : UnityEditor.Editor
     {
         private SurfacePainter surfacePainter;
-
         private SerializedProperty brushSize;
-        
         private SerializedProperty brushOpacity;
-        
         private SerializedProperty paintType;
-        
         private SerializedProperty selectedPaintIndex;
-
+        private SerializedProperty visibleSurfacePaintCount;
         private SerializedProperty surfaceData;
         
         private SerializedObject surfaceDataObject;
 
         private string dataId;
-
         private bool isPainting;
 
         private void OnEnable()
@@ -31,13 +26,10 @@ namespace Game.Deforming.Editor
             surfacePainter = (SurfacePainter)target;
             
             brushSize = serializedObject.FindProperty("brushSize");
-            
             brushOpacity = serializedObject.FindProperty("brushOpacity");
-            
             paintType = serializedObject.FindProperty("paintType");
-            
             selectedPaintIndex = serializedObject.FindProperty("selectedPaintIndex");
-
+            visibleSurfacePaintCount = serializedObject.FindProperty("visibleSurfacePaintCount");
             surfaceData = serializedObject.FindProperty("surfaceData");
         }
 
@@ -64,7 +56,7 @@ namespace Game.Deforming.Editor
                 return;
             }
             
-            // TODO: Don't do this every frame, but timing is important
+            // TODO: Don't do this every frame, but this timing is important
             surfaceDataObject = new SerializedObject(surfaceData.objectReferenceValue);
             
             bool areShaderPropertiesSet = DrawShaderProperties();
@@ -313,7 +305,7 @@ namespace Game.Deforming.Editor
 
             SerializedProperty surfacePaints = surfaceDataObject.FindProperty("surfacePaints");
 
-            for (int i = 0; i < surfacePaints.arraySize; i++)
+            for (int i = 0; i < visibleSurfacePaintCount.intValue; i++)
             {
                 SerializedProperty paint = surfacePaints.GetArrayElementAtIndex(i);
 
@@ -381,8 +373,6 @@ namespace Game.Deforming.Editor
                     }
                 }
                 
-                serializedObject.ApplyModifiedProperties();
-                
                 GUILayout.Space(lastGuiRect.height + offset.y);
             }
             
@@ -390,51 +380,45 @@ namespace Game.Deforming.Editor
 
             if (EditorGUI.EndChangeCheck())
             {
-                surfaceDataObject.ApplyModifiedProperties();
-                serializedObject.ApplyModifiedProperties();
-                
+                surfaceDataObject.ApplyModifiedProperties();                
                 surfacePainter.UpdateSurfaceTextures();
-                
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
             }
         }
 
         private void DrawAddRemovePaintButtons()
         {
             EditorGUILayout.BeginHorizontal("box");
-            
-            EditorGUI.BeginChangeCheck();
-            
-            SerializedProperty surfacePaints = surfaceDataObject.FindProperty("surfacePaints");
 
-            if (surfacePaints.arraySize < SurfacePainter.MAX_PAINTS)
+            if (visibleSurfacePaintCount.intValue < SurfacePainter.MAX_PAINTS)
             {
                 if (GUILayout.Button("Add Layer"))
                 {
-                    surfacePainter.AddPaint();
+                    visibleSurfacePaintCount.intValue++;
+
+                    if (visibleSurfacePaintCount.intValue > SurfaceData.MAX_PAINTS)
+                    {
+                        visibleSurfacePaintCount.intValue = SurfaceData.MAX_PAINTS;
+                    }
+                    
                     SceneView.RepaintAll();
                 }
             }
             
-            if (surfacePaints.arraySize > 0)
+            if (visibleSurfacePaintCount.intValue > 0)
             {
                 if (GUILayout.Button("Remove Layer"))
                 {
-                    surfacePainter.RemovePaint();
+                    visibleSurfacePaintCount.intValue--;
+
+                    if (visibleSurfacePaintCount.intValue < 0)
+                    {
+                        visibleSurfacePaintCount.intValue = 0;
+                    }
+                    
+                    // TODO: Reset alpha map for removed layer
+                    
                     SceneView.RepaintAll();
                 }
-            }
-            
-            if (EditorGUI.EndChangeCheck())
-            {
-                surfaceDataObject.ApplyModifiedProperties();
-                serializedObject.ApplyModifiedProperties();
-                
-                surfacePainter.UpdateSurfaceTextures();
-                
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
             }
             
             EditorGUILayout.EndHorizontal();
@@ -518,10 +502,6 @@ namespace Game.Deforming.Editor
                 isPainting = false;
                 
                 surfaceDataObject.ApplyModifiedProperties();
-                serializedObject.ApplyModifiedProperties();
-                
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
             }
         }
 
