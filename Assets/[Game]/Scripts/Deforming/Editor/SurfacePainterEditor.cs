@@ -255,12 +255,7 @@ namespace Game.Deforming.Editor
             if (EditorGUI.EndChangeCheck())
             {
                 surfaceDataObject.ApplyModifiedProperties();
-                serializedObject.ApplyModifiedProperties();
-                
                 surfacePainter.UpdateDeformTextures();
-                
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
             }
         }
 
