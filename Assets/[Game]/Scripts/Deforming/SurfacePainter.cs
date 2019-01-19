@@ -45,12 +45,12 @@ namespace Game.Deforming
             }
             
             Material selectedBrushMaterial = surfaceData.SurfacePaints[selectedPaintIndex].BrushMaterial;
-            RenderTexture selectedErasedAlphaMap = surfaceData.SurfacePaints[selectedPaintIndex].AlphaMap;
+            RenderTexture selectedErasedAlphaMap = surfaceData.SurfacePaints[selectedPaintIndex].alphaMap;
                 
             DrawOnAlphaMap(textureCoord, ref selectedBrushMaterial, ref selectedErasedAlphaMap, 1);
 
             surfaceData.SurfacePaints[selectedPaintIndex].BrushMaterial = selectedBrushMaterial;
-            surfaceData.SurfacePaints[selectedPaintIndex].AlphaMap = selectedErasedAlphaMap;
+            surfaceData.SurfacePaints[selectedPaintIndex].alphaMap = selectedErasedAlphaMap;
 
             for (int i = 0; i < surfaceData.SurfacePaints.Length; i++)
             {
@@ -60,12 +60,12 @@ namespace Game.Deforming
                 }
                 
                 Material brushMaterial = surfaceData.SurfacePaints[i].BrushMaterial;
-                RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].AlphaMap;
+                RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].alphaMap;
                 
                 DrawOnAlphaMap(textureCoord, ref brushMaterial, ref erasedAlphaMap, 0);
 
                 surfaceData.SurfacePaints[i].BrushMaterial = brushMaterial;
-                surfaceData.SurfacePaints[i].AlphaMap = erasedAlphaMap;
+                surfaceData.SurfacePaints[i].alphaMap = erasedAlphaMap;
             }
         }
 
@@ -85,12 +85,12 @@ namespace Game.Deforming
             for (int i = 0; i < surfaceData.SurfacePaints.Length; i++)
             {
                 Material brushMaterial = surfaceData.SurfacePaints[i].BrushMaterial;
-                RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].AlphaMap;
+                RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].alphaMap;
                 
                 DrawOnAlphaMap(textureCoord, ref brushMaterial, ref erasedAlphaMap, 0);
 
                 surfaceData.SurfacePaints[i].BrushMaterial = brushMaterial;
-                surfaceData.SurfacePaints[i].AlphaMap = erasedAlphaMap;
+                surfaceData.SurfacePaints[i].alphaMap = erasedAlphaMap;
             }
         }
 
@@ -116,14 +116,14 @@ namespace Game.Deforming
             brushMaterial.SetVector("_Coordinate", new Vector4(textureCoord.x, textureCoord.y, 0f, 0f));
             brushMaterial.SetFloat("_Strength", brushOpacity);
             brushMaterial.SetFloat("_Size", brushSize);
+
+            RenderTexture tempAlphaMap =
+                RenderTexture.GetTemporary(alphaMap.width, alphaMap.height, alphaMap.depth, alphaMap.format);
             
-            RenderTexture tempSplatMap = RenderTexture.GetTemporary(alphaMap.width, alphaMap.height, 0,
-                RenderTextureFormat.ARGB32);
+            Graphics.Blit(alphaMap, tempAlphaMap);
+            Graphics.Blit(tempAlphaMap, alphaMap, brushMaterial);
             
-            Graphics.Blit(alphaMap, tempSplatMap);
-            Graphics.Blit(tempSplatMap, alphaMap, brushMaterial);
-            
-            RenderTexture.ReleaseTemporary(tempSplatMap);
+            RenderTexture.ReleaseTemporary(tempAlphaMap);
         }
 
         public void Initialize()
