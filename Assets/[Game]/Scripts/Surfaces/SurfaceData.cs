@@ -61,7 +61,7 @@ namespace Game.Surfaces
 
         public void CreateDeformPaint()
         {
-            deformPaint = new DeformPaint(brushShader, name);
+            deformPaint = new DeformPaint(name);
                 
             AssetDatabase.AddObjectToAsset(deformPaint.AlphaMap, this);
         }
@@ -70,12 +70,11 @@ namespace Game.Surfaces
         {
             for (int i = 0; i < MAX_PAINTS; i++)
             {
-                SurfacePaint surfacePaint = new SurfacePaint(brushShader, name);
+                SurfacePaint surfacePaint = new SurfacePaint(name);
                 surfacePaints.Add(surfacePaint);
                     
                 // Add objects to the Asset
                 AssetDatabase.AddObjectToAsset(surfacePaint.AlphaMap, this);
-                AssetDatabase.AddObjectToAsset(surfacePaint.BrushMaterial, this);
             }
         }
 
@@ -88,6 +87,9 @@ namespace Game.Surfaces
                 RenderTexture alphaMap = surfacePaints[i].AlphaMap;
                 
                 Texture2D surfaceTex = new Texture2D(alphaMap.width, alphaMap.height, TextureFormat.ARGB32, false);
+                RenderTexture.active = alphaMap;
+                surfaceTex.ReadPixels(new Rect(0, 0, alphaMap.width, alphaMap.height), 0, 0);
+                surfaceTex.Apply();
                 alphaMapDataHolders[i] = surfaceTex;
                 
                 AssetDatabase.AddObjectToAsset(surfaceTex, this);
@@ -95,6 +97,10 @@ namespace Game.Surfaces
 
             deformMapDataHolder = new Texture2D(deformPaint.AlphaMap.width, deformPaint.AlphaMap.height,
                 TextureFormat.ARGB32, false);
+            
+            RenderTexture.active = deformPaint.AlphaMap;
+            deformMapDataHolder.ReadPixels(new Rect(0, 0, deformPaint.AlphaMap.width, deformPaint.AlphaMap.height), 0, 0);
+            deformMapDataHolder.Apply();
             
             AssetDatabase.AddObjectToAsset(deformMapDataHolder, this);
         }
@@ -165,7 +171,7 @@ namespace Game.Surfaces
 
         public void Save()
         {
-            for (int i = 0; i < MAX_PAINTS; i++)
+            for (int i = 0; i < surfacePaints.Count; i++)
             {
                 RenderTexture alphaMap = surfacePaints[i].AlphaMap;
                 Texture2D tex = alphaMapDataHolders[i];
@@ -186,9 +192,24 @@ namespace Game.Surfaces
         
         public void Load()
         {
-            for (int i = 0; i < MAX_PAINTS; i++)
+            for (int i = 0; i < surfacePaints.Count; i++)
             {
+                if (i > alphaMapDataHolders.Length - 1)
+                {
+                    break;
+                }
+                
+                if (alphaMapDataHolders[i] == null)
+                {
+                    continue;
+                }
+                
                 surfacePaints[i].SetAlphaMap(alphaMapDataHolders[i]);
+            }
+
+            if (deformMapDataHolder == null)
+            {
+                return;
             }
             
             deformPaint.SetAlphaMap(deformMapDataHolder);

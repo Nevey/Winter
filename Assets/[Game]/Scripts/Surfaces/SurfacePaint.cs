@@ -12,8 +12,6 @@ namespace Game.Surfaces
 
         [SerializeField] private RenderTexture alphaMap;
 
-        [SerializeField] private Material brushMaterial;
-
         [SerializeField] private int tiling = 1;
 
         public Texture PaintTexture => paintTexture;
@@ -21,8 +19,6 @@ namespace Game.Surfaces
         public Texture NormalMap => normalMap;
 
         public RenderTexture AlphaMap => alphaMap;
-
-        public Material BrushMaterial => brushMaterial;
 
         public int Tiling
         {
@@ -37,14 +33,12 @@ namespace Game.Surfaces
             }
         }
 
-        public SurfacePaint(Shader brushShader, string surfaceName)
+        public SurfacePaint(string surfaceName)
         {
             alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32)
             {
                 name = $"surfaceAlphaMap_{surfaceName}"
             };
-
-            brushMaterial = new Material(brushShader);
         }
 
         public void SetAlphaMap(Texture2D tex)

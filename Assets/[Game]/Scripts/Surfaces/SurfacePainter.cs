@@ -47,10 +47,9 @@ namespace Game.Surfaces
                 selectedPaintIndex = surfaceData.SurfacePaints.Length - 1;
             }
             
-            Material selectedBrushMaterial = surfaceData.SurfacePaints[selectedPaintIndex].BrushMaterial;
             RenderTexture selectedAlphaMap = surfaceData.SurfacePaints[selectedPaintIndex].AlphaMap;
                 
-            DrawOnAlphaMap(textureCoord, selectedBrushMaterial, selectedAlphaMap, 1);
+            DrawOnAlphaMap(textureCoord, selectedAlphaMap, 1);
 
             for (int i = 0; i < surfaceData.SurfacePaints.Length; i++)
             {
@@ -59,35 +58,33 @@ namespace Game.Surfaces
                     continue;
                 }
                 
-                Material brushMaterial = surfaceData.SurfacePaints[i].BrushMaterial;
                 RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].AlphaMap;
                 
-                DrawOnAlphaMap(textureCoord, brushMaterial, erasedAlphaMap, 0);
+                DrawOnAlphaMap(textureCoord, erasedAlphaMap, 0);
             }
         }
 
         private void DrawDeform(Vector2 textureCoord)
         {
-            DrawOnAlphaMap(textureCoord, surfaceData.DeformPaint.BrushMaterial, surfaceData.DeformPaint.AlphaMap, 1);
+            DrawOnAlphaMap(textureCoord, surfaceData.DeformPaint.AlphaMap, 1);
         }
 
         private void EraseSurfaces(Vector2 textureCoord)
         {
             for (int i = 0; i < surfaceData.SurfacePaints.Length; i++)
             {
-                Material brushMaterial = surfaceData.SurfacePaints[i].BrushMaterial;
                 RenderTexture erasedAlphaMap = surfaceData.SurfacePaints[i].AlphaMap;
                 
-                DrawOnAlphaMap(textureCoord, brushMaterial, erasedAlphaMap, 0);
+                DrawOnAlphaMap(textureCoord, erasedAlphaMap, 0);
             }
         }
 
         private void EraseDeform(Vector2 textureCoord)
         {
-            DrawOnAlphaMap(textureCoord, surfaceData.DeformPaint.BrushMaterial, surfaceData.DeformPaint.AlphaMap, 0);
+            DrawOnAlphaMap(textureCoord, surfaceData.DeformPaint.AlphaMap, 0);
         }
         
-        private void DrawOnAlphaMap(Vector2 textureCoord, Material brushMaterial, RenderTexture alphaMap, int appends = 1)
+        private void DrawOnAlphaMap(Vector2 textureCoord, RenderTexture alphaMap, int appends = 1)
         {
             if (surfaceData.BrushMaterial == null || alphaMap == null)
             {
@@ -135,6 +132,11 @@ namespace Game.Surfaces
 
         public void Load()
         {
+            if (surfaceData == null || surfaceData.PaintedSurfaceMaterial == null)
+            {
+                return;
+            }
+            
             UpdateMaterial();
             
             surfaceData.Load();

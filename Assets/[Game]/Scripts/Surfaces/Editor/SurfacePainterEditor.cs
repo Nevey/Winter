@@ -21,6 +21,7 @@ namespace Game.Surfaces.Editor
         private SerializedObject surfaceDataObject;
 
         private string dataId;
+        private bool isMouseDown;
         private bool isPainting;
 
         private void OnEnable()
@@ -452,16 +453,16 @@ namespace Game.Surfaces.Editor
 
             if (e.type == EventType.MouseDown)
             {
-                isPainting = true;
+                isMouseDown = true;
             }
 
-            if (isPainting)
+            if (isMouseDown)
             {
                 Vector2? textureCoord = GetTextureCoord();
 
                 if (e.button != 0)
                 {
-                    isPainting = false;
+                    isMouseDown = false;
                     return;
                 }
                 
@@ -469,6 +470,8 @@ namespace Game.Surfaces.Editor
                 {
                     return;
                 }
+
+                isPainting = true;
 
                 if (e.shift)
                 {
@@ -482,14 +485,14 @@ namespace Game.Surfaces.Editor
                 Repaint();
             }
 
-            if (e.type == EventType.MouseUp)
+            if (e.type == EventType.MouseUp && isPainting)
             {
                 if (e.button != 0)
                 {
                     return;
                 }
                 
-                isPainting = false;
+                isMouseDown = false;
                 
                 surfaceDataObject.ApplyModifiedProperties();
                 serializedObject.ApplyModifiedProperties();

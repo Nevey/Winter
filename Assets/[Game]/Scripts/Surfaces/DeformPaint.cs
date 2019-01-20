@@ -12,7 +12,6 @@ namespace Game.Surfaces
 
         // Is added as Asset to instance of this ScriptableObject
         [SerializeField] private RenderTexture alphaMap;
-        [SerializeField] private Material brushMaterial;
 
         [SerializeField] private int tiling = 1;
 
@@ -21,12 +20,6 @@ namespace Game.Surfaces
         public Texture DispMap => dispMap;
 
         public RenderTexture AlphaMap => alphaMap;
-
-        public Material BrushMaterial
-        {
-            get => brushMaterial;
-            set => brushMaterial = value;
-        }
 
         public int Tiling
         {
@@ -41,14 +34,12 @@ namespace Game.Surfaces
             }
         }
 
-        public DeformPaint(Shader brushShader, string surfaceName)
+        public DeformPaint(string surfaceName)
         {
             alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32)
             {
                 name = $"deformAlphaMap_{surfaceName}"
             };
-            
-            brushMaterial = new Material(brushShader);
         }
         
         public void SetAlphaMap(Texture2D tex)
