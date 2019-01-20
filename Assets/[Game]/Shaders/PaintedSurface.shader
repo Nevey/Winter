@@ -36,11 +36,11 @@ Shader "Paint/PaintedSurface" {
         _TessMinDist ("Tessellation Min Distance", Range(0, 10)) = 0
         _TessMaxDist ("Tessellation Max Distance", Range(0, 20)) = 20
         
-        _Displacement ("Displacement", Range(0, 10.0)) = 0.3
+        _Displacement ("Displacement", Range(0, 10.0)) = 1
         
         _Color ("Color", color) = (1,1,1,0)
         
-        _AlphaOffset ("Alpha Offset", Range(0, 1)) = 0
+        _AlphaOffset ("Alpha Offset", Range(0, 1)) = 0.1
     }
     SubShader {
     

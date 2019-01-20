@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game.Utilities;
 
@@ -22,6 +23,8 @@ namespace Game.Deforming
         [SerializeField] private Material paintedSurfaceMaterial;
         [SerializeField] private List<SurfacePaint> surfacePaints = new List<SurfacePaint>();
         [SerializeField] private DeformPaint deformPaint;
+        [SerializeField] private Texture2D[] alphaMapDataHolders;
+        [SerializeField] private Texture2D deformMapDataHolder;
 
         public Material PaintedSurfaceMaterial => paintedSurfaceMaterial;
 
@@ -43,12 +46,11 @@ namespace Game.Deforming
 
         public void CreateDeformPaint()
         {
-            deformPaint = new DeformPaint(brushShader);
+            deformPaint = new DeformPaint(brushShader, name);
                 
             AssetDatabase.AddObjectToAsset(deformPaint.AlphaMap, this);
         }
         
-        // create all paint slots
         public void CreateSurfacePaints()
         {
             for (int i = 0; i < MAX_PAINTS; i++)
@@ -60,6 +62,26 @@ namespace Game.Deforming
                 AssetDatabase.AddObjectToAsset(surfacePaint.AlphaMap, this);
                 AssetDatabase.AddObjectToAsset(surfacePaint.BrushMaterial, this);
             }
+        }
+
+        public void CreateAlphaMapDataHolders()
+        {
+            alphaMapDataHolders = new Texture2D[MAX_PAINTS];
+
+            for (int i = 0; i < MAX_PAINTS; i++)
+            {
+                RenderTexture alphaMap = surfacePaints[i].AlphaMap;
+                
+                Texture2D surfaceTex = new Texture2D(alphaMap.width, alphaMap.height, TextureFormat.ARGB32, false);
+                alphaMapDataHolders[i] = surfaceTex;
+                
+                AssetDatabase.AddObjectToAsset(surfaceTex, this);
+            }
+
+            deformMapDataHolder = new Texture2D(deformPaint.AlphaMap.width, deformPaint.AlphaMap.height,
+                TextureFormat.ARGB32, false);
+            
+            AssetDatabase.AddObjectToAsset(deformMapDataHolder, this);
         }
         
         public void UpdateMainTextures()
@@ -124,6 +146,36 @@ namespace Game.Deforming
                 paintedSurfaceMaterial.SetTextureScale("_PaintTex" + i, tiling);
                 paintedSurfaceMaterial.SetTextureScale("_PaintNormal" + i, tiling);
             }
+        }
+
+        public void Save()
+        {
+            for (int i = 0; i < MAX_PAINTS; i++)
+            {
+                RenderTexture alphaMap = surfacePaints[i].AlphaMap;
+                Texture2D tex = alphaMapDataHolders[i];
+                RenderTexture.active = alphaMap;
+                tex.ReadPixels(new Rect(0, 0, alphaMap.width, alphaMap.height), 0, 0);
+                tex.Apply();
+            }
+
+            RenderTexture.active = deformPaint.AlphaMap;
+            deformMapDataHolder.ReadPixels(new Rect(0, 0, deformPaint.AlphaMap.width, deformPaint.AlphaMap.height), 0, 0);
+            deformMapDataHolder.Apply();
+            
+            AssetDatabase.SaveAssets();
+            
+            Load();
+        }
+
+        public void Load()
+        {
+            for (int i = 0; i < MAX_PAINTS; i++)
+            {
+                surfacePaints[i].SetAlphaMap(alphaMapDataHolders[i]);
+            }
+            
+            deformPaint.SetAlphaMap(deformMapDataHolder);
         }
     }
 }

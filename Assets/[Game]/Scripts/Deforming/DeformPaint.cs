@@ -18,17 +18,9 @@ namespace Game.Deforming
 
         public Texture DeformTexture => deformTexture;
 
-        public Texture DispMap
-        {
-            get => dispMap;
-            set => dispMap = value;
-        }
+        public Texture DispMap => dispMap;
 
-        public RenderTexture AlphaMap
-        {
-            get => alphaMap;
-            set => alphaMap = value;
-        }
+        public RenderTexture AlphaMap => alphaMap;
 
         public Material BrushMaterial
         {
@@ -49,12 +41,19 @@ namespace Game.Deforming
             }
         }
 
-        public DeformPaint(Shader brushShader)
+        public DeformPaint(Shader brushShader, string surfaceName)
         {
-            alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32);
-            alphaMap.name = "deformAlphaMap";
+            alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32)
+            {
+                name = $"deformAlphaMap_{surfaceName}"
+            };
             
             brushMaterial = new Material(brushShader);
+        }
+        
+        public void SetAlphaMap(Texture2D tex)
+        {
+            Graphics.Blit(tex, alphaMap);
         }
     }
 }

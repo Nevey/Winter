@@ -20,17 +20,9 @@ namespace Game.Deforming
 
         public Texture NormalMap => normalMap;
 
-        public RenderTexture AlphaMap
-        {
-            get => alphaMap;
-            set => alphaMap = value;
-        }
-        
-        public Material BrushMaterial
-        {
-            get => brushMaterial;
-            set => brushMaterial = value;
-        }
+        public RenderTexture AlphaMap => alphaMap;
+
+        public Material BrushMaterial => brushMaterial;
 
         public int Tiling
         {
@@ -47,12 +39,17 @@ namespace Game.Deforming
 
         public SurfacePaint(Shader brushShader, string surfaceName)
         {
-            alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGBFloat)
+            alphaMap = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32)
             {
                 name = $"surfaceAlphaMap_{surfaceName}"
             };
 
             brushMaterial = new Material(brushShader);
+        }
+
+        public void SetAlphaMap(Texture2D tex)
+        {
+            Graphics.Blit(tex, alphaMap);
         }
     }
 }

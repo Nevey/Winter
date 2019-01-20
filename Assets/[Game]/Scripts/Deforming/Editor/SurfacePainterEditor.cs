@@ -1,3 +1,4 @@
+using Game.Utilities;
 using Game.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -7,6 +8,8 @@ namespace Game.Deforming.Editor
     [CustomEditor(typeof(SurfacePainter))]
     public class SurfacePainterEditor : UnityEditor.Editor
     {
+        private const string SURFACES_PATH = "Assets/[Game]/Data/Surfaces/";
+        
         private SurfacePainter surfacePainter;
         
         private SerializedProperty brushSize;
@@ -31,11 +34,6 @@ namespace Game.Deforming.Editor
             selectedPaintIndex = serializedObject.FindProperty("selectedPaintIndex");
             visibleSurfacePaintCount = serializedObject.FindProperty("visibleSurfacePaintCount");
             surfaceData = serializedObject.FindProperty("surfaceData");
-        }
-
-        private void OnDisable()
-        {
-            
         }
 
         public override void OnInspectorGUI()
@@ -93,7 +91,7 @@ namespace Game.Deforming.Editor
             
             if (surfaceData.objectReferenceValue == null && GUILayout.Button("INITIALIZE"))
             {
-                SurfaceData existingData = AssetUtility.LoadAssetAtPath<SurfaceData>($"Assets/[Game]/Data/{dataId}.asset");
+                SurfaceData existingData = AssetUtility.LoadAssetAtPath<SurfaceData>($"{SURFACES_PATH}{dataId}.asset");
 
                 if (existingData)
                 {
@@ -116,7 +114,7 @@ namespace Game.Deforming.Editor
 
             if (GUILayout.Button("LOAD"))
             {
-                SurfaceData loadedData = AssetUtility.LoadAssetAtPath<SurfaceData>($"Assets/[Game]/Data/{dataId}.asset");
+                SurfaceData loadedData = AssetUtility.LoadAssetAtPath<SurfaceData>($"{SURFACES_PATH}{dataId}.asset");
 
                 if (loadedData == null)
                 {
@@ -143,12 +141,9 @@ namespace Game.Deforming.Editor
             surfaceData.objectReferenceValue = CreateInstance<SurfaceData>();
                     
             AssetUtility.CreateAsset<SurfaceData>(surfaceData.objectReferenceValue,
-                $"Assets/[Game]/Data/{dataId}.asset");
+                $"{SURFACES_PATH}{dataId}.asset");
                         
             serializedObject.ApplyModifiedProperties();
-                
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
         }
 
         private bool DrawShaderProperties()
@@ -182,9 +177,6 @@ namespace Game.Deforming.Editor
                 {
                     surfacePainter.Initialize();
                     surfacePainter.UpdateMaterial();
-                    
-                    AssetDatabase.SaveAssets();
-                    AssetDatabase.Refresh();
                 }
             }
             
@@ -225,9 +217,6 @@ namespace Game.Deforming.Editor
                 serializedObject.ApplyModifiedProperties();
                 
                 surfacePainter.UpdateMainTextures();
-                
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
             }
         }
 
@@ -494,12 +483,17 @@ namespace Game.Deforming.Editor
 
             if (e.type == EventType.MouseUp)
             {
+                if (e.button != 0)
+                {
+                    return;
+                }
+                
                 isPainting = false;
                 
                 surfaceDataObject.ApplyModifiedProperties();
                 serializedObject.ApplyModifiedProperties();
                 
-                AssetDatabase.SaveAssets();
+                surfacePainter.Save();
             }
         }
 
