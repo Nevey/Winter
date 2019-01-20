@@ -108,6 +108,17 @@ namespace Game.UserInput.Services
         {
             isInputPaused = !isInputPaused;
 
+            if (isInputPaused)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+
             ToggleConsoleEvent?.Invoke();
         }
 
