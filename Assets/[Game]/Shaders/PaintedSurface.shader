@@ -203,11 +203,12 @@ Shader "Paint/PaintedSurface" {
         fixed4 _Color;
         float _AlphaOffset;
         float4x4 _World2Camera;
+        float4 _DeformDispTex_ST;
         
         void disp (inout appdata v)
         {
             half alpha = tex2Dlod(_DeformAlpha, float4(v.texcoord.xy,0,0)).r;
-            float disp = tex2Dlod(_DeformDispTex, float4(v.texcoord.xy,0,0)).r * _Displacement * alpha;
+            float disp = tex2Dlod(_DeformDispTex, float4(v.texcoord.xy * _DeformDispTex_ST,0,0)).r * _Displacement * alpha;
             
             v.vertex.xyz += v.normal * disp;
             float4 vertex_view = mul(_World2Camera, mul(unity_ObjectToWorld, v.vertex));
