@@ -418,7 +418,7 @@ namespace Game.Surfaces.Editor
             }
             
             DrawSurfaceAlphaMapsInSceneView();
-            
+            DrawDeformAlphaMapInSceneView();
             UpdateMouseInput();
         }
 
@@ -440,6 +440,20 @@ namespace Game.Surfaces.Editor
                     GUI.DrawTexture(new Rect(5, 5 + 74 * i, 64, 64), alphaMap, ScaleMode.ScaleToFit, false, 1);
                 }
             }
+            
+            Handles.EndGUI();
+        }
+
+        private void DrawDeformAlphaMapInSceneView()
+        {
+            Handles.BeginGUI();
+            
+            SerializedObject surfaceDataObject = new SerializedObject(surfaceData.objectReferenceValue);
+            SerializedProperty deformPaint = surfaceDataObject.FindProperty("deformPaint");
+            
+            Texture alphaMap = (Texture)deformPaint.FindPropertyRelative("alphaMap").objectReferenceValue;
+                    
+            GUI.DrawTexture(new Rect(5 + 74, 5, 64, 64), alphaMap, ScaleMode.ScaleToFit, false, 1);
             
             Handles.EndGUI();
         }
